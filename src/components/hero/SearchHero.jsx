@@ -2,160 +2,154 @@
 
 import React, { useState } from "react";
 import Logo from "@/components/shared/Logo";
-import Badge from "@/components/shared/Badge";
 import { DESIGN_SYSTEM } from "@/config/design_system";
 import { searchNcertDatabase } from "@/data/ncert_db";
-import { Search, Sparkles, BookOpen, AlertCircle, ArrowRight } from "lucide-react";
+import { Search, ArrowRight, Loader2, BookOpen } from "lucide-react";
 
 export default function SearchHero({ onSelectChapter }) {
   const [query, setQuery] = useState("");
   const [outOfScopeNotice, setOutOfScopeNotice] = useState(null);
+  const [preparationStep, setPreparationStep] = useState(null); // null | "fetching" | "synthesizing" | "ready"
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!query.trim() || preparationStep) return;
 
     const result = searchNcertDatabase(query);
 
     if (result.matched) {
       setOutOfScopeNotice(null);
-      onSelectChapter(result.data);
+      // Trigger Class Preparation Sequence:
+      // "first class is prepared -preparation time is taken-> Data is fetched from ncert db stored with me
+      // It is then shortend and concise but same wording module is preapred"
+      setPreparationStep("fetching");
+
+      setTimeout(() => {
+        setPreparationStep("synthesizing");
+      }, 1000);
+
+      setTimeout(() => {
+        setPreparationStep("ready");
+      }, 2000);
+
+      setTimeout(() => {
+        onSelectChapter(result.data);
+      }, 2600);
     } else {
       setOutOfScopeNotice(result.outOfScopeMessage);
     }
   };
 
-  const handlePresetClick = (presetQuery) => {
-    setQuery(presetQuery);
-    const result = searchNcertDatabase(presetQuery);
-    if (result.matched) {
-      setOutOfScopeNotice(null);
-      onSelectChapter(result.data);
-    }
-  };
-
   return (
-    <div className="min-h-screen w-full flex flex-col justify-between p-6 md:p-10 relative overflow-hidden bg-[#FAFBFD]">
-      {/* Background Studio Light Flourishes */}
-      <div 
-        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none opacity-40"
-        style={{ background: `radial-gradient(circle, ${DESIGN_SYSTEM.colors.tealGreen.lightBg} 0%, transparent 70%)` }}
-      />
-      <div 
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none opacity-30"
-        style={{ background: `radial-gradient(circle, ${DESIGN_SYSTEM.colors.earthyBrown.lightBg} 0%, transparent 70%)` }}
-      />
-
-      {/* Top Header Bar */}
-      <header className="w-full flex items-center justify-between z-10">
-        <Logo size="lg" />
-
-        <div className="hidden md:flex items-center gap-3">
-          <Badge variant="brown" icon={BookOpen}>
-            NCERT Classes 4 - 10 Pre-Connected
-          </Badge>
-          <Badge variant="royalRed" icon={Sparkles}>
-            100% Exam Readiness Guaranteed
-          </Badge>
-        </div>
+    <div className="min-h-screen w-full flex flex-col justify-between p-6 md:p-10 relative bg-[#FAFBFD] overflow-hidden">
+      {/* Top Left Logo Only (as specified: 'with a logo in the left nothing else') */}
+      <header className="w-full flex items-center justify-start z-20">
+        <Logo size="md" />
       </header>
 
-      {/* Centered Search Engine Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center text-center max-w-3xl mx-auto w-full z-10 py-12">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold mb-6 shadow-xs border bg-white"
-             style={{ borderColor: DESIGN_SYSTEM.colors.earthyBrown.border, color: DESIGN_SYSTEM.colors.earthyBrown.primary }}>
-          <Sparkles className="w-4 h-4 text-amber-600" />
-          Outcome-Based Dynamic Classroom Engine
-        </div>
-
-        <h1 
-          className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 mb-4 leading-tight"
-          style={{ fontFamily: DESIGN_SYSTEM.typography.fonts.sans }}
-        >
-          Master Any <span style={{ color: DESIGN_SYSTEM.colors.tealGreen.primary }}>NCERT Chapter</span>.
-          <br />
-          Be <span style={{ color: DESIGN_SYSTEM.colors.royalRed.primary }}>100% Exam Ready</span>.
-        </h1>
-
-        <p className="text-base md:text-lg text-gray-600 mb-8 max-w-xl">
-          Enter an NCERT chapter name or number to launch your dynamic 2-way interactive blackboard classroom.
-        </p>
-
-        {/* Central Searchbar */}
-        <form onSubmit={handleSearchSubmit} className="w-full relative group">
-          <div 
-            className="flex items-center bg-white rounded-2xl p-2.5 shadow-xl transition-all duration-300 border-2 group-focus-within:ring-4"
-            style={{ 
-              borderColor: DESIGN_SYSTEM.colors.earthyBrown.primary,
-              boxShadow: DESIGN_SYSTEM.shadows.searchBarShadow
-            }}
+      {/* Dead Center: Chat-like Searchbar & Expansion Transition */}
+      <main className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full z-10 px-4">
+        
+        {/* Chat-Like Searchbar */}
+        <div className="w-full relative">
+          <form 
+            onSubmit={handleSearchSubmit}
+            className={`w-full transition-all duration-700 ease-out ${
+              preparationStep === "ready" ? "scale-105 opacity-0" : "scale-100 opacity-100"
+            }`}
           >
-            <div className="pl-4 pr-2 text-gray-400">
-              <Search className="w-6 h-6 text-gray-400 group-focus-within:text-teal-700 transition-colors" />
-            </div>
-
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Type NCERT Chapter (e.g. NCERT Class 6 Science Chapter 2)..."
-              className="w-full py-3 px-2 text-lg text-gray-900 placeholder-gray-400 bg-transparent focus:outline-none font-medium"
-              autoFocus
-            />
-
-            <button
-              type="submit"
-              className="px-6 py-3.5 rounded-xl font-bold text-white flex items-center gap-2 transition-all hover:opacity-90 active:scale-98 shadow-md"
+            <div 
+              className="flex items-center bg-white rounded-full px-5 py-3.5 shadow-xl transition-all duration-300 border hover:shadow-2xl focus-within:ring-2 focus-within:ring-[#005F56]"
               style={{
-                backgroundColor: DESIGN_SYSTEM.colors.tealGreen.primary
+                borderColor: DESIGN_SYSTEM.colors.earthyBrown.border,
+                boxShadow: DESIGN_SYSTEM.shadows.searchBarShadow
               }}
             >
-              <span>Start Class</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
-        </form>
+              <Search className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
 
-        {/* Out-of-Scope Notice Display */}
-        {outOfScopeNotice && (
-          <div 
-            className="mt-6 w-full p-4 rounded-xl text-left border flex items-start gap-3 shadow-md animate-in fade-in slide-in-from-top-2 duration-300"
-            style={{
-              backgroundColor: DESIGN_SYSTEM.colors.royalRed.lightBg,
-              borderColor: DESIGN_SYSTEM.colors.royalRed.border,
-              color: DESIGN_SYSTEM.colors.royalRed.primary
-            }}
-          >
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <div className="text-sm font-semibold whitespace-pre-line leading-relaxed">
-              {outOfScopeNotice}
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  if (outOfScopeNotice) setOutOfScopeNotice(null);
+                }}
+                disabled={Boolean(preparationStep)}
+                placeholder="Ask or search NCERT chapter (e.g. NCERT Class 6 Science Chapter 2)..."
+                className="w-full py-1 text-base md:text-lg text-gray-900 placeholder-gray-400 bg-transparent focus:outline-none font-medium"
+                autoFocus
+              />
+
+              <button
+                type="submit"
+                disabled={Boolean(preparationStep)}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-all hover:opacity-90 active:scale-95 shrink-0 ml-2 shadow-sm"
+                style={{
+                  backgroundColor: DESIGN_SYSTEM.colors.tealGreen.primary
+                }}
+              >
+                {preparationStep ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <ArrowRight className="w-5 h-5" />
+                )}
+              </button>
             </div>
-          </div>
-        )}
+          </form>
 
-        {/* Popular Preset Chips */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-xs font-semibold text-gray-400 mr-1">Quick Try:</span>
-          {[
-            "NCERT Class 6 Science Chapter 2",
-            "NCERT Class 8 Science Chapter 11",
-            "NCERT Class 10 Science Chapter 10",
-            "NCERT Class 4 EVS Chapter 1"
-          ].map((preset, idx) => (
-            <button
-              key={idx}
-              onClick={() => handlePresetClick(preset)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border bg-white hover:bg-gray-50 transition-all text-gray-700 shadow-2xs hover:border-gray-400"
+          {/* Preparation Stage Status Animation */}
+          {preparationStep && (
+            <div className="mt-8 flex flex-col items-center text-center animate-in fade-in duration-300">
+              <div 
+                className="p-4 rounded-2xl border bg-white shadow-lg flex items-center gap-3"
+                style={{ borderColor: DESIGN_SYSTEM.colors.earthyBrown.primary }}
+              >
+                <div className="w-3 h-3 rounded-full animate-ping" style={{ backgroundColor: DESIGN_SYSTEM.colors.tealGreen.bright }} />
+                <span className="text-sm font-bold text-gray-800">
+                  {preparationStep === "fetching" && "1/2 Fetching verified NCERT chapter data..."}
+                  {preparationStep === "synthesizing" && "2/2 Preparing concise textbook wording & blackboard modules..."}
+                  {preparationStep === "ready" && "Expanding Blackboard Classroom..."}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Out-of-Scope Response (As specified: 'an ans comes that we are expanding try typing Ncert [class] [subject] [chapter no]') */}
+          {outOfScopeNotice && !preparationStep && (
+            <div 
+              className="mt-6 p-4 rounded-2xl border bg-white shadow-md animate-in fade-in slide-in-from-top-2 duration-300"
+              style={{
+                borderColor: DESIGN_SYSTEM.colors.royalRed.border,
+                borderLeftWidth: "4px",
+                borderLeftColor: DESIGN_SYSTEM.colors.royalRed.primary
+              }}
             >
-              {preset}
-            </button>
-          ))}
+              <p className="text-sm font-semibold text-gray-800 whitespace-pre-line leading-relaxed">
+                {outOfScopeNotice}
+              </p>
+              
+              {/* Quick try shortcut chip */}
+              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2">
+                <span className="text-xs text-gray-500 font-medium">Quick example:</span>
+                <button
+                  onClick={() => {
+                    setQuery("NCERT Class 6 Science Chapter 2");
+                    setOutOfScopeNotice(null);
+                  }}
+                  className="text-xs font-bold text-[#005F56] hover:underline"
+                >
+                  NCERT Class 6 Science Chapter 2
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
-      {/* Footer info */}
-      <footer className="w-full text-center text-xs text-gray-400 z-10 py-2 border-t border-gray-100">
-        OPED Outcome-Based Classroom • Powered by AWS Free Tier Architecture & 2-Way Speech Verification
+      {/* Clean Bottom Footer Anchor */}
+      <footer className="w-full flex justify-between items-center text-[11px] text-gray-400 z-10">
+        <span>OPED • Outcome-Based Education</span>
+        <span>Desktop & Mobile Landscape Optimized</span>
       </footer>
     </div>
   );

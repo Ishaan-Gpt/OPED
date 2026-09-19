@@ -5,18 +5,23 @@ import { DESIGN_SYSTEM } from "@/config/design_system";
 import AudioWaveform from "@/components/shared/AudioWaveform";
 import RecitationModule from "@/components/blackboard/RecitationModule";
 import Badge from "@/components/shared/Badge";
-import { Box, Volume2, Sparkles, CheckCircle, ArrowRight, Layers, VolumeX } from "lucide-react";
+import { Box, Volume2, Sparkles, CheckCircle, ArrowRight, Layers, Sliders } from "lucide-react";
 
 export default function BlackboardCanvas({ 
   chapterData, 
   currentModuleIndex, 
   onNextModule, 
-  onOpen3D,
-  onExitClassroom
+  onOpen3D, 
+  onExitClassroom 
 }) {
   const currentModule = chapterData.modules[currentModuleIndex] || chapterData.modules[0];
   const [learningPhase, setLearningPhase] = useState("understanding"); // "understanding" | "recitation" | "completed"
   const [isSpeaking, setIsSpeaking] = useState(true);
+
+  // Interactive Artifact Simulation State (e.g. Area vs Pressure slider or Nutrient balance)
+  const [artifactAreaVal, setArtifactAreaVal] = useState(5);
+  const artifactForce = 50;
+  const computedPressure = (artifactForce / Math.max(artifactAreaVal, 1)).toFixed(1);
 
   // Play Browser Audio TTS for Teacher Speech
   const playTeacherSpeech = () => {
@@ -49,7 +54,7 @@ export default function BlackboardCanvas({
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col gap-6">
       {/* Top Header Bar inside Classroom */}
-      <div className="flex items-center justify-between bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-gray-200 shadow-sm">
         <div className="flex items-center gap-3">
           <button
             onClick={onExitClassroom}
@@ -78,7 +83,7 @@ export default function BlackboardCanvas({
 
       {/* Photorealistic Wooden Blackboard Frame Container */}
       <div 
-        className="relative w-full rounded-3xl p-6 md:p-10 shadow-2xl transition-all duration-500 overflow-hidden"
+        className="relative w-full rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 overflow-hidden"
         style={{
           backgroundColor: DESIGN_SYSTEM.colors.earthyBrown.darkWood,
           boxShadow: DESIGN_SYSTEM.shadows.woodFrame
@@ -117,11 +122,11 @@ export default function BlackboardCanvas({
             <AudioWaveform active={isSpeaking} label={isSpeaking ? "AI Teacher Reciting NCERT..." : "Audio Paused"} />
           </div>
 
-          {/* Blackboard Content Area (Chalk Text & Diagrams) */}
+          {/* Blackboard Content Area (Chalk Text, Formulas, Images, Interactive Artifacts) */}
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-10 py-4">
             
             {/* Left Column: Text & Formulas */}
-            <div className="lg:col-span-8 space-y-5 text-emerald-50">
+            <div className="lg:col-span-7 space-y-5 text-emerald-50">
               <h3 
                 className="text-2xl md:text-4xl font-bold tracking-wide text-white drop-shadow-sm"
                 style={{ fontFamily: DESIGN_SYSTEM.typography.fonts.sans }}
@@ -154,22 +159,45 @@ export default function BlackboardCanvas({
               )}
             </div>
 
-            {/* Right Column: Diagram Tag & 3D Interactive Trigger Box */}
-            <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4">
+            {/* Right Column: Multipurpose Canvas (Diagrams, Interactive Artifact, 3D Experience) */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center gap-4">
               
-              {/* Diagram Tag */}
-              <div className="w-full p-4 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md text-center">
-                <span className="text-xs font-semibold text-emerald-200 block mb-1">NCERT Visual Diagram</span>
-                <div className="h-28 rounded-xl bg-emerald-950/80 border border-emerald-800 flex items-center justify-center p-3 text-emerald-300 font-bold text-sm">
-                  🖼️ {currentModule.understanding.blackboardContent.imageTag}
+              {/* Multipurpose Interactive Artifact Widget */}
+              <div className="w-full p-4 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300 uppercase tracking-wider">
+                    <Sliders className="w-3.5 h-3.5" />
+                    <span>Interactive Artifact</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-200 font-semibold">Live Simulation</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-800 text-xs text-emerald-200 space-y-2">
+                  <div className="flex justify-between font-bold">
+                    <span>Contact Area (A): {artifactAreaVal} cm²</span>
+                    <span className="text-amber-300">Pressure (P): {computedPressure} N/cm²</span>
+                  </div>
+                  
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={artifactAreaVal}
+                    onChange={(e) => setArtifactAreaVal(Number(e.target.value))}
+                    className="w-full accent-teal-400 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-emerald-400">
+                    <span>Small Area (High Pressure)</span>
+                    <span>Large Area (Low Pressure)</span>
+                  </div>
                 </div>
               </div>
 
-              {/* 3D Interactive Trigger Overlay */}
+              {/* 3D Interactive Trigger Overlay (Blurred background with 'Enter 3D' option) */}
               {currentModule.interactive3D?.has3D && (
                 <div className="w-full relative group">
                   <div className="p-4 rounded-2xl bg-teal-900/60 border-2 border-teal-400/60 backdrop-blur-md text-center transition-all group-hover:scale-102 shadow-xl">
-                    <div className="flex items-center justify-center gap-2 text-teal-200 font-bold text-xs uppercase tracking-wider mb-2">
+                    <div className="flex items-center justify-center gap-2 text-teal-200 font-bold text-xs uppercase tracking-wider mb-1">
                       <Box className="w-4 h-4 text-teal-300" />
                       3D Experience Available
                     </div>
@@ -185,7 +213,7 @@ export default function BlackboardCanvas({
                       }}
                     >
                       <Box className="w-4 h-4" />
-                      <span>Enter 3D Experience</span>
+                      <span>Enter 3D Experience (Zoom)</span>
                     </button>
                   </div>
                 </div>
@@ -199,7 +227,7 @@ export default function BlackboardCanvas({
             <div className="flex items-center gap-3">
               <button 
                 onClick={playTeacherSpeech}
-                className="p-2 rounded-lg bg-teal-800/80 hover:bg-teal-700 text-teal-100 transition-colors"
+                className="p-2 rounded-lg bg-teal-800/80 hover:bg-teal-700 text-teal-100 transition-colors shrink-0"
                 title="Replay Teacher Voice"
               >
                 <Volume2 className="w-4 h-4" />
@@ -224,7 +252,7 @@ export default function BlackboardCanvas({
             <div>
               <h4 className="font-bold text-gray-900 text-base">Finished Understanding Phase A?</h4>
               <p className="text-xs text-gray-500 font-medium">
-                Proceed to Phase B recitation to test student retention and ensure exam readiness.
+                Teacher will recite the key concept twice, then test student recitation.
               </p>
             </div>
 
