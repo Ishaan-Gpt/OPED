@@ -140,7 +140,7 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
           )}
           {speakingText && (
             <p className="text-slate-100 font-medium leading-relaxed">
-              "{speakingText}"
+              &ldquo;{speakingText}&rdquo;
             </p>
           )}
           {thoughtContent}
