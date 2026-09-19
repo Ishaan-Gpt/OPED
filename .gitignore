@@ -35,4 +35,6 @@ dist-ssr
 .next
 *.zip
 temp_unzip
+.amplify-hosting/
+.agents/
 
