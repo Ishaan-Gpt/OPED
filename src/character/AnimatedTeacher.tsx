@@ -31,7 +31,7 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
   className = '',
   showThoughtBubble,
   thoughtContent,
-  avatarStyle = 'nft',
+  avatarStyle = 'standard',
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isBlinking, setIsBlinking] = useState(false);
@@ -44,7 +44,7 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
   useEffect(() => {
     let blinkTimeout: ReturnType<typeof setTimeout>;
     const scheduleBlink = () => {
-      const nextBlinkMs = 2200 + Math.random() * 2800;
+      const nextBlinkMs = 2000 + Math.random() * 2600;
       blinkTimeout = setTimeout(() => {
         setIsBlinking(true);
         setTimeout(() => {
@@ -106,23 +106,23 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
       exit={{ opacity: 0, scale: 0.8 }}
       transition={{
         type: 'spring',
-        stiffness: 100,
-        damping: 18,
+        stiffness: 90,
+        damping: 16,
       }}
       className={`fixed z-30 pointer-events-auto flex flex-col items-center ${positionClass} ${className}`}
       style={customPositionStyle}
       onAnimationComplete={() => onAnimationComplete && onAnimationComplete(state)}
     >
-      {/* THOUGHT BUBBLE */}
-      {(showThoughtBubble || state === 'thinking' || speakingText) && avatarStyle === 'standard' && (
+      {/* THOUGHT BUBBLE / SPEECH BADGE */}
+      {(showThoughtBubble || state === 'thinking' || speakingText) && (
         <motion.div
-          initial={{ opacity: 0, y: 10, scale: 0.9 }}
+          initial={{ opacity: 0, y: 8, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="mb-2 max-w-xs px-4 py-2.5 bg-[#171717] border border-[#2f2f2f] rounded-2xl shadow-xl text-xs text-slate-200 flex items-center gap-2 z-40"
+          className="mb-2 max-w-xs px-4 py-2 bg-[#171717]/95 backdrop-blur-md border border-[#383838] rounded-2xl shadow-2xl text-xs text-slate-200 flex items-center gap-2 z-40"
         >
           {state === 'thinking' && (
-            <div className="flex items-center gap-1 text-amber-400 font-medium">
+            <div className="flex items-center gap-1.5 text-amber-400 font-semibold">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
               <span>Thinking...</span>
             </div>
@@ -136,32 +136,17 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
         </motion.div>
       )}
 
-      {/* RENDER CHARACTER OR NFT CARD CONTAINER */}
-      {avatarStyle === 'nft' ? (
-        <div className="p-1 rounded-3xl bg-[#171717]/90 backdrop-blur-xl border border-[#383838] shadow-2xl">
-          <div className="w-56 h-72 md:w-64 md:h-80 relative">
-            <CharacterRig
-              boneAngles={finalBoneAngles}
-              expression={activeExpression}
-              pupilOffset={gazeResult.pupilOffset}
-              isBlinking={isBlinking}
-              isNoPeekActive={state === 'noPeek' || activeGesture === 'noPeek'}
-              isSpeaking={isAudioSpeaking || state === 'speaking'}
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="w-56 h-72 md:w-64 md:h-80 relative">
-          <CharacterRig
-            boneAngles={finalBoneAngles}
-            expression={activeExpression}
-            pupilOffset={gazeResult.pupilOffset}
-            isBlinking={isBlinking}
-            isNoPeekActive={state === 'noPeek' || activeGesture === 'noPeek'}
-            isSpeaking={isAudioSpeaking || state === 'speaking'}
-          />
-        </div>
-      )}
+      {/* DYNAMIC BORDERLESS SVG CARTOON RIG VIEWPORT */}
+      <div className="w-60 h-72 md:w-64 md:h-80 relative overflow-visible">
+        <CharacterRig
+          boneAngles={finalBoneAngles}
+          expression={activeExpression}
+          pupilOffset={gazeResult.pupilOffset}
+          isBlinking={isBlinking}
+          isNoPeekActive={state === 'noPeek' || activeGesture === 'noPeek'}
+          isSpeaking={isAudioSpeaking || state === 'speaking'}
+        />
+      </div>
     </motion.div>
   );
 };

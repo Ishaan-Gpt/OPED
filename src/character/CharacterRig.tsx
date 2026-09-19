@@ -15,12 +15,12 @@ interface CharacterRigProps {
 }
 
 const defaultConfig: CharacterConfig = {
-  skinColor: '#FDE2D1',
-  skinDarkColor: '#F5C2A5',
-  hairColor: '#2C1D11',
-  shirtColor: '#475569',
-  vestColor: '#1E293B',
-  accentColor: '#3B82F6',
+  skinColor: '#FDE2D1',      // Soft natural peach skin tone
+  skinDarkColor: '#F5C2A5',  // Subtle shadow
+  hairColor: '#2C1D11',      // Warm mocha brown
+  shirtColor: '#475569',     // Slate shirt
+  vestColor: '#1E293B',      // Deep navy vest
+  accentColor: '#38BDF8',    // Soft sky blue
   glasses: true,
 };
 
@@ -40,7 +40,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
   const finalPupilX = pupilOffset.x + expr.eyes.pupilOffset.x;
   const finalPupilY = pupilOffset.y + expr.eyes.pupilOffset.y;
 
-  // Mouth rendering supporting all expression types
+  // Fluid SVG Mouth Renderer with Phoneme Interpolation
   const renderMouth = () => {
     const mouthType = isSpeaking ? 'speaking' : expr.mouth.type;
 
@@ -63,18 +63,19 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
         return (
           <motion.g
             animate={{
-              scaleY: [0.75, 1.35, 0.85, 1.25, 0.75],
+              scaleY: [0.7, 1.4, 0.8, 1.3, 0.7],
+              scaleX: [0.95, 1.05, 0.9, 1.1, 0.95],
             }}
             transition={{
               repeat: Infinity,
-              duration: 0.32,
+              duration: 0.28,
               ease: 'easeInOut',
             }}
             style={{ transformOrigin: '160px 158px' }}
           >
-            <ellipse cx="160" cy="158" rx="12" ry="9" fill="#9F1239" />
-            <path d="M 150 154 Q 160 157 170 154 Z" fill="#FFFFFF" />
-            <ellipse cx="160" cy="162" rx="7" ry="3.5" fill="#FB7185" />
+            <ellipse cx="160" cy="158" rx="13" ry="10" fill="#9F1239" />
+            <path d="M 149 153 Q 160 157 171 153 Z" fill="#FFFFFF" />
+            <ellipse cx="160" cy="162" rx="7.5" ry="4" fill="#FB7185" />
           </motion.g>
         );
       case 'surprised':
@@ -107,7 +108,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
     }
   };
 
-  // Hand shape renderer supporting 12+ pose variations
+  // Controllable Hand Poses
   const renderHand = (
     pose: BoneAngles['leftHandPose'],
     isRight: boolean
@@ -118,7 +119,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
         return (
           <g transform={`scale(${flip}, 1)`}>
             <circle cx="0" cy="8" r="10" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
-            <rect x="-4" y="-15" width="8" height="17" rx="4" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
+            <rect x="-4" y="-16" width="8" height="18" rx="4" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
             <circle cx="5" cy="6" r="4" fill={config.skinDarkColor} />
             <circle cx="5" cy="12" r="4" fill={config.skinDarkColor} />
           </g>
@@ -185,10 +186,10 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
   };
 
   return (
-    <div className={`relative flex items-center justify-center select-none ${className}`}>
+    <div className={`relative flex items-center justify-center select-none overflow-visible ${className}`}>
       <svg
         viewBox="0 0 320 400"
-        className="w-full h-full drop-shadow-xl overflow-visible"
+        className="w-full h-full filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)] overflow-visible"
         style={{ maxHeight: '100%', maxWidth: '100%' }}
       >
         <defs>
@@ -197,35 +198,65 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             <stop offset="100%" stopColor="#FDE2D1" />
           </radialGradient>
           <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(0,0,0,0.18)" />
+            <stop offset="0%" stopColor="rgba(0,0,0,0.25)" />
             <stop offset="100%" stopColor="rgba(0,0,0,0)" />
           </radialGradient>
         </defs>
 
-        <ellipse cx="160" cy="385" rx="70" ry="10" fill="url(#shadowGrad)" />
-
-        <motion.g
+        {/* Soft Dynamic Floor Shadow */}
+        <motion.ellipse
+          cx="160"
+          cy="385"
+          rx="72"
+          ry="11"
+          fill="url(#shadowGrad)"
           animate={{
-            y: [0, -2.5, 0],
+            scaleX: [1, 1.05, 1],
+            opacity: [0.8, 0.9, 0.8],
           }}
           transition={{
             repeat: Infinity,
-            duration: 3.8,
+            duration: 3.5,
+            ease: 'easeInOut',
+          }}
+        />
+
+        {/* ALIVE RIGGED CARTOON CHARACTER CONTAINER */}
+        <motion.g
+          animate={{
+            y: [0, -4, 0],
+            rotate: [0, 0.6, -0.6, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 3.6,
             ease: 'easeInOut',
           }}
         >
-          {/* LEGS */}
+          {/* LEGS / FEET */}
           <rect x="136" y="325" width="16" height="52" rx="6" fill="#334155" />
           <rect x="168" y="325" width="16" height="52" rx="6" fill="#334155" />
           <ellipse cx="144" cy="377" rx="13" ry="5.5" fill="#1E293B" />
           <ellipse cx="176" cy="377" rx="13" ry="5.5" fill="#1E293B" />
 
-          {/* TORSO & CLOTHING */}
-          <g>
+          {/* TORSO & CLOTHING WITH BREATHING SWAY */}
+          <motion.g
+            animate={{
+              scaleY: [1, 1.015, 1],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 3.6,
+              ease: 'easeInOut',
+            }}
+            style={{ transformOrigin: '160px 325px' }}
+          >
+            {/* Shirt */}
             <path
               d="M 108 205 Q 160 192 212 205 L 222 325 Q 160 334 98 325 Z"
               fill={config.shirtColor}
             />
+            {/* Vest */}
             <path
               d="M 108 205 L 142 325 L 98 325 Z"
               fill={config.vestColor}
@@ -234,24 +265,26 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               d="M 212 205 L 178 325 L 222 325 Z"
               fill={config.vestColor}
             />
+            {/* Collar & Tie */}
             <polygon points="160,202 152,212 160,222 168,212" fill="#38BDF8" />
             <polygon points="160,202 146,210 160,218 174,210" fill="#FFFFFF" />
+            {/* Badge */}
             <rect x="122" y="235" width="14" height="18" rx="3" fill="#F59E0B" opacity="0.9" />
             <circle cx="129" cy="241" r="3" fill="#FFFFFF" />
-          </g>
+          </motion.g>
 
-          {/* LEFT ARM */}
+          {/* LEFT ARM (SHOULDER & FOREARM JOINTS) */}
           <motion.g
             animate={{
               rotate: boneAngles.leftUpperArm,
             }}
-            transition={{ type: 'spring', stiffness: 120, damping: 14 }}
+            transition={{ type: 'spring', stiffness: 90, damping: 13 }}
             style={{ transformOrigin: '108px 208px' }}
           >
             <path d="M 108 208 L 78 262" stroke={config.vestColor} strokeWidth="20" strokeLinecap="round" />
             <motion.g
               animate={{ rotate: boneAngles.leftForearm }}
-              transition={{ type: 'spring', stiffness: 120, damping: 14 }}
+              transition={{ type: 'spring', stiffness: 90, damping: 13 }}
               style={{ transformOrigin: '78px 262px' }}
             >
               <path d="M 78 262 L 54 308" stroke={config.skinColor} strokeWidth="16" strokeLinecap="round" />
@@ -261,18 +294,18 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             </motion.g>
           </motion.g>
 
-          {/* RIGHT ARM */}
+          {/* RIGHT ARM (SHOULDER & FOREARM JOINTS) */}
           <motion.g
             animate={{
               rotate: boneAngles.rightUpperArm,
             }}
-            transition={{ type: 'spring', stiffness: 120, damping: 14 }}
+            transition={{ type: 'spring', stiffness: 90, damping: 13 }}
             style={{ transformOrigin: '212px 208px' }}
           >
             <path d="M 212 208 L 242 262" stroke={config.vestColor} strokeWidth="20" strokeLinecap="round" />
             <motion.g
               animate={{ rotate: boneAngles.rightForearm }}
-              transition={{ type: 'spring', stiffness: 120, damping: 14 }}
+              transition={{ type: 'spring', stiffness: 90, damping: 13 }}
               style={{ transformOrigin: '242px 262px' }}
             >
               <path d="M 242 262 L 266 308" stroke={config.skinColor} strokeWidth="16" strokeLinecap="round" />
@@ -285,19 +318,23 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           {/* NECK */}
           <rect x="147" y="176" width="26" height="30" rx="6" fill={config.skinDarkColor} />
 
-          {/* HEAD & EXPRESSIONS */}
+          {/* DYNAMIC HEAD & FACIAL RIG */}
           <motion.g
             animate={{
               rotate: boneAngles.headRotate + boneAngles.headTilt,
+              y: [0, -1, 0],
             }}
-            transition={{ type: 'spring', stiffness: 140, damping: 12 }}
+            transition={{ type: 'spring', stiffness: 110, damping: 12 }}
             style={{ transformOrigin: '160px 180px' }}
           >
+            {/* Head Base */}
             <ellipse cx="160" cy="130" rx="58" ry="60" fill="url(#headSkinGrad)" stroke="#F5C2A5" strokeWidth="1.5" />
 
+            {/* Ears */}
             <ellipse cx="99" cy="132" rx="9.5" ry="13" fill={config.skinColor} stroke="#F5C2A5" strokeWidth="1" />
             <ellipse cx="221" cy="132" rx="9.5" ry="13" fill={config.skinColor} stroke="#F5C2A5" strokeWidth="1" />
 
+            {/* Hair */}
             <path
               d="M 98 125 C 92 75, 140 54, 160 54 C 188 54, 228 75, 222 125 C 212 95, 196 74, 160 76 C 128 74, 108 95, 98 125 Z"
               fill={config.hairColor}
@@ -313,7 +350,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
                 rotate: expr.eyebrows.leftAngle,
                 y: expr.eyebrows.leftHeight,
               }}
-              transition={{ type: 'spring', stiffness: 180, damping: 12 }}
+              transition={{ type: 'spring', stiffness: 150, damping: 11 }}
               style={{ transformOrigin: '126px 98px' }}
             >
               <path d="M 110 100 Q 126 92 142 98" fill="none" stroke={config.hairColor} strokeWidth="4.5" strokeLinecap="round" />
@@ -324,13 +361,13 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
                 rotate: expr.eyebrows.rightAngle,
                 y: expr.eyebrows.rightHeight,
               }}
-              transition={{ type: 'spring', stiffness: 180, damping: 12 }}
+              transition={{ type: 'spring', stiffness: 150, damping: 11 }}
               style={{ transformOrigin: '194px 98px' }}
             >
               <path d="M 178 98 Q 194 92 210 100" fill="none" stroke={config.hairColor} strokeWidth="4.5" strokeLinecap="round" />
             </motion.g>
 
-            {/* EYES */}
+            {/* EXPRESSIVE GAZE EYES */}
             <g transform="translate(126, 122)">
               <ellipse cx="0" cy="0" rx="15" ry="17" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
               <motion.g
@@ -338,7 +375,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
                   x: finalPupilX,
                   y: finalPupilY,
                 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 15 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 14 }}
               >
                 <ellipse cx="0" cy="0" rx="9" ry="11" fill="#1E293B" />
                 <ellipse cx="0" cy="0" rx="5" ry="7" fill="#3B82F6" />
@@ -366,7 +403,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
                   x: finalPupilX,
                   y: finalPupilY,
                 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 15 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 14 }}
               >
                 <ellipse cx="0" cy="0" rx="9" ry="11" fill="#1E293B" />
                 <ellipse cx="0" cy="0" rx="5" ry="7" fill="#3B82F6" />
@@ -387,6 +424,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               />
             </g>
 
+            {/* GLASSES */}
             {config.glasses && (
               <g stroke="#334155" strokeWidth="2.5" fill="none">
                 <rect x="107" y="107" width="38" height="30" rx="9" />
@@ -405,7 +443,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
         </motion.g>
       </svg>
 
-      {/* "NO PEEKING!" CAMERA PALM OVERLAY */}
+      {/* SIGNATURE "NO PEEKING!" CAMERA PALM EXTENSION */}
       <AnimatePresence>
         {isNoPeekActive && (
           <motion.div
@@ -413,7 +451,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             animate={{ scale: 4.6, opacity: 1, x: -60, y: -40 }}
             exit={{ scale: 0.2, opacity: 0, x: 100, y: 100 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute z-50 pointer-events-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)]"
+            className="absolute z-50 pointer-events-none drop-shadow-[0_25px_35px_rgba(0,0,0,0.6)]"
             style={{ width: '180px', height: '180px', top: '15%', left: '15%' }}
           >
             <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
