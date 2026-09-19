@@ -9,7 +9,8 @@ import ArtifactViewer from "@/components/ArtifactViewer";
 import RecitationHUD from "@/components/RecitationHUD";
 import { BrandMark, CheckSealIcon, CubeIcon, TeacherIcon } from "@/components/icons";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
-import type { CharacterState, ExpressionType, GestureType, GazeTarget, PointTarget } from "@/character/types";
+import type { CharacterState, ExpressionType, GestureType, GazeTarget, PointTarget, PositionPreset } from "@/character/types";
+import { DemoControls } from "@/demo/DemoControls";
 
 const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
 
@@ -31,6 +32,13 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [teacherRepeat, setTeacherRepeat] = useState(0);
   const [isTeacherActive, setIsTeacherActive] = useState(true);
   const [teacherGreeting, setTeacherGreeting] = useState<string | null>(null);
+  const [showStudioControls, setShowStudioControls] = useState(false);
+  const [customState, setCustomState] = useState<CharacterState | null>(null);
+  const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
+  const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
+  const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
+  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
+  const [customPosition, setCustomPosition] = useState<PositionPreset>('bottom-right');
 
   const lines = module.narration;
   const caption = useMemo(() => {
@@ -340,20 +348,28 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       {/* AI Teacher Character Integration */}
       <AnimatePresence>
         {isTeacherActive ? (
-          <AnimatedTeacher
-            key="ai-teacher-active"
-            state={teacherProps.state}
-            expression={teacherProps.expression}
-            gesture={teacherProps.gesture}
-            position="bottom-right"
-            scale={0.88}
-            gazeTarget={teacherProps.gaze}
-            pointTarget={teacherProps.pointTarget}
-            speakingText={teacherGreeting ?? (speaking ? caption : undefined)}
-            isAudioSpeaking={speaking || !!teacherGreeting}
-            onClick={handleTeacherClick}
-            className="cursor-pointer select-none"
-          />
+          <div className="fixed bottom-4 right-4 z-30 flex flex-col items-end gap-2">
+            <button
+              onClick={() => setShowStudioControls((v) => !v)}
+              className="flex items-center gap-1.5 rounded-full border border-teal-soft/40 bg-[#18231f]/90 px-3 py-1 text-[11px] font-medium text-teal-soft shadow-lg backdrop-blur-md transition-all hover:border-teal-soft hover:bg-[#18231f]"
+            >
+              <span>✨ 3D Character Studio</span>
+            </button>
+            <AnimatedTeacher
+              key="ai-teacher-active"
+              state={customState || teacherProps.state}
+              expression={customExpression || teacherProps.expression}
+              gesture={customGesture || teacherProps.gesture}
+              position={customPosition}
+              scale={0.88}
+              gazeTarget={customGaze || teacherProps.gaze}
+              pointTarget={customPoint || teacherProps.pointTarget}
+              speakingText={teacherGreeting ?? (speaking ? caption : undefined)}
+              isAudioSpeaking={speaking || !!teacherGreeting}
+              onClick={handleTeacherClick}
+              className="cursor-pointer select-none"
+            />
+          </div>
         ) : (
           <motion.button
             key="summon-teacher-btn"
@@ -372,6 +388,26 @@ export function BlackboardCanvas({ module, onExit }: Props) {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* 3D Character Studio Drawer Controls */}
+      <DemoControls
+        isOpen={showStudioControls}
+        onClose={() => setShowStudioControls(false)}
+        currentState={customState || teacherProps.state}
+        currentExpression={customExpression || teacherProps.expression}
+        currentGesture={customGesture || teacherProps.gesture}
+        currentPosition={customPosition}
+        onPlayState={(st) => {
+          setCustomState(st);
+          setCustomExpression(null);
+          setCustomGesture(null);
+        }}
+        onSetExpression={(exp) => setCustomExpression(exp)}
+        onSetGesture={(gst) => setCustomGesture(gst)}
+        onMoveTo={(pos) => setCustomPosition(pos)}
+        onLookAt={(gz) => setCustomGaze(gz)}
+        onPointAt={(pt) => setCustomPoint(pt)}
+      />
     </div>
   );
 }
