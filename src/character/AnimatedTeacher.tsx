@@ -31,11 +31,8 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
   className = '',
   showThoughtBubble,
   thoughtContent,
-<<<<<<< HEAD
   avatarStyle = 'standard',
-=======
   onClick,
->>>>>>> origin/main
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isBlinking, setIsBlinking] = useState(false);
