@@ -299,26 +299,37 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             <stop offset="100%" stopColor="#E2A988" />
           </radialGradient>
 
-          {/* 3D HAIR GRADIENT */}
+          {/* 3D PIXAR HAIR GRADIENTS (IMAGE.PNG MATCH) */}
           <linearGradient id="hair3DGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#4A3222" />
-            <stop offset="50%" stopColor="#2C1D11" />
-            <stop offset="100%" stopColor="#190F08" />
+            <stop offset="0%" stopColor="#242129" />
+            <stop offset="45%" stopColor="#18161D" />
+            <stop offset="100%" stopColor="#0D0C10" />
+          </linearGradient>
+          <linearGradient id="hairSheenGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#4F4A5E" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#18161D" stopOpacity="0" />
           </linearGradient>
 
-          {/* 3D VEST & SHIRT GRADIENTS */}
-          <linearGradient id="vest3DGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#334155" />
-            <stop offset="40%" stopColor="#1E293B" />
-            <stop offset="100%" stopColor="#0F172A" />
+          {/* 3D VEST & SHIRT GRADIENTS (IMAGE.PNG MATCH) */}
+          <linearGradient id="blackTShirtGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#2A2A2E" />
+            <stop offset="50%" stopColor="#18181B" />
+            <stop offset="100%" stopColor="#09090B" />
           </linearGradient>
 
-          <linearGradient id="shirt3DGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#64748B" />
-            <stop offset="100%" stopColor="#334155" />
+          <linearGradient id="creamPantsGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FAFAFA" />
+            <stop offset="60%" stopColor="#F4F4F5" />
+            <stop offset="100%" stopColor="#E4E4E7" />
           </linearGradient>
 
-          {/* 3D EYE GRADIENTS */}
+          <radialGradient id="pearlGrad" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="70%" stopColor="#F1F5F9" />
+            <stop offset="100%" stopColor="#CBD5E1" />
+          </radialGradient>
+
+          {/* 3D EYE GRADIENTS - VIOLET IRIS (IMAGE.PNG MATCH) */}
           <radialGradient id="eyeball3DGrad" cx="40%" cy="30%" r="65%">
             <stop offset="0%" stopColor="#FFFFFF" />
             <stop offset="85%" stopColor="#F1F5F9" />
@@ -331,9 +342,10 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           </radialGradient>
 
           <radialGradient id="iris3DGrad" cx="40%" cy="30%" r="65%">
-            <stop offset="0%" stopColor="#60A5FA" />
-            <stop offset="50%" stopColor="#2563EB" />
-            <stop offset="100%" stopColor="#1E40AF" />
+            <stop offset="0%" stopColor="#C4B5FD" />
+            <stop offset="35%" stopColor="#8B5CF6" />
+            <stop offset="75%" stopColor="#6D28D9" />
+            <stop offset="100%" stopColor="#4C1D95" />
           </radialGradient>
 
           {/* MOUTH & ACCENT GRADIENTS */}
@@ -415,13 +427,23 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             ease: 'easeInOut',
           }}
         >
-          {/* LEGS */}
-          <rect x="136" y="325" width="16" height="52" rx="6" fill="#1E293B" />
-          <rect x="168" y="325" width="16" height="52" rx="6" fill="#1E293B" />
-          <ellipse cx="144" cy="377" rx="13" ry="5.5" fill="#0F172A" />
-          <ellipse cx="176" cy="377" rx="13" ry="5.5" fill="#0F172A" />
+          {/* LEGS & HIGH-WAISTED CREAM TROUSERS (IMAGE.PNG MATCH) */}
+          <rect x="134" y="320" width="22" height="58" rx="7" fill="url(#creamPantsGrad)" />
+          <rect x="164" y="320" width="22" height="58" rx="7" fill="url(#creamPantsGrad)" />
+          <ellipse cx="145" cy="378" rx="14" ry="5.5" fill="#E4E4E7" />
+          <ellipse cx="175" cy="378" rx="14" ry="5.5" fill="#E4E4E7" />
 
-          {/* 3D VOLUMETRIC TORSO & CLOTHING WITH BREATHING SWAY */}
+          {/* 3D BACK HAIR CASCADING PAST SHOULDERS (IMAGE.PNG MATCH) */}
+          <path
+            d="M 102 110 C 58 135, 42 220, 58 310 C 72 350, 95 330, 96 260 C 97 200, 106 145, 115 125 Z"
+            fill="url(#hair3DGrad)"
+          />
+          <path
+            d="M 218 110 C 262 135, 278 220, 262 310 C 248 350, 225 330, 224 260 C 223 200, 214 145, 205 125 Z"
+            fill="url(#hair3DGrad)"
+          />
+
+          {/* 3D VOLUMETRIC TORSO - BLACK FITTED TEE & CREAM TROUSERS */}
           <motion.g
             animate={{
               scaleY: [1, 1.018, 1],
@@ -433,26 +455,23 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             }}
             style={{ transformOrigin: '160px 325px' }}
           >
-            {/* Shirt */}
+            {/* Black Crew Neck Fitted Shirt */}
             <path
-              d="M 108 205 Q 160 192 212 205 L 222 325 Q 160 334 98 325 Z"
-              fill="url(#shirt3DGrad)"
+              d="M 106 200 Q 160 190 214 200 L 220 282 Q 160 288 100 282 Z"
+              fill="url(#blackTShirtGrad)"
             />
-            {/* 3D Vest */}
+            {/* Crew Neckline */}
+            <path d="M 138 200 Q 160 212 182 200" fill="none" stroke="#27272A" strokeWidth="3" />
+
+            {/* High-Waisted Tailored Cream Trousers */}
             <path
-              d="M 108 205 L 142 325 L 98 325 Z"
-              fill="url(#vest3DGrad)"
+              d="M 100 280 Q 160 286 220 280 L 224 330 Q 160 338 96 330 Z"
+              fill="url(#creamPantsGrad)"
             />
-            <path
-              d="M 212 205 L 178 325 L 222 325 Z"
-              fill="url(#vest3DGrad)"
-            />
-            {/* Collar & 3D Tie */}
-            <polygon points="160,202 152,212 160,222 168,212" fill="#38BDF8" />
-            <polygon points="160,202 146,210 160,218 174,210" fill="#FFFFFF" />
-            {/* Metallic Teacher Badge */}
-            <rect x="122" y="235" width="14" height="18" rx="3" fill="url(#lightbulbGlow)" stroke="#D97706" strokeWidth="1" />
-            <circle cx="129" cy="241" r="3" fill="#FFFFFF" />
+            {/* Waistband Seam & Silver Button */}
+            <line x1="100" y1="282" x2="220" y2="282" stroke="#D4D4D8" strokeWidth="2" />
+            <line x1="160" y1="282" x2="160" y2="330" stroke="#E4E4E7" strokeWidth="1.5" />
+            <circle cx="160" cy="292" r="3.5" fill="#E2E8F0" stroke="#94A3B8" strokeWidth="1" />
           </motion.g>
 
           {/* LEFT ARM */}
@@ -463,14 +482,14 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             transition={{ type: 'spring', stiffness: 90, damping: 13 }}
             style={{ transformOrigin: '108px 208px' }}
           >
-            <path d="M 108 208 L 78 262" stroke="url(#vest3DGrad)" strokeWidth="20" strokeLinecap="round" />
+            <path d="M 108 204 L 78 258" stroke="url(#blackTShirtGrad)" strokeWidth="18" strokeLinecap="round" />
             <motion.g
               animate={{ rotate: boneAngles.leftForearm }}
               transition={{ type: 'spring', stiffness: 90, damping: 13 }}
-              style={{ transformOrigin: '78px 262px' }}
+              style={{ transformOrigin: '78px 258px' }}
             >
-              <path d="M 78 262 L 54 308" stroke="url(#skin3DGrad)" strokeWidth="16" strokeLinecap="round" />
-              <g transform="translate(54, 312)">
+              <path d="M 78 258 L 54 304" stroke="url(#skin3DGrad)" strokeWidth="15" strokeLinecap="round" />
+              <g transform="translate(54, 308)">
                 {render3DHand(boneAngles.leftHandPose, false)}
               </g>
             </motion.g>
@@ -484,22 +503,22 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             transition={{ type: 'spring', stiffness: 90, damping: 13 }}
             style={{ transformOrigin: '212px 208px' }}
           >
-            <path d="M 212 208 L 242 262" stroke="url(#vest3DGrad)" strokeWidth="20" strokeLinecap="round" />
+            <path d="M 212 204 L 242 258" stroke="url(#blackTShirtGrad)" strokeWidth="18" strokeLinecap="round" />
             <motion.g
               animate={{ rotate: boneAngles.rightForearm }}
               transition={{ type: 'spring', stiffness: 90, damping: 13 }}
-              style={{ transformOrigin: '242px 262px' }}
+              style={{ transformOrigin: '242px 258px' }}
             >
-              <path d="M 242 262 L 266 308" stroke="url(#skin3DGrad)" strokeWidth="16" strokeLinecap="round" />
-              <g transform="translate(266, 312)">
+              <path d="M 242 258 L 266 304" stroke="url(#skin3DGrad)" strokeWidth="15" strokeLinecap="round" />
+              <g transform="translate(266, 308)">
                 {render3DHand(boneAngles.rightHandPose, true)}
               </g>
             </motion.g>
           </motion.g>
 
           {/* 3D NECK & AMBIENT SHADOW */}
-          <rect x="147" y="176" width="26" height="30" rx="6" fill="#E2A988" />
-          <path d="M 147 180 Q 160 188 173 180 Z" fill="#D99B7A" opacity="0.6" />
+          <rect x="147" y="174" width="26" height="30" rx="6" fill="#E2A988" />
+          <path d="M 147 178 Q 160 186 173 178 Z" fill="#D99B7A" opacity="0.6" />
 
           {/* 3D HEAD & DYNAMIC FACIAL RIG */}
           <motion.g
@@ -514,22 +533,27 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             <ellipse cx="160" cy="130" rx="58" ry="60" fill="url(#headSkin3D)" stroke="#E5A784" strokeWidth="1.2" />
 
             {/* Specular Forehead Light Highlight */}
-            <ellipse cx="145" cy="98" rx="28" ry="12" fill="#FFFFFF" opacity="0.2" />
+            <ellipse cx="145" cy="98" rx="28" ry="12" fill="#FFFFFF" opacity="0.22" />
 
             {/* 3D Ears */}
             <ellipse cx="99" cy="132" rx="9.5" ry="13" fill="url(#skin3DGrad)" stroke="#E2A988" strokeWidth="1" />
             <ellipse cx="221" cy="132" rx="9.5" ry="13" fill="url(#skin3DGrad)" stroke="#E2A988" strokeWidth="1" />
 
-            {/* 3D Layered Haircut with Specular Sheen */}
+            {/* WHITE PEARL EARRINGS (IMAGE.PNG MATCH) */}
+            <circle cx="95" cy="138" r="4.5" fill="url(#pearlGrad)" stroke="#E2E8F0" strokeWidth="0.8" />
+            <circle cx="93.5" cy="136.5" r="1.5" fill="#FFFFFF" />
+            <circle cx="225" cy="138" r="4.5" fill="url(#pearlGrad)" stroke="#E2E8F0" strokeWidth="0.8" />
+            <circle cx="223.5" cy="136.5" r="1.5" fill="#FFFFFF" />
+
+            {/* 3D WAVED LONG BLACK HAIR OVERHEAD & SIDES (IMAGE.PNG MATCH) */}
             <path
-              d="M 98 125 C 92 75, 140 54, 160 54 C 188 54, 228 75, 222 125 C 212 95, 196 74, 160 76 C 128 74, 108 95, 98 125 Z"
+              d="M 96 130 C 88 68, 138 48, 160 48 C 190 48, 232 68, 224 130 C 214 90, 198 66, 160 68 C 124 66, 106 90, 96 130 Z"
               fill="url(#hair3DGrad)"
             />
-            {/* Hair Specular Sheen */}
+            {/* Volumetric Front Wave Lock */}
             <path
-              d="M 125 72 C 145 60, 175 66, 188 80 C 170 72, 145 72, 125 72 Z"
-              fill="#6B4B35"
-              opacity="0.7"
+              d="M 115 62 C 145 52, 185 58, 205 78 C 185 66, 145 66, 115 62 Z"
+              fill="url(#hairSheenGrad)"
             />
 
             {/* EYEBROWS */}
@@ -541,7 +565,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               transition={{ type: 'spring', stiffness: 150, damping: 11 }}
               style={{ transformOrigin: '126px 98px' }}
             >
-              <path d="M 110 100 Q 126 92 142 98" fill="none" stroke={config.hairColor} strokeWidth="4.5" strokeLinecap="round" />
+              <path d="M 108 98 Q 126 88 144 96" fill="none" stroke="#18161D" strokeWidth="4.8" strokeLinecap="round" />
             </motion.g>
 
             <motion.g
@@ -552,24 +576,24 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               transition={{ type: 'spring', stiffness: 150, damping: 11 }}
               style={{ transformOrigin: '194px 98px' }}
             >
-              <path d="M 178 98 Q 194 92 210 100" fill="none" stroke={config.hairColor} strokeWidth="4.5" strokeLinecap="round" />
+              <path d="M 176 96 Q 194 88 212 98" fill="none" stroke="#18161D" strokeWidth="4.8" strokeLinecap="round" />
             </motion.g>
 
             {/* RENDER 3D SPHERICAL EYES */}
             {render3DEye(true)}
             {render3DEye(false)}
 
-            {/* 3D GLASSES WITH METALLIC FRAME SHINE */}
+            {/* OVERSIZED CAT-EYE BLACK SPECTACLES (IMAGE.PNG MATCH) */}
             {config.glasses && (
-              <g stroke="#334155" strokeWidth="2.5" fill="none">
-                <rect x="107" y="107" width="38" height="30" rx="9" />
-                <rect x="175" y="107" width="38" height="30" rx="9" />
-                <line x1="145" y1="120" x2="175" y2="120" strokeWidth="3" />
-                <line x1="99" y1="118" x2="107" y2="120" />
-                <line x1="213" y1="120" x2="221" y2="118" />
+              <g stroke="#18181B" strokeWidth="3.2" fill="none">
+                <rect x="104" y="104" width="42" height="34" rx="12" />
+                <rect x="174" y="104" width="42" height="34" rx="12" />
+                <line x1="146" y1="118" x2="174" y2="118" strokeWidth="3.5" />
+                <line x1="95" y1="115" x2="104" y2="117" strokeWidth="2.5" />
+                <line x1="216" y1="117" x2="225" y2="115" strokeWidth="2.5" />
                 {/* Lens Specular Reflection */}
-                <path d="M 110 110 L 125 110 L 115 130 Z" fill="#FFFFFF" opacity="0.15" stroke="none" />
-                <path d="M 178 110 L 193 110 L 183 130 Z" fill="#FFFFFF" opacity="0.15" stroke="none" />
+                <path d="M 108 108 L 125 108 L 114 132 Z" fill="#FFFFFF" opacity="0.18" stroke="none" />
+                <path d="M 178 108 L 195 108 L 184 132 Z" fill="#FFFFFF" opacity="0.18" stroke="none" />
               </g>
             )}
 
@@ -581,8 +605,8 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             {render3DMouth()}
 
             {/* SOFT 3D CHEEK BLUSH */}
-            <ellipse cx="110" cy="142" rx="9.5" ry="6" fill="#FB7185" opacity="0.32" />
-            <ellipse cx="210" cy="142" rx="9.5" ry="6" fill="#FB7185" opacity="0.32" />
+            <ellipse cx="108" cy="144" rx="10.5" ry="6.5" fill="#FB7185" opacity="0.35" />
+            <ellipse cx="212" cy="144" rx="10.5" ry="6.5" fill="#FB7185" opacity="0.35" />
           </motion.g>
         </motion.g>
       </svg>
