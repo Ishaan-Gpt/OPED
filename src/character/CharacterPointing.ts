@@ -40,7 +40,7 @@ export function resolvePointTargetCoords(target: PointTarget | undefined): { x: 
       message1: { x: window.innerWidth * 0.45, y: window.innerHeight * 0.3 },
       header: { x: window.innerWidth * 0.5, y: window.innerHeight * 0.08 },
     };
-    return namedMap[target.target] || namedMap.board;
+    return namedMap[target.target] ?? namedMap['board'] ?? null;
   }
 
   return null;

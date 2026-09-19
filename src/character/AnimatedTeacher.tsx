@@ -31,6 +31,7 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
   className = '',
   showThoughtBubble,
   thoughtContent,
+  onClick,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isBlinking, setIsBlinking] = useState(false);
@@ -122,6 +123,7 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
       }}
       className={`fixed z-30 pointer-events-auto flex flex-col items-center ${positionClass} ${className}`}
       style={customPositionStyle}
+      onClick={onClick}
       onAnimationComplete={() => onAnimationComplete && onAnimationComplete(state)}
     >
       {/* THOUGHT BUBBLE / SPEECH BADGE */}
