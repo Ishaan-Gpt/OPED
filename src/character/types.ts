@@ -155,19 +155,20 @@ export interface GazeTargetCoords {
 export type GazeTarget = GazeDirection | GazeTargetCoords;
 
 export interface CharacterProps {
-  state?: CharacterState;
-  expression?: ExpressionType;
-  gesture?: GestureType;
-  position?: PositionPreset | { x: number; y: number };
-  scale?: number;
-  gazeTarget?: GazeTarget;
-  pointTarget?: PointTarget;
-  speakingText?: string;
-  isAudioSpeaking?: boolean;
-  onAnimationComplete?: (state: CharacterState) => void;
-  className?: string;
-  showThoughtBubble?: boolean;
-  thoughtContent?: ReactNode;
+  state?: CharacterState | undefined;
+  expression?: ExpressionType | undefined;
+  gesture?: GestureType | undefined;
+  position?: PositionPreset | { x: number; y: number } | undefined;
+  scale?: number | undefined;
+  gazeTarget?: GazeTarget | undefined;
+  pointTarget?: PointTarget | undefined;
+  speakingText?: string | undefined;
+  isAudioSpeaking?: boolean | undefined;
+  onAnimationComplete?: ((state: CharacterState) => void) | undefined;
+  className?: string | undefined;
+  showThoughtBubble?: boolean | undefined;
+  thoughtContent?: ReactNode | undefined;
+  onClick?: (() => void) | undefined;
 }
 
 export interface CharacterConfig {

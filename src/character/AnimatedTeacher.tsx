@@ -31,7 +31,11 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
   className = '',
   showThoughtBubble,
   thoughtContent,
+<<<<<<< HEAD
   avatarStyle = 'standard',
+=======
+  onClick,
+>>>>>>> origin/main
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isBlinking, setIsBlinking] = useState(false);
@@ -111,6 +115,7 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
       }}
       className={`fixed z-30 pointer-events-auto flex flex-col items-center ${positionClass} ${className}`}
       style={customPositionStyle}
+      onClick={onClick}
       onAnimationComplete={() => onAnimationComplete && onAnimationComplete(state)}
     >
       {/* THOUGHT BUBBLE / SPEECH BADGE */}
@@ -129,7 +134,7 @@ export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standar
           )}
           {speakingText && (
             <p className="text-slate-100 font-medium leading-relaxed">
-              "{speakingText}"
+              &ldquo;{speakingText}&rdquo;
             </p>
           )}
           {thoughtContent}
