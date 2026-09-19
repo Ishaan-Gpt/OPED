@@ -17,7 +17,7 @@ const POSITION_STYLES: Record<PositionPreset, string> = {
   'top-left': 'top-16 left-4 md:top-20 md:left-8',
 };
 
-export const AnimatedTeacher: React.FC<CharacterProps> = ({
+export const AnimatedTeacher: React.FC<CharacterProps & { avatarStyle?: 'standard' | 'nft' }> = ({
   state = 'idle',
   expression,
   gesture,
@@ -31,20 +31,18 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
   className = '',
   showThoughtBubble,
   thoughtContent,
+  avatarStyle = 'nft',
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isBlinking, setIsBlinking] = useState(false);
   const [characterRect, setCharacterRect] = useState<DOMRect | undefined>(undefined);
 
-  // Derive current active expression and gesture from state preset or explicit props
   const activeExpression = expression || STATE_PRESETS[state]?.expression || 'idle';
   const activeGesture = gesture || STATE_PRESETS[state]?.gesture || 'idle';
   const activeGaze = gazeTarget || STATE_PRESETS[state]?.gaze || 'student';
 
-  // Natural Blink Loop
   useEffect(() => {
     let blinkTimeout: ReturnType<typeof setTimeout>;
-
     const scheduleBlink = () => {
       const nextBlinkMs = 2200 + Math.random() * 2800;
       blinkTimeout = setTimeout(() => {
@@ -55,12 +53,10 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
         }, 150);
       }, nextBlinkMs);
     };
-
     scheduleBlink();
     return () => clearTimeout(blinkTimeout);
   }, []);
 
-  // Update container rect for spatial targeting
   useEffect(() => {
     const updateRect = () => {
       if (containerRef.current) {
@@ -72,18 +68,12 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
     return () => window.removeEventListener('resize', updateRect);
   }, [position]);
 
-  // Compute Gaze Pupil & Head offsets
   const gazeResult = calculateGaze(activeGaze, characterRect);
-
-  // Base Bone Angles from Gesture Preset
   const baseBoneAngles: BoneAngles = GESTURE_PRESETS[activeGesture] || GESTURE_PRESETS.idle;
-
-  // Spatial Pointing Angles Override (if in pointing state or pointTarget is provided)
   const pointingOverride = (state === 'pointing' || activeGesture === 'pointAtTarget')
     ? calculatePointingAngles(pointTarget, characterRect)
     : null;
 
-  // Final Bone Angles merging preset and pointing math
   const finalBoneAngles: BoneAngles = {
     ...baseBoneAngles,
     headRotate: (baseBoneAngles.headRotate || 0) + (gazeResult.headRotate || 0) + (pointingOverride?.headRotate || 0),
@@ -103,7 +93,6 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
       : {}),
   };
 
-  // Determine container position style
   const isPresetPosition = typeof position === 'string' && position in POSITION_STYLES;
   const positionClass = isPresetPosition ? POSITION_STYLES[position as PositionPreset] : '';
   const customPositionStyle = typeof position === 'object' ? { left: `${position.x}px`, top: `${position.y}px` } : {};
@@ -124,13 +113,13 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
       style={customPositionStyle}
       onAnimationComplete={() => onAnimationComplete && onAnimationComplete(state)}
     >
-      {/* THOUGHT BUBBLE / SPEECH BADGE */}
-      {(showThoughtBubble || state === 'thinking' || speakingText) && (
+      {/* THOUGHT BUBBLE */}
+      {(showThoughtBubble || state === 'thinking' || speakingText) && avatarStyle === 'standard' && (
         <motion.div
           initial={{ opacity: 0, y: 10, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="mb-2 max-w-xs px-4 py-2.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl shadow-xl text-xs text-slate-200 flex items-center gap-2 z-40"
+          className="mb-2 max-w-xs px-4 py-2.5 bg-[#171717] border border-[#2f2f2f] rounded-2xl shadow-xl text-xs text-slate-200 flex items-center gap-2 z-40"
         >
           {state === 'thinking' && (
             <div className="flex items-center gap-1 text-amber-400 font-medium">
@@ -147,17 +136,32 @@ export const AnimatedTeacher: React.FC<CharacterProps> = ({
         </motion.div>
       )}
 
-      {/* CHARACTER SVG RIG CONTAINER */}
-      <div className="w-56 h-72 md:w-64 md:h-80 relative">
-        <CharacterRig
-          boneAngles={finalBoneAngles}
-          expression={activeExpression}
-          pupilOffset={gazeResult.pupilOffset}
-          isBlinking={isBlinking}
-          isNoPeekActive={state === 'noPeek' || activeGesture === 'noPeek'}
-          isSpeaking={isAudioSpeaking || state === 'speaking'}
-        />
-      </div>
+      {/* RENDER CHARACTER OR NFT CARD CONTAINER */}
+      {avatarStyle === 'nft' ? (
+        <div className="p-1 rounded-3xl bg-[#171717]/90 backdrop-blur-xl border border-[#383838] shadow-2xl">
+          <div className="w-56 h-72 md:w-64 md:h-80 relative">
+            <CharacterRig
+              boneAngles={finalBoneAngles}
+              expression={activeExpression}
+              pupilOffset={gazeResult.pupilOffset}
+              isBlinking={isBlinking}
+              isNoPeekActive={state === 'noPeek' || activeGesture === 'noPeek'}
+              isSpeaking={isAudioSpeaking || state === 'speaking'}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="w-56 h-72 md:w-64 md:h-80 relative">
+          <CharacterRig
+            boneAngles={finalBoneAngles}
+            expression={activeExpression}
+            pupilOffset={gazeResult.pupilOffset}
+            isBlinking={isBlinking}
+            isNoPeekActive={state === 'noPeek' || activeGesture === 'noPeek'}
+            isSpeaking={isAudioSpeaking || state === 'speaking'}
+          />
+        </div>
+      )}
     </motion.div>
   );
 };
