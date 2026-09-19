@@ -15,12 +15,12 @@ interface CharacterRigProps {
 }
 
 const defaultConfig: CharacterConfig = {
-  skinColor: '#FDE2D1',      // Soft natural peach skin tone
-  skinDarkColor: '#F5C2A5',  // Subtle shadow
-  hairColor: '#2C1D11',      // Warm mocha brown
-  shirtColor: '#475569',     // Slate shirt
-  vestColor: '#1E293B',      // Deep navy vest
-  accentColor: '#38BDF8',    // Soft sky blue
+  skinColor: '#FDE2D1',
+  skinDarkColor: '#F5C2A5',
+  hairColor: '#2C1D11',
+  shirtColor: '#475569',
+  vestColor: '#1E293B',
+  accentColor: '#38BDF8',
   glasses: true,
 };
 
@@ -40,7 +40,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
   const finalPupilX = pupilOffset.x + expr.eyes.pupilOffset.x;
   const finalPupilY = pupilOffset.y + expr.eyes.pupilOffset.y;
 
-  // Fluid SVG Mouth Renderer with Phoneme Interpolation
+  // Mouth renderer supporting all 16 mouth types
   const renderMouth = () => {
     const mouthType = isSpeaking ? 'speaking' : expr.mouth.type;
 
@@ -80,8 +80,17 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
         );
       case 'surprised':
       case 'mindBlown':
+      case 'gasp':
         return (
           <ellipse cx="160" cy="159" rx="10" ry="14" fill="#9F1239" stroke="#BE123C" strokeWidth="1.5" />
+        );
+      case 'shush':
+        return (
+          <ellipse cx="160" cy="158" rx="5" ry="6" fill="#9F1239" stroke="#BE123C" strokeWidth="1" />
+        );
+      case 'smirk':
+        return (
+          <path d="M 148 158 Q 162 165 174 153" fill="none" stroke="#475569" strokeWidth="3.5" strokeLinecap="round" />
         );
       case 'thinking':
         return (
@@ -108,7 +117,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
     }
   };
 
-  // Controllable Hand Poses
+  // Hand shape renderer supporting 16+ pose variations
   const renderHand = (
     pose: BoneAngles['leftHandPose'],
     isRight: boolean
@@ -122,6 +131,14 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             <rect x="-4" y="-16" width="8" height="18" rx="4" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
             <circle cx="5" cy="6" r="4" fill={config.skinDarkColor} />
             <circle cx="5" cy="12" r="4" fill={config.skinDarkColor} />
+          </g>
+        );
+      case 'fingerGun':
+        return (
+          <g transform={`scale(${flip}, 1)`}>
+            <circle cx="0" cy="8" r="10" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
+            <rect x="-4" y="-18" width="8" height="20" rx="4" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
+            <rect x="-12" y="2" width="14" height="7" rx="3.5" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
           </g>
         );
       case 'thumbsUp':
@@ -146,9 +163,21 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           </g>
         );
       case 'salute':
+      case 'adjustGlasses':
         return (
           <g transform={`scale(${flip}, 1)`}>
             <rect x="-8" y="-4" width="16" height="8" rx="3" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
+          </g>
+        );
+      case 'highFive':
+      case 'facepalm':
+        return (
+          <g transform={`scale(${flip}, 1)`}>
+            <circle cx="0" cy="4" r="11" fill={config.skinColor} stroke={config.skinDarkColor} strokeWidth="1.5" />
+            <rect x="-9" y="-11" width="4.5" height="13" rx="2.2" fill={config.skinColor} />
+            <rect x="-3.5" y="-14" width="4.5" height="15" rx="2.2" fill={config.skinColor} />
+            <rect x="2" y="-13" width="4.5" height="14" rx="2.2" fill={config.skinColor} />
+            <rect x="7.5" y="-9" width="4" height="11" rx="2" fill={config.skinColor} />
           </g>
         );
       case 'book':
@@ -185,6 +214,68 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
     }
   };
 
+  // ILLUSTRATION-GRADE EYE RENDERER
+  const renderIllustrationEye = (isLeft: boolean) => {
+    const shape = expr.eyes.shape;
+
+    return (
+      <g transform={`translate(${isLeft ? 126 : 194}, 122)`}>
+        {/* Sclera / Socket */}
+        <ellipse cx="0" cy="0" rx="15" ry="17" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1.2" />
+
+        {/* Dynamic pupil / iris */}
+        {shape === 'heart' ? (
+          <g transform="scale(0.9)">
+            <path d="M 0 -2 C -6 -10 -12 -3 0 8 C 12 -3 6 -10 0 -2 Z" fill="#FB7185" stroke="#E11D48" strokeWidth="1" />
+          </g>
+        ) : shape === 'star' ? (
+          <g transform="scale(0.85)">
+            <polygon points="0,-12 3.5,-3.5 12,0 3.5,3.5 0,12 -3.5,3.5 -12,0 -3.5,-3.5" fill="#F59E0B" />
+          </g>
+        ) : (
+          <motion.g
+            animate={{
+              x: finalPupilX,
+              y: finalPupilY,
+            }}
+            transition={{ type: 'spring', stiffness: 220, damping: 15 }}
+          >
+            {/* Outer Iris Gradient Depth */}
+            <ellipse cx="0" cy="0" rx="9.5" ry="11.5" fill="#0F172A" />
+            {/* Vibrant Core Iris */}
+            <ellipse cx="0" cy="0" rx="6.5" ry="8.5" fill="#2563EB" />
+            <ellipse cx="0" cy="1" rx="4.5" ry="6" fill="#3B82F6" />
+            {/* Inner Pupil Hole */}
+            <circle cx="0" cy="0" r="3.5" fill="#020617" />
+
+            {/* Glossy Double Catchlight Sparkles */}
+            <circle cx="-3" cy="-4" r="3" fill="#FFFFFF" />
+            <circle cx="3.5" cy="3.5" r="1.5" fill="#FFFFFF" opacity="0.9" />
+            {/* Bottom Reflection Arc */}
+            <path d="M -4 4 Q 0 7 4 4" fill="none" stroke="#60A5FA" strokeWidth="1.2" opacity="0.7" />
+          </motion.g>
+        )}
+
+        {/* Eyelid Blink Cover */}
+        <motion.rect
+          x="-17"
+          y="-19"
+          width="34"
+          height="38"
+          fill={config.skinColor}
+          animate={{
+            scaleY: isBlinking ? 1 : (shape === 'wink' && !isLeft ? 1 : shape === 'closed' ? 1 : 1 - expr.eyes.lidOpenness),
+          }}
+          style={{ transformOrigin: '0px -19px' }}
+          transition={{ duration: 0.1 }}
+        />
+
+        {/* Stylish Curved Eyelash / Upper Lid Outline */}
+        <path d="M -16 -8 Q 0 -21 16 -8" fill="none" stroke="#1E293B" strokeWidth="3" strokeLinecap="round" />
+      </g>
+    );
+  };
+
   return (
     <div className={`relative flex items-center justify-center select-none overflow-visible ${className}`}>
       <svg
@@ -203,7 +294,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           </radialGradient>
         </defs>
 
-        {/* Soft Dynamic Floor Shadow */}
+        {/* Dynamic Floor Shadow */}
         <motion.ellipse
           cx="160"
           cy="385"
@@ -221,7 +312,22 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           }}
         />
 
-        {/* ALIVE RIGGED CARTOON CHARACTER CONTAINER */}
+        {/* FLOATING EUREKA LIGHTBULB (When in eureka state) */}
+        {expression === 'eureka' && (
+          <motion.g
+            initial={{ scale: 0, y: -20 }}
+            animate={{ scale: 1.2, y: -35 }}
+            className="z-50"
+          >
+            <circle cx="160" cy="30" r="14" fill="#F59E0B" filter="drop-shadow(0px 0px 8px #F59E0B)" />
+            <path d="M 154 40 L 166 40 L 163 45 L 157 45 Z" fill="#94A3B8" />
+            <line x1="160" y1="10" x2="160" y2="4" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="144" y1="20" x2="138" y2="16" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="176" y1="20" x2="182" y2="16" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
+          </motion.g>
+        )}
+
+        {/* CARTOON RIG CONTAINER */}
         <motion.g
           animate={{
             y: [0, -4, 0],
@@ -233,13 +339,13 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             ease: 'easeInOut',
           }}
         >
-          {/* LEGS / FEET */}
+          {/* LEGS */}
           <rect x="136" y="325" width="16" height="52" rx="6" fill="#334155" />
           <rect x="168" y="325" width="16" height="52" rx="6" fill="#334155" />
           <ellipse cx="144" cy="377" rx="13" ry="5.5" fill="#1E293B" />
           <ellipse cx="176" cy="377" rx="13" ry="5.5" fill="#1E293B" />
 
-          {/* TORSO & CLOTHING WITH BREATHING SWAY */}
+          {/* TORSO */}
           <motion.g
             animate={{
               scaleY: [1, 1.015, 1],
@@ -251,12 +357,10 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             }}
             style={{ transformOrigin: '160px 325px' }}
           >
-            {/* Shirt */}
             <path
               d="M 108 205 Q 160 192 212 205 L 222 325 Q 160 334 98 325 Z"
               fill={config.shirtColor}
             />
-            {/* Vest */}
             <path
               d="M 108 205 L 142 325 L 98 325 Z"
               fill={config.vestColor}
@@ -265,15 +369,13 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               d="M 212 205 L 178 325 L 222 325 Z"
               fill={config.vestColor}
             />
-            {/* Collar & Tie */}
             <polygon points="160,202 152,212 160,222 168,212" fill="#38BDF8" />
             <polygon points="160,202 146,210 160,218 174,210" fill="#FFFFFF" />
-            {/* Badge */}
             <rect x="122" y="235" width="14" height="18" rx="3" fill="#F59E0B" opacity="0.9" />
             <circle cx="129" cy="241" r="3" fill="#FFFFFF" />
           </motion.g>
 
-          {/* LEFT ARM (SHOULDER & FOREARM JOINTS) */}
+          {/* LEFT ARM */}
           <motion.g
             animate={{
               rotate: boneAngles.leftUpperArm,
@@ -294,7 +396,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             </motion.g>
           </motion.g>
 
-          {/* RIGHT ARM (SHOULDER & FOREARM JOINTS) */}
+          {/* RIGHT ARM */}
           <motion.g
             animate={{
               rotate: boneAngles.rightUpperArm,
@@ -318,7 +420,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           {/* NECK */}
           <rect x="147" y="176" width="26" height="30" rx="6" fill={config.skinDarkColor} />
 
-          {/* DYNAMIC HEAD & FACIAL RIG */}
+          {/* HEAD & ILLUSTRATION EYE RIG */}
           <motion.g
             animate={{
               rotate: boneAngles.headRotate + boneAngles.headTilt,
@@ -327,14 +429,11 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
             transition={{ type: 'spring', stiffness: 110, damping: 12 }}
             style={{ transformOrigin: '160px 180px' }}
           >
-            {/* Head Base */}
             <ellipse cx="160" cy="130" rx="58" ry="60" fill="url(#headSkinGrad)" stroke="#F5C2A5" strokeWidth="1.5" />
 
-            {/* Ears */}
             <ellipse cx="99" cy="132" rx="9.5" ry="13" fill={config.skinColor} stroke="#F5C2A5" strokeWidth="1" />
             <ellipse cx="221" cy="132" rx="9.5" ry="13" fill={config.skinColor} stroke="#F5C2A5" strokeWidth="1" />
 
-            {/* Hair */}
             <path
               d="M 98 125 C 92 75, 140 54, 160 54 C 188 54, 228 75, 222 125 C 212 95, 196 74, 160 76 C 128 74, 108 95, 98 125 Z"
               fill={config.hairColor}
@@ -367,62 +466,9 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               <path d="M 178 98 Q 194 92 210 100" fill="none" stroke={config.hairColor} strokeWidth="4.5" strokeLinecap="round" />
             </motion.g>
 
-            {/* EXPRESSIVE GAZE EYES */}
-            <g transform="translate(126, 122)">
-              <ellipse cx="0" cy="0" rx="15" ry="17" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
-              <motion.g
-                animate={{
-                  x: finalPupilX,
-                  y: finalPupilY,
-                }}
-                transition={{ type: 'spring', stiffness: 200, damping: 14 }}
-              >
-                <ellipse cx="0" cy="0" rx="9" ry="11" fill="#1E293B" />
-                <ellipse cx="0" cy="0" rx="5" ry="7" fill="#3B82F6" />
-                <circle cx="-3" cy="-4" r="3" fill="#FFFFFF" />
-                <circle cx="3.5" cy="3.5" r="1.5" fill="#FFFFFF" />
-              </motion.g>
-              <motion.rect
-                x="-17"
-                y="-19"
-                width="34"
-                height="38"
-                fill={config.skinColor}
-                animate={{
-                  scaleY: isBlinking ? 1 : (expr.eyes.shape === 'closed' ? 1 : 1 - expr.eyes.lidOpenness),
-                }}
-                style={{ transformOrigin: '0px -19px' }}
-                transition={{ duration: 0.1 }}
-              />
-            </g>
-
-            <g transform="translate(194, 122)">
-              <ellipse cx="0" cy="0" rx="15" ry="17" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
-              <motion.g
-                animate={{
-                  x: finalPupilX,
-                  y: finalPupilY,
-                }}
-                transition={{ type: 'spring', stiffness: 200, damping: 14 }}
-              >
-                <ellipse cx="0" cy="0" rx="9" ry="11" fill="#1E293B" />
-                <ellipse cx="0" cy="0" rx="5" ry="7" fill="#3B82F6" />
-                <circle cx="-3" cy="-4" r="3" fill="#FFFFFF" />
-                <circle cx="3.5" cy="3.5" r="1.5" fill="#FFFFFF" />
-              </motion.g>
-              <motion.rect
-                x="-17"
-                y="-19"
-                width="34"
-                height="38"
-                fill={config.skinColor}
-                animate={{
-                  scaleY: isBlinking ? 1 : (expr.eyes.shape === 'wink' ? 1 : expr.eyes.shape === 'closed' ? 1 : 1 - expr.eyes.lidOpenness),
-                }}
-                style={{ transformOrigin: '0px -19px' }}
-                transition={{ duration: 0.1 }}
-              />
-            </g>
+            {/* RENDER ILLUSTRATION EYES */}
+            {renderIllustrationEye(true)}
+            {renderIllustrationEye(false)}
 
             {/* GLASSES */}
             {config.glasses && (
@@ -443,7 +489,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
         </motion.g>
       </svg>
 
-      {/* SIGNATURE "NO PEEKING!" CAMERA PALM EXTENSION */}
+      {/* CAMERA PALM EXTENSION */}
       <AnimatePresence>
         {isNoPeekActive && (
           <motion.div

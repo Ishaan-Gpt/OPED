@@ -47,6 +47,17 @@ const STATE_AURA_COLORS: Record<CharacterState, { border: string; glow: string; 
   secretTip: { border: 'border-purple-500/50', glow: 'shadow-[0_0_45px_rgba(168,85,247,0.3)]', badgeBg: 'bg-purple-500/20 text-purple-300', text: 'Pro Tip' },
   stretch: { border: 'border-amber-500/40', glow: 'shadow-[0_0_40px_rgba(245,158,11,0.25)]', badgeBg: 'bg-amber-500/20 text-amber-300', text: 'Energize' },
   listeningEar: { border: 'border-emerald-500/50', glow: 'shadow-[0_0_45px_rgba(16,185,129,0.3)]', badgeBg: 'bg-emerald-500/20 text-emerald-300', text: 'Listening...' },
+  eureka: { border: 'border-amber-500/60', glow: 'shadow-[0_0_60px_rgba(245,158,11,0.45)]', badgeBg: 'bg-amber-500/20 text-amber-300', text: 'Eureka! 💡' },
+  facepalm: { border: 'border-rose-500/50', glow: 'shadow-[0_0_45px_rgba(244,63,94,0.3)]', badgeBg: 'bg-rose-500/20 text-rose-300', text: 'Facepalm' },
+  flex: { border: 'border-blue-500/60', glow: 'shadow-[0_0_55px_rgba(59,130,246,0.4)]', badgeBg: 'bg-blue-500/20 text-blue-300', text: 'Power Knowledge' },
+  shushing: { border: 'border-purple-500/40', glow: 'shadow-[0_0_40px_rgba(168,85,247,0.25)]', badgeBg: 'bg-purple-500/20 text-purple-300', text: 'Quiet Please' },
+  adjustGlasses: { border: 'border-cyan-500/50', glow: 'shadow-[0_0_45px_rgba(6,182,212,0.3)]', badgeBg: 'bg-cyan-500/20 text-cyan-300', text: 'Smart Professor' },
+  highFive: { border: 'border-emerald-500/60', glow: 'shadow-[0_0_55px_rgba(16,185,129,0.4)]', badgeBg: 'bg-emerald-500/20 text-emerald-300', text: 'High Five! ✋' },
+  fingerGuns: { border: 'border-pink-500/50', glow: 'shadow-[0_0_45px_rgba(236,72,153,0.3)]', badgeBg: 'bg-pink-500/20 text-pink-300', text: 'Bingo!' },
+  handsOnHips: { border: 'border-slate-500/50', glow: 'shadow-[0_0_40px_rgba(100,116,139,0.3)]', badgeBg: 'bg-slate-500/20 text-slate-300', text: 'Teacher Ready' },
+  heartEyes: { border: 'border-rose-500/60', glow: 'shadow-[0_0_60px_rgba(244,63,94,0.45)]', badgeBg: 'bg-rose-500/20 text-rose-300', text: 'Love It! 😍' },
+  starEyes: { border: 'border-yellow-500/60', glow: 'shadow-[0_0_60px_rgba(234,179,8,0.45)]', badgeBg: 'bg-yellow-500/20 text-yellow-300', text: 'Hyped! 🤩' },
+  cheeringRally: { border: 'border-emerald-500/60', glow: 'shadow-[0_0_55px_rgba(16,185,129,0.4)]', badgeBg: 'bg-emerald-500/20 text-emerald-300', text: 'Cheering!' },
 };
 
 export const NFTTeacherAvatar: React.FC<NFTTeacherAvatarProps> = ({
@@ -64,7 +75,6 @@ export const NFTTeacherAvatar: React.FC<NFTTeacherAvatarProps> = ({
 }) => {
   const [isBlinking, setIsBlinking] = React.useState(false);
 
-  // Natural blink loop
   React.useEffect(() => {
     let blinkTimeout: ReturnType<typeof setTimeout>;
     const scheduleBlink = () => {
@@ -105,13 +115,11 @@ export const NFTTeacherAvatar: React.FC<NFTTeacherAvatarProps> = ({
 
   return (
     <div className={`relative flex flex-col items-center select-none ${className}`}>
-      {/* NFT FRAME CONTAINER */}
       <div
         className={`relative rounded-3xl p-3 md:p-4 bg-[#171717]/90 backdrop-blur-2xl border ${aura.border} ${aura.glow} transition-all duration-500 flex flex-col items-center overflow-visible ${
           showCardFrame ? 'w-64 md:w-72' : 'w-auto'
         }`}
       >
-        {/* Holographic Top NFT Header Badge */}
         {showCardFrame && (
           <div className="w-full flex items-center justify-between mb-2 px-1">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-[10px] font-bold text-slate-200">
@@ -125,7 +133,6 @@ export const NFTTeacherAvatar: React.FC<NFTTeacherAvatarProps> = ({
           </div>
         )}
 
-        {/* SPEECH / THOUGHT BUBBLE */}
         {(state === 'thinking' || speakingText) && (
           <motion.div
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -143,7 +150,6 @@ export const NFTTeacherAvatar: React.FC<NFTTeacherAvatarProps> = ({
           </motion.div>
         )}
 
-        {/* CHARACTER RIG VIEWPORT */}
         <div className="w-56 h-64 md:w-60 md:h-72 relative">
           <CharacterRig
             boneAngles={finalBoneAngles}
@@ -155,7 +161,6 @@ export const NFTTeacherAvatar: React.FC<NFTTeacherAvatarProps> = ({
           />
         </div>
 
-        {/* Bottom NFT Status Bar */}
         {showCardFrame && (
           <div className="w-full mt-2 pt-2 border-t border-[#2f2f2f] flex items-center justify-between px-1">
             <span className="text-[10px] font-mono text-slate-400 font-semibold tracking-wider">

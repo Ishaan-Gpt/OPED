@@ -82,6 +82,17 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     'secretTip',
     'stretch',
     'listeningEar',
+    'eureka',
+    'facepalm',
+    'flex',
+    'shushing',
+    'adjustGlasses',
+    'highFive',
+    'fingerGuns',
+    'handsOnHips',
+    'heartEyes',
+    'starEyes',
+    'cheeringRally',
   ];
 
   const expressions: ExpressionType[] = [
@@ -107,6 +118,13 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     'mindBlown',
     'cheerful',
     'determined',
+    'heartEyes',
+    'starEyes',
+    'eureka',
+    'facepalm',
+    'sleepy',
+    'shushing',
+    'smartGlasses',
   ];
 
   const gestures: GestureType[] = [
@@ -141,6 +159,16 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
     'secretTip',
     'stretch',
     'listeningEar',
+    'eureka',
+    'facepalm',
+    'flex',
+    'shushing',
+    'adjustGlasses',
+    'highFive',
+    'fingerGuns',
+    'handsOnHips',
+    'heartOverhead',
+    'cheeringRally',
   ];
 
   const positions: PositionPreset[] = [
@@ -171,12 +199,12 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   ];
 
   return (
-    <div className="fixed top-16 right-4 z-40 w-80 md:w-[420px] max-h-[calc(100vh-5rem)] bg-[#171717]/95 backdrop-blur-xl border border-[#2f2f2f] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-5 duration-200">
+    <div className="fixed top-16 right-4 z-40 w-80 md:w-[440px] max-h-[calc(100vh-5rem)] bg-[#171717]/95 backdrop-blur-xl border border-[#2f2f2f] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-5 duration-200">
       {/* Header */}
       <div className="p-3.5 border-b border-[#2f2f2f] flex items-center justify-between bg-[#212121]">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-100 uppercase tracking-wider">
           <Sparkles className="w-4 h-4 text-blue-400" />
-          <span>Full Pose & Expression Suite ({states.length} States)</span>
+          <span>Illustration Pose Suite ({states.length} States)</span>
         </div>
         <button
           onClick={onClose}
@@ -192,7 +220,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         <div className="space-y-2">
           <div className="flex items-center gap-1.5 font-semibold text-slate-200">
             <Play className="w-3.5 h-3.5 text-blue-400" />
-            <span>Full Poses & Poses Presets ({states.length})</span>
+            <span>Animation & Reaction States ({states.length})</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             {states.map((st) => (
@@ -276,7 +304,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         <div className="space-y-2 pt-2 border-t border-[#2f2f2f]">
           <div className="flex items-center gap-1.5 font-semibold text-slate-200">
             <Smile className="w-3.5 h-3.5 text-pink-400" />
-            <span>Facial Expressions ({expressions.length})</span>
+            <span>Illustration Expressions ({expressions.length})</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             {expressions.map((exp) => (
@@ -299,7 +327,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         <div className="space-y-2 pt-2 border-t border-[#2f2f2f]">
           <div className="flex items-center gap-1.5 font-semibold text-slate-200">
             <Hand className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Gesture & Pose Library ({gestures.length})</span>
+            <span>Gesture & Reaction Library ({gestures.length})</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             {gestures.map((gst) => (

@@ -32,7 +32,18 @@ export type CharacterState =
   | 'salute'
   | 'secretTip'
   | 'stretch'
-  | 'listeningEar';
+  | 'listeningEar'
+  | 'eureka'
+  | 'facepalm'
+  | 'flex'
+  | 'shushing'
+  | 'adjustGlasses'
+  | 'highFive'
+  | 'fingerGuns'
+  | 'handsOnHips'
+  | 'heartEyes'
+  | 'starEyes'
+  | 'cheeringRally';
 
 export type ExpressionType =
   | 'idle'
@@ -56,7 +67,14 @@ export type ExpressionType =
   | 'empathetic'
   | 'mindBlown'
   | 'cheerful'
-  | 'determined';
+  | 'determined'
+  | 'heartEyes'
+  | 'starEyes'
+  | 'eureka'
+  | 'facepalm'
+  | 'sleepy'
+  | 'shushing'
+  | 'smartGlasses';
 
 export type GestureType =
   | 'idle'
@@ -91,7 +109,17 @@ export type GestureType =
   | 'salute'
   | 'secretTip'
   | 'stretch'
-  | 'listeningEar';
+  | 'listeningEar'
+  | 'eureka'
+  | 'facepalm'
+  | 'flex'
+  | 'shushing'
+  | 'adjustGlasses'
+  | 'highFive'
+  | 'fingerGuns'
+  | 'handsOnHips'
+  | 'heartOverhead'
+  | 'cheeringRally';
 
 export type PositionPreset =
   | 'bottom-left'
@@ -159,6 +187,6 @@ export interface BoneAngles {
   leftForearm: number;
   rightUpperArm: number;
   rightForearm: number;
-  leftHandPose: 'flat' | 'pointing' | 'thumbsUp' | 'fist' | 'chin' | 'wave' | 'noPeek' | 'peace' | 'heart' | 'clap' | 'cupped' | 'salute' | 'book';
-  rightHandPose: 'flat' | 'pointing' | 'thumbsUp' | 'fist' | 'chin' | 'wave' | 'noPeek' | 'peace' | 'heart' | 'clap' | 'cupped' | 'salute' | 'book';
+  leftHandPose: 'flat' | 'pointing' | 'thumbsUp' | 'fist' | 'chin' | 'wave' | 'noPeek' | 'peace' | 'heart' | 'clap' | 'cupped' | 'salute' | 'book' | 'fingerGun' | 'facepalm' | 'adjustGlasses' | 'highFive';
+  rightHandPose: 'flat' | 'pointing' | 'thumbsUp' | 'fist' | 'chin' | 'wave' | 'noPeek' | 'peace' | 'heart' | 'clap' | 'cupped' | 'salute' | 'book' | 'fingerGun' | 'facepalm' | 'adjustGlasses' | 'highFive';
 }
