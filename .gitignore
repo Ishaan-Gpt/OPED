@@ -35,4 +35,4 @@ dist-ssr
 .next
 *.zip
 temp_unzip
-
+img2threejs/
