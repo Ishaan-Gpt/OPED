@@ -8,7 +8,8 @@ frontend:
     build:
       commands:
         - pnpm run build
-        - rm -rf .amplify-hosting
+        - mkdir -p .output/public
+        - if [ -d .amplify-hosting/static ]; then cp -r .amplify-hosting/static/* .output/public/; fi
   artifacts:
     baseDirectory: .output/public
     files:
@@ -16,3 +17,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+
