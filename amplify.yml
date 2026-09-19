@@ -8,6 +8,7 @@ frontend:
     build:
       commands:
         - pnpm run build
+        - rm -rf .amplify-hosting
   artifacts:
     baseDirectory: .output/public
     files:
