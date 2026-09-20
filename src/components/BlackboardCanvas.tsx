@@ -21,10 +21,12 @@ import { decideTeacherMove } from "@/lib/teacher/client";
 import { generateLessonVideo } from "@/lib/remotion/client";
 import { streamTeacherResponse } from "@/lib/bedrock";
 
+import MasteryOutcome from "@/components/MasteryOutcome";
+
 const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
 const VideoMoment = lazy(() => import("@/components/VideoMoment"));
 
-type Stage = "understanding" | "artifact" | "recall";
+type Stage = "understanding" | "artifact" | "recall" | "mastery";
 
 interface Props {
   module: NcertModule;
@@ -132,6 +134,16 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     const t = setTimeout(() => setShow3DPrompt(true), 900);
     return () => clearTimeout(t);
   }, [stage]);
+
+  useEffect(() => {
+    if (readiness >= 100 && stage !== "mastery") {
+      const t = setTimeout(() => {
+        setStage("mastery");
+        setTeacherGreeting("Incredible work! You are fully prepared for your exam on this topic.");
+      }, 2500); // Wait 2.5s to let the student see the 100% badge before transitioning
+      return () => clearTimeout(t);
+    }
+  }, [readiness, stage]);
 
   // Synchronize teacher posture, expression, and gestures with classroom activity
   const teacherProps = useMemo<{
@@ -436,6 +448,10 @@ export function BlackboardCanvas({ module, onExit }: Props) {
             />
           </Suspense>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {stage === "mastery" && <MasteryOutcome module={module} onNewTopic={onExit} />}
       </AnimatePresence>
 
       {/* AI Teacher Character Integration */}
