@@ -25,6 +25,8 @@ function refineVisualKind(context: TeacherContext, brief: VideoBrief): VideoBrie
   if (/rutherford|gold foil|alpha particle/.test(text)) return "rutherfordAtom";
   if (/concave/.test(text)) return "concaveMirror";
   if (/convex/.test(text)) return "convexMirror";
+  if (/prism|dispersion|vibgyor|spectrum/.test(text)) return "prism";
+  if (/refract/.test(text) && brief.visualKind !== "prism") return "refraction";
   return brief.visualKind;
 }
 
@@ -53,6 +55,11 @@ when truly nothing else fits, from exactly these options:
   inverted image — use specifically for CONCAVE mirrors (converging mirrors)
 - "convexMirror": a curved mirror where rays diverge outward, forming a virtual, upright, smaller
   image behind the mirror — use specifically for CONVEX mirrors (diverging mirrors)
+- "prism": white light entering a triangular prism and splitting into a VIBGYOR spectrum, violet
+  bending most and red least — use for DISPERSION of light specifically, not general refraction
+- "refraction": a ray crossing a boundary between two media (e.g. air to water) and bending toward
+  the normal as it slows down — use for general refraction/bending of light through a single medium
+  change, NOT for the prism/dispersion/rainbow case (use "prism" for that instead)
 - "atom": a nucleus with electron shells filling in one by one — Bohr's model, shell capacity
   (2n² rule), K/L/M shells, general "building the atom" content
 - "rutherfordAtom": the gold foil experiment — alpha particles fired at a foil, most pass straight

@@ -8,6 +8,7 @@ import { RayScene } from "./scenes/RayScene";
 import { ConcaveMirrorScene } from "./scenes/ConcaveMirrorScene";
 import { ConvexMirrorScene } from "./scenes/ConvexMirrorScene";
 import { PrismScene } from "./scenes/PrismScene";
+import { RefractionScene } from "./scenes/RefractionScene";
 import { AtomScene } from "./scenes/AtomScene";
 import { RutherfordAtomScene } from "./scenes/RutherfordAtomScene";
 import { PhotosynthesisScene } from "./scenes/PhotosynthesisScene";
@@ -37,6 +38,7 @@ const SCENES: Record<VisualKind, (props: SceneProps) => JSX.Element> = {
   concaveMirror: ConcaveMirrorScene,
   convexMirror: ConvexMirrorScene,
   prism: PrismScene,
+  refraction: RefractionScene,
   atom: AtomScene,
   rutherfordAtom: RutherfordAtomScene,
   photosynthesis: PhotosynthesisScene,
