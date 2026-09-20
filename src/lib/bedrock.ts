@@ -5,7 +5,7 @@
  * @param context The current NCERT module context (title, notes)
  */
 export async function* streamTeacherResponse(userPrompt: string, context: string) {
-  const apiKey = import.meta.env['VITE_GROQ_API_KEY'];
+  const apiKey = import.meta.env["VITE_GROQ_API_KEY"];
   if (!apiKey) {
     yield "Oops, my AI key is missing. Please add VITE_GROQ_API_KEY to your .env file!";
     return;
@@ -21,14 +21,14 @@ Keep your responses extremely concise (1-2 sentences), encouraging, and easy to 
   const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile", // State-of-the-art reasoning model on Groq
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
+        { role: "user", content: userPrompt },
       ],
       stream: true,
       temperature: 0.7,
@@ -39,7 +39,7 @@ Keep your responses extremely concise (1-2 sentences), encouraging, and easy to 
   if (!response.ok) {
     throw new Error(`Failed to connect to AI Teacher (Groq HTTP ${response.status})`);
   }
-  
+
   if (!response.body) {
     throw new Error("No response body received.");
   }
@@ -51,14 +51,14 @@ Keep your responses extremely concise (1-2 sentences), encouraging, and easy to 
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    
+
     buffer += decoder.decode(value, { stream: true });
-    
+
     let newlineIdx;
-    while ((newlineIdx = buffer.indexOf('\n')) !== -1) {
+    while ((newlineIdx = buffer.indexOf("\n")) !== -1) {
       const line = buffer.slice(0, newlineIdx).trim();
       buffer = buffer.slice(newlineIdx + 1);
-      
+
       if (line.startsWith("data: ") && line !== "data: [DONE]") {
         try {
           const data = JSON.parse(line.slice(6));

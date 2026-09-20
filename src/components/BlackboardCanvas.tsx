@@ -136,13 +136,12 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   }, [stage]);
 
   useEffect(() => {
-    if (readiness >= 100 && stage !== "mastery") {
-      const t = setTimeout(() => {
-        setStage("mastery");
-        setTeacherGreeting("Incredible work! You are fully prepared for your exam on this topic.");
-      }, 2500); // Wait 2.5s to let the student see the 100% badge before transitioning
-      return () => clearTimeout(t);
-    }
+    if (readiness < 100 || stage === "mastery") return undefined;
+    const t = setTimeout(() => {
+      setStage("mastery");
+      setTeacherGreeting("Incredible work! You are fully prepared for your exam on this topic.");
+    }, 2500); // Wait 2.5s to let the student see the 100% badge before transitioning
+    return () => clearTimeout(t);
   }, [readiness, stage]);
 
   // Synchronize teacher posture, expression, and gestures with classroom activity

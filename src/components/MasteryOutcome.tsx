@@ -40,7 +40,8 @@ export default function MasteryOutcome({ module, onNewTopic }: Props) {
             100% Exam Ready!
           </h2>
           <p className="mb-8 text-sm leading-relaxed text-chalk/70">
-            You've successfully mastered <strong>{module.title}</strong>. Your recitation showed perfect alignment with the core NCERT concepts.
+            You've successfully mastered <strong>{module.title}</strong>. Your recitation showed
+            perfect alignment with the core NCERT concepts.
           </p>
 
           <div className="mb-8 rounded-2xl bg-black/40 p-4 text-left border border-white/5">
@@ -48,7 +49,8 @@ export default function MasteryOutcome({ module, onNewTopic }: Props) {
               <Sparkles size={14} /> Teacher's Note
             </h3>
             <p className="text-sm italic text-chalk/80">
-              "Outstanding recall! You perfectly retained the relationships between the key components. Keep up this momentum for the exams."
+              "Outstanding recall! You perfectly retained the relationships between the key
+              components. Keep up this momentum for the exams."
             </p>
           </div>
 
