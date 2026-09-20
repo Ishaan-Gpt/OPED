@@ -1,10 +1,8 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { noise2D } from "@remotion/noise";
-import { CameraMotionBlur } from "@remotion/motion-blur";
 import type { VideoBrief, VisualKind } from "../types";
 import { SCENE_THEMES } from "./theme";
 import { Environment } from "./Environment";
-import { LightLeakOverlay } from "./LightLeakOverlay";
 import { ReactionScene } from "./scenes/ReactionScene";
 import { RayScene } from "./scenes/RayScene";
 import { AtomScene } from "./scenes/AtomScene";
@@ -22,15 +20,6 @@ const SCENES: Record<VisualKind, (props: { accent: string }) => JSX.Element> = {
   photosynthesis: PhotosynthesisScene,
   graph: GraphScene,
   generic: GenericScene,
-};
-
-const HUE_SHIFTS: Record<VisualKind, number> = {
-  reaction: 20,
-  ray: 200,
-  atom: 235,
-  photosynthesis: 110,
-  graph: 20,
-  generic: 260,
 };
 
 function crossfadeAt(frame: number, start: number, end: number, fade: number) {
@@ -69,7 +58,7 @@ function SignalPulse({ localFrame, accent }: { localFrame: number; accent: strin
  * Cinematic explainer driven by the teacher's video brief: a title hook, then one continuous
  * animated illustration in a themed 3D "set", paced into beats — one per bullet. A single
  * handheld-style camera (Perlin-noise drift, not robotic sine waves) drifts through the whole
- * clip with real motion blur and a light-leak sweep, instead of a static slide with text.
+ * clip, instead of a static slide with text.
  */
 export function ExplainerClip({
   title,
@@ -133,128 +122,121 @@ export function ExplainerClip({
 
   return (
     <AbsoluteFill style={{ fontFamily: '"Outfit", system-ui, sans-serif' }}>
-      <CameraMotionBlur shutterAngle={160} samples={4}>
+      <AbsoluteFill
+        style={{
+          perspective: 900,
+          transform: `translate(${handheldX}px, ${handheldY}px) rotate(${handheldRotate}deg) scale(${dolly})`,
+        }}
+      >
         <AbsoluteFill
           style={{
-            perspective: 900,
-            transform: `translate(${handheldX}px, ${handheldY}px) rotate(${handheldRotate}deg) scale(${dolly})`,
+            transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+            transformStyle: "preserve-3d",
           }}
         >
-          <AbsoluteFill
-            style={{
-              transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
-              transformStyle: "preserve-3d",
-            }}
-          >
-            <Environment theme={theme} />
-          </AbsoluteFill>
-
-          {/* Hook: title */}
-          <AbsoluteFill
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: introOpacity,
-              padding: "0 10%",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: '"Fraunces", Georgia, serif',
-                fontSize: 54,
-                textAlign: "center",
-                color: CHALK,
-                transform: `scale(${0.8 + introScale * 0.2})`,
-                textShadow: `0 0 40px ${accent}55`,
-              }}
-            >
-              {title}
-            </div>
-          </AbsoluteFill>
-
-          {/* Continuous illustration, paced into beats */}
-          <AbsoluteFill
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: visualOpacity,
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                width: "58%",
-                maxWidth: 440,
-                transform: `scale(${settleIn * punch}) translateX(${pan}px)`,
-                filter: `drop-shadow(0 0 34px ${accent}55)`,
-              }}
-            >
-              <SignalPulse localFrame={beatLocalFrame} accent={accent} />
-              <Scene accent={accent} />
-            </div>
-
-            {/* Lower-third broadcast-style caption, anchored to the frame rather than floating text */}
-            <div
-              style={{
-                position: "absolute",
-                left: "8%",
-                right: "8%",
-                bottom: "9%",
-                opacity: captionOpacity,
-                transform: `translateY(${captionY}px)`,
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-                padding: "14px 20px",
-                borderRadius: 14,
-                background: "linear-gradient(90deg, rgba(10,14,13,0.78), rgba(10,14,13,0.35))",
-                backdropFilter: "blur(6px)",
-                borderLeft: `3px solid ${accent}`,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 26,
-                  fontWeight: 600,
-                  color: CHALK,
-                  lineHeight: 1.35,
-                  textShadow: "0 2px 10px rgba(0,0,0,0.4)",
-                }}
-              >
-                {beats[beatIndex]}
-              </span>
-            </div>
-
-            {/* Beat progress dots — shows the student how many points remain, like chapter markers */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: "3.5%",
-                display: "flex",
-                gap: 8,
-              }}
-            >
-              {beats.map((_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: i === beatIndex ? accent : "rgba(243,241,231,0.25)",
-                    transition: "background 0.2s",
-                  }}
-                />
-              ))}
-            </div>
-          </AbsoluteFill>
-
-          <LightLeakOverlay
-            seed={beatIndex + 1}
-            hueShift={HUE_SHIFTS[visualKind] ?? HUE_SHIFTS.generic}
-          />
+          <Environment theme={theme} />
         </AbsoluteFill>
-      </CameraMotionBlur>
+
+        {/* Hook: title */}
+        <AbsoluteFill
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: introOpacity,
+            padding: "0 10%",
+          }}
+        >
+          <div
+            style={{
+              fontFamily: '"Fraunces", Georgia, serif',
+              fontSize: 54,
+              textAlign: "center",
+              color: CHALK,
+              transform: `scale(${0.8 + introScale * 0.2})`,
+              textShadow: `0 0 40px ${accent}55`,
+            }}
+          >
+            {title}
+          </div>
+        </AbsoluteFill>
+
+        {/* Continuous illustration, paced into beats */}
+        <AbsoluteFill
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: visualOpacity,
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              width: "58%",
+              maxWidth: 440,
+              transform: `scale(${settleIn * punch}) translateX(${pan}px)`,
+              filter: `drop-shadow(0 0 34px ${accent}55)`,
+            }}
+          >
+            <SignalPulse localFrame={beatLocalFrame} accent={accent} />
+            <Scene accent={accent} />
+          </div>
+
+          {/* Lower-third broadcast-style caption, anchored to the frame rather than floating text */}
+          <div
+            style={{
+              position: "absolute",
+              left: "8%",
+              right: "8%",
+              bottom: "9%",
+              opacity: captionOpacity,
+              transform: `translateY(${captionY}px)`,
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              padding: "14px 20px",
+              borderRadius: 14,
+              background: "linear-gradient(90deg, rgba(10,14,13,0.78), rgba(10,14,13,0.35))",
+              backdropFilter: "blur(6px)",
+              borderLeft: `3px solid ${accent}`,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 26,
+                fontWeight: 600,
+                color: CHALK,
+                lineHeight: 1.35,
+                textShadow: "0 2px 10px rgba(0,0,0,0.4)",
+              }}
+            >
+              {beats[beatIndex]}
+            </span>
+          </div>
+
+          {/* Beat progress dots — shows the student how many points remain, like chapter markers */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "3.5%",
+              display: "flex",
+              gap: 8,
+            }}
+          >
+            {beats.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  background: i === beatIndex ? accent : "rgba(243,241,231,0.25)",
+                  transition: "background 0.2s",
+                }}
+              />
+            ))}
+          </div>
+        </AbsoluteFill>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 }

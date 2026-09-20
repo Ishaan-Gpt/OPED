@@ -45,8 +45,9 @@ async function renderLocally(brief: VideoBrief): Promise<RenderedClip> {
     codec: "h264",
     outputLocation,
     inputProps: brief as unknown as Record<string, unknown>,
-    // @remotion/effects (lightLeak() etc.) render via WebGL2 — needs ANGLE, not the default.
-    chromiumOptions: { gl: "angle" },
+    // renderMedia() ignores remotion.config.ts entirely — every option must be passed here.
+    // Default concurrency is half of available cores; use them all for local dev speed.
+    concurrency: "100%",
   });
 
   return {
@@ -75,8 +76,6 @@ async function renderOnLambda(brief: VideoBrief): Promise<RenderedClip> {
     inputProps: brief as unknown as Record<string, unknown>,
     codec: "h264",
     framesPerLambda: 20,
-    // @remotion/effects (lightLeak() etc.) render via WebGL2 — needs ANGLE, not the default.
-    chromiumOptions: { gl: "angle" },
   });
 
   for (;;) {
