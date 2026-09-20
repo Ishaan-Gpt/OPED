@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BoneAngles, CharacterConfig, ExpressionType } from './types';
 import { EXPRESSION_PRESETS } from './CharacterExpressions';
+import { CharacterFace } from './CharacterFace';
 
 interface CharacterRigProps {
   boneAngles: BoneAngles;

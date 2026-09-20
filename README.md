@@ -1,29 +1,44 @@
-# Welcome to your Lovable project
+# Animated AI Teacher Character Engine
 
-This project was built with [Lovable](https://lovable.dev).
+A standalone, high-quality vector animated cartoon AI teacher system built as a reusable React component suite for educational web applications.
 
-## Build with Lovable
+## 🌟 Quick Links
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+* **Showcase & Interactive Test Suite**: Navigate to `/showcase` in your browser.
+* **Character Documentation**: See [`src/character/README.md`](file:///Users/keshav/oped/src/character/README.md) for complete API documentation, controller methods, and integration guides.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## 🚀 Quick Start
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+# Install dependencies
+npm install
+
+# Start local dev server
 npm run dev
+
+# Build production bundle
+npm run build
 ```
 
-## Built with
+## 🧩 Component Usage Example
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+```tsx
+import { AnimatedTeacher, useCharacterController } from './character';
+
+export function LessonScreen() {
+  const teacher = useCharacterController('idle', 'bottom-right');
+
+  return (
+    <div>
+      <AnimatedTeacher
+        state={teacher.state}
+        expression={teacher.expression}
+        gesture={teacher.gesture}
+        position={teacher.position}
+        gazeTarget={teacher.gazeTarget}
+        pointTarget={teacher.pointTarget}
+      />
+    </div>
+  );
+}
+```
