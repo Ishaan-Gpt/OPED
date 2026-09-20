@@ -9,9 +9,18 @@ import ArtifactViewer from "@/components/ArtifactViewer";
 import RecitationHUD from "@/components/RecitationHUD";
 import { BrandMark, CheckSealIcon, CubeIcon, TeacherIcon } from "@/components/icons";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
-import type { CharacterState, ExpressionType, GestureType, GazeTarget, PointTarget } from "@/character/types";
+import type {
+  CharacterState,
+  ExpressionType,
+  GestureType,
+  GazeTarget,
+  PointTarget,
+} from "@/character/types";
+import { decideTeacherMove } from "@/lib/teacher/decide";
+import { generateLessonVideo } from "@/lib/remotion/render";
 
 const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
+const VideoMoment = lazy(() => import("@/components/VideoMoment"));
 
 type Stage = "understanding" | "artifact" | "recall";
 
@@ -31,6 +40,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [teacherRepeat, setTeacherRepeat] = useState(0);
   const [isTeacherActive, setIsTeacherActive] = useState(true);
   const [teacherGreeting, setTeacherGreeting] = useState<string | null>(null);
+  const [videoMoment, setVideoMoment] = useState<{ title: string; url: string | null } | null>(
+    null,
+  );
 
   const lines = module.narration;
   const caption = useMemo(() => {
@@ -40,6 +52,46 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         : "Listen twice, then recite it back to me.";
     return lines[Math.min(lineIndex, lines.length - 1)]?.text ?? "";
   }, [stage, lineIndex, lines, teacherRepeat, module.examConcept]);
+
+  const advanceLine = useCallback(() => {
+    if (lineIndex + 1 < lines.length) setLineIndex(lineIndex + 1);
+    else {
+      setSpeaking(false);
+      setStage("artifact");
+    }
+  }, [lineIndex, lines]);
+
+  // After each narration beat, the AI teacher decides whether the concept
+  // needs a short generated video instead of just continuing to the next line.
+  const consultTeacher = useCallback(async () => {
+    const current = lines[lineIndex];
+    try {
+      const decision = await decideTeacherMove({
+        data: {
+          boardHeading: module.boardHeading,
+          notes: module.notes,
+          examConcept: module.examConcept,
+          currentLine: current?.text ?? "",
+          stage: "understanding",
+        },
+      });
+      if (decision.action === "generate_video") {
+        setSpeaking(false);
+        setVideoMoment({ title: decision.videoBrief.title, url: null });
+        const clip = await generateLessonVideo({ data: decision.videoBrief });
+        setVideoMoment({ title: decision.videoBrief.title, url: clip.url });
+        return;
+      }
+    } catch {
+      // Bedrock unreachable or misconfigured — lesson just continues normally.
+    }
+    advanceLine();
+  }, [lineIndex, lines, module, advanceLine]);
+
+  const closeVideoMoment = useCallback(() => {
+    setVideoMoment(null);
+    advanceLine();
+  }, [advanceLine]);
 
   // Narration playback with synchronized captions
   useEffect(() => {
@@ -51,13 +103,10 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     }
     setSpeaking(true);
     const t = setTimeout(() => {
-      if (lineIndex + 1 < lines.length) setLineIndex(lineIndex + 1);
-      else {
-        setSpeaking(false);
-        setStage("artifact");
-      }
+      consultTeacher();
     }, current.hold * 1000);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage, lineIndex, lines]);
 
   const reciteTwice = useCallback(() => {
@@ -186,7 +235,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   }, [teacherGreeting, open3D, stage, teacherRepeat, readiness, speaking, lineIndex]);
 
   const handleTeacherClick = useCallback(() => {
-    setTeacherGreeting("I'm Dr. Rao! Focus on each note on the board, then recite it back to secure 100% exam readiness.");
+    setTeacherGreeting(
+      "I'm Dr. Rao! Focus on each note on the board, then recite it back to secure 100% exam readiness.",
+    );
     const t = setTimeout(() => {
       setTeacherGreeting(null);
     }, 4500);
@@ -199,12 +250,12 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         <div className="flex items-center gap-3">
           <BrandMark size={32} />
           <div>
-          <p className="text-[0.62rem] uppercase tracking-[0.22em] text-white/60">
-            NCERT · Class {module.grade} · {module.subject} · Chapter {module.chapter}
-          </p>
-          <h1 className="font-[family-name:var(--font-display)] text-xl text-white sm:text-2xl">
-            {module.title}
-          </h1>
+            <p className="text-[0.62rem] uppercase tracking-[0.22em] text-white/60">
+              NCERT · Class {module.grade} · {module.subject} · Chapter {module.chapter}
+            </p>
+            <h1 className="font-[family-name:var(--font-display)] text-xl text-white sm:text-2xl">
+              {module.title}
+            </h1>
           </div>
         </div>
         <div className="flex items-center gap-2.5">
@@ -225,7 +276,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               <CheckSealIcon size={16} />
             </span>
             Exam readiness
-            <span className={readiness >= 100 ? "text-teal-soft" : "text-royal-soft"}>{readiness}%</span>
+            <span className={readiness >= 100 ? "text-teal-soft" : "text-royal-soft"}>
+              {readiness}%
+            </span>
           </div>
           <button
             onClick={onExit}
@@ -302,7 +355,6 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               </span>
             </button>
           </aside>
-
         </motion.div>
         <AnimatePresence>
           {show3DPrompt && !open3D && (
@@ -318,8 +370,8 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               <span
                 className="ml-1 text-xs text-[#22312d]/50"
                 onClick={(e) => {
-                e.stopPropagation();
-                setShow3DPrompt(false);
+                  e.stopPropagation();
+                  setShow3DPrompt(false);
                 }}
               >
                 dismiss
@@ -332,7 +384,23 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       <AnimatePresence>
         {open3D && (
           <Suspense fallback={null}>
-            <ThreeDModal kind={module.threeD} title={module.threeDTitle} onClose={() => setOpen3D(false)} />
+            <ThreeDModal
+              kind={module.threeD}
+              title={module.threeDTitle}
+              onClose={() => setOpen3D(false)}
+            />
+          </Suspense>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {videoMoment && (
+          <Suspense fallback={null}>
+            <VideoMoment
+              title={videoMoment.title}
+              url={videoMoment.url}
+              onClose={closeVideoMoment}
+            />
           </Suspense>
         )}
       </AnimatePresence>

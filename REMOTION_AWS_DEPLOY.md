@@ -1,0 +1,119 @@
+# Remotion → AWS Lambda deploy runbook
+
+This is the step-by-step guide for deploying the video-rendering side of the app to AWS. It's kept up to date as the Remotion setup evolves — if you change anything here, tell the app team so `src/lib/remotion/render.ts` stays in sync with the env vars below.
+
+**What this covers:** the app generates short (≤15s) explainer video clips on the fly using [Remotion](https://www.remotion.dev/). Locally it renders on your own machine. In production it renders on **AWS Lambda** via `@remotion/lambda` — that's what you're setting up.
+
+**Not covered here:** the adaptive teacher's AI decisioning (Bedrock). That uses its own env vars (`AWS_BEARER_TOKEN_BEDROCK`, `AWS_KNOWLEDGE_BASE_ID`, `AWS_REGION`) which are separate from the Remotion Lambda setup below, but share the same AWS account/region.
+
+---
+
+## ⚠️ Security first
+
+A Bedrock bearer token was pasted into a chat during development (`AWS_BEARER_TOKEN_BEDROCK=ABSK...`). Treat it as **compromised**:
+
+1. In the AWS Bedrock console, revoke/regenerate that API key.
+2. Put the new value **only** in a local `.env.local` file (already gitignored — never commit it).
+3. Same rule applies to every credential below: real values go in `.env.local` or your deployment platform's secret/env-var store (Amplify Console → App settings → Environment variables), never in a committed file.
+
+---
+
+## 0. Prerequisites
+
+- An AWS account with billing enabled, region **`ap-south-1`** (Mumbai) — matches the rest of the app's AWS usage.
+- Node.js 18+ and the AWS CLI installed locally, or IAM credentials you can export as env vars.
+- An IAM user/role with permission to create IAM roles/policies, Lambda functions, and S3 buckets (an Administrator-level user is simplest for first-time setup; you can lock it down after).
+
+Set your AWS credentials locally however you normally do (`aws configure`, or export `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION=ap-south-1`). These are your **own deploy-time** credentials — separate from anything the running app uses.
+
+---
+
+## 1. Install the Remotion CLI in the project
+
+From the repo root (already done in the codebase, just make sure deps are installed):
+
+```bash
+npm install
+```
+
+This already includes `remotion`, `@remotion/cli`, `@remotion/renderer`, `@remotion/bundler`, and `@remotion/lambda`.
+
+## 2. Create the IAM role + policy Remotion needs
+
+Remotion provides a one-shot command that prints/creates the exact IAM policy it needs (least-privilege, scoped to Remotion's own resources):
+
+```bash
+npx remotion lambda policies role
+```
+
+Follow the printed instructions — it either creates the role directly (if your AWS CLI credentials have IAM permissions) or gives you the JSON to paste into the IAM console. Name suggestion: `remotion-lambda-role`.
+
+Then create the matching user policy so *you* (or the CI/CD pipeline) can call the Remotion deploy commands:
+
+```bash
+npx remotion lambda policies user
+```
+
+Attach that policy to the IAM user whose credentials you're using for deployment.
+
+## 3. Deploy the Lambda function
+
+```bash
+npx remotion lambda functions deploy --region=ap-south-1
+```
+
+This creates the actual Lambda function that renders video. Note the **function name** it prints (something like `remotion-render-4-0-XXX-mem2048mb-disk2048mb-120sec`) — you'll need it below.
+
+Defaults are fine for our use case (short ≤15s clips), but if renders ever time out, redeploy with a longer timeout:
+
+```bash
+npx remotion lambda functions deploy --region=ap-south-1 --timeout=180
+```
+
+## 4. Deploy the "site" (the bundled Remotion compositions)
+
+This uploads the actual video compositions (`remotion/` folder in the repo) to S3 so Lambda can render them:
+
+```bash
+npx remotion lambda sites create remotion/index.ts --region=ap-south-1
+```
+
+Note the **Serve URL** and **bucket name** it prints. Re-run this command every time the compositions in `remotion/` change and redeploy — it's cheap and fast.
+
+## 5. Set the app's environment variables
+
+Wherever the app runs in production (AWS Amplify Console → your app → Hosting → Environment variables), set:
+
+| Variable | Value |
+|---|---|
+| `REMOTION_RENDER_TARGET` | `lambda` |
+| `REMOTION_AWS_FUNCTION_NAME` | the function name from step 3 |
+| `REMOTION_AWS_SERVE_URL` | the serve URL from step 4 |
+| `REMOTION_AWS_BUCKET_NAME` | the bucket name from step 4 |
+| `AWS_REGION` | `ap-south-1` |
+
+The app also needs standard AWS credentials available to its own server runtime (Amplify's compute role, or `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` for a scoped IAM user) so it can call `renderMediaOnLambda` — the Lambda **invoke** permission comes from the "user" policy in step 2, so whatever identity the running app assumes needs that policy attached.
+
+Locally (dev), leave `REMOTION_RENDER_TARGET` unset or `local` — it renders on your own machine instead of Lambda, no AWS needed. See `.env.example`.
+
+## 6. Test it
+
+Test the Lambda render directly from the CLI before wiring it into the app:
+
+```bash
+npx remotion lambda render <serve-url-from-step-4> ExplainerClip \
+  --region=ap-south-1 \
+  --props='{"title":"Test clip","bullets":["First point","Second point"],"targetSeconds":8}'
+```
+
+It should print progress and finally an S3 URL to a playable `.mp4`. If that works, the app's `generateLessonVideo` server function (`src/lib/remotion/render.ts`) will work the same way in production.
+
+## Cost & limits to know
+
+- Lambda has a hard **15-minute** execution cap — irrelevant here since our clips are capped at 15 **seconds**, but don't remove that cap in `remotion/types.ts` (`MAX_VIDEO_SECONDS`) without reconsidering render time.
+- You're billed per render (Lambda invocation + S3 storage/egress) — for short clips this is fractions of a cent per video, but if usage scales up, keep an eye on S3 lifecycle rules for the output bucket (consider auto-expiring generated clips after a few days).
+- `npx remotion lambda functions ls` / `npx remotion lambda sites ls` list what's currently deployed; `npx remotion lambda functions rm` / `sites rm` clean up old ones.
+
+## When compositions change
+
+Any time someone edits `remotion/compositions/ExplainerClip.tsx` (or adds new compositions), re-run step 4 (`sites create`) and update `REMOTION_AWS_SERVE_URL` if it changes. The Lambda function itself (step 3) only needs redeploying if Remotion's version is bumped in `package.json`.
