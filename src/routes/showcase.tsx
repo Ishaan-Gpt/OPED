@@ -1,5 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router';
-import React, { useState, useRef } from 'react';
+import { createFileRoute } from "@tanstack/react-router";
+import React, { useState, useRef } from "react";
 import {
   Play,
   Eye,
@@ -13,26 +13,28 @@ import {
   CheckCircle2,
   RefreshCw,
   Info,
-} from 'lucide-react';
-import { AnimatedTeacher } from '../character/AnimatedTeacher';
-import { useCharacterController } from '../character/CharacterController';
+} from "lucide-react";
+import { AnimatedTeacher } from "../character/AnimatedTeacher";
+import { useCharacterController } from "../character/CharacterController";
 import {
   CharacterState,
   ExpressionType,
   GestureType,
   PositionPreset,
   GazeTarget,
-} from '../character/types';
+} from "../character/types";
 
-export const Route = createFileRoute('/showcase')({
+export const Route = createFileRoute("/showcase")({
   component: CharacterShowcasePage,
 });
 
 export function CharacterShowcasePage() {
-  const teacher = useCharacterController('idle', 'bottom-right');
+  const teacher = useCharacterController("idle", "bottom-right");
   const [demoStep, setDemoStep] = useState<string | null>(null);
   const [demoActive, setDemoActive] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'states' | 'movement' | 'gaze' | 'expressions' | 'gestures'>('states');
+  const [activeTab, setActiveTab] = useState<
+    "states" | "movement" | "gaze" | "expressions" | "gestures"
+  >("states");
 
   // Dummy target refs
   const diagramRef = useRef<HTMLDivElement>(null);
@@ -43,117 +45,117 @@ export function CharacterShowcasePage() {
 
   // States list from prompt
   const coreStates: { id: CharacterState; label: string }[] = [
-    { id: 'idle', label: 'Idle' },
-    { id: 'thinking', label: 'Thinking' },
-    { id: 'speaking', label: 'Speaking' },
-    { id: 'listening', label: 'Listening' },
-    { id: 'explaining', label: 'Explaining' },
-    { id: 'presenting', label: 'Presenting' },
-    { id: 'question', label: 'Question' },
-    { id: 'pointing', label: 'Point At Target' },
-    { id: 'wave', label: 'Wave' },
-    { id: 'correct', label: 'Correct (Thumbs Up)' },
-    { id: 'incorrect', label: 'Incorrect (Encourage)' },
-    { id: 'celebrate', label: 'Celebrate' },
-    { id: 'encourage', label: 'Encourage' },
-    { id: 'confused', label: 'Confused' },
-    { id: 'surprised', label: 'Surprised' },
-    { id: 'noPeek', label: 'No Peek 🙈' },
+    { id: "idle", label: "Idle" },
+    { id: "thinking", label: "Thinking" },
+    { id: "speaking", label: "Speaking" },
+    { id: "listeningEar", label: "Listening" },
+    { id: "explaining", label: "Explaining" },
+    { id: "presenting", label: "Presenting" },
+    { id: "question", label: "Question" },
+    { id: "pointing", label: "Point At Target" },
+    { id: "wave", label: "Wave" },
+    { id: "correct", label: "Correct (Thumbs Up)" },
+    { id: "incorrect", label: "Incorrect (Encourage)" },
+    { id: "celebrate", label: "Celebrate" },
+    { id: "encourage", label: "Encourage" },
+    { id: "confused", label: "Confused" },
+    { id: "surprised", label: "Surprised" },
+    { id: "noPeek", label: "No Peek 🙈" },
   ];
 
   const positions: { id: PositionPreset; label: string }[] = [
-    { id: 'top-left', label: 'Top Left' },
-    { id: 'top-right', label: 'Top Right' },
-    { id: 'center-left', label: 'Center Left' },
-    { id: 'center-right', label: 'Center Right' },
-    { id: 'bottom-left', label: 'Bottom Left' },
-    { id: 'bottom-center', label: 'Bottom Center' },
-    { id: 'bottom-right', label: 'Bottom Right' },
+    { id: "top-left", label: "Top Left" },
+    { id: "top-right", label: "Top Right" },
+    { id: "center-left", label: "Center Left" },
+    { id: "center-right", label: "Center Right" },
+    { id: "bottom-left", label: "Bottom Left" },
+    { id: "bottom-center", label: "Bottom Center" },
+    { id: "bottom-right", label: "Bottom Right" },
   ];
 
   const gazeDirections: { id: GazeTarget; label: string }[] = [
-    { id: 'student', label: 'Student (Center)' },
-    { id: 'left', label: 'Left' },
-    { id: 'right', label: 'Right' },
-    { id: 'up', label: 'Up' },
-    { id: 'down', label: 'Down' },
-    { id: 'upper-left', label: 'Upper Left' },
-    { id: 'upper-right', label: 'Upper Right (Thinking)' },
-    { id: 'lower-left', label: 'Lower Left' },
-    { id: 'lower-right', label: 'Lower Right' },
+    { id: "student", label: "Student (Center)" },
+    { id: "left", label: "Left" },
+    { id: "right", label: "Right" },
+    { id: "up", label: "Up" },
+    { id: "down", label: "Down" },
+    { id: "upper-left", label: "Upper Left" },
+    { id: "upper-right", label: "Upper Right (Thinking)" },
+    { id: "lower-left", label: "Lower Left" },
+    { id: "lower-right", label: "Lower Right" },
   ];
 
   const expressions: ExpressionType[] = [
-    'idle',
-    'happy',
-    'excited',
-    'thinking',
-    'confused',
-    'explaining',
-    'question',
-    'surprised',
-    'encouraging',
-    'correct',
-    'incorrect',
-    'celebrating',
-    'proud',
-    'focused',
-    'playful',
-    'amazed',
-    'puzzled',
-    'relieved',
-    'empathetic',
-    'mindBlown',
-    'cheerful',
-    'determined',
-    'heartEyes',
-    'starEyes',
-    'eureka',
-    'facepalm',
-    'smartGlasses',
+    "idle",
+    "happy",
+    "excited",
+    "thinking",
+    "confused",
+    "explaining",
+    "question",
+    "surprised",
+    "encouraging",
+    "correct",
+    "incorrect",
+    "celebrating",
+    "proud",
+    "focused",
+    "playful",
+    "amazed",
+    "puzzled",
+    "relieved",
+    "empathetic",
+    "mindBlown",
+    "cheerful",
+    "determined",
+    "heartEyes",
+    "starEyes",
+    "eureka",
+    "facepalm",
+    "smartGlasses",
   ];
 
   const gestures: GestureType[] = [
-    'idle',
-    'wave',
-    'pointLeft',
-    'pointRight',
-    'pointUp',
-    'pointDown',
-    'present',
-    'explainOneHand',
-    'explainBothHands',
-    'thinking',
-    'handOnChin',
-    'thumbsUp',
-    'doubleThumbsUp',
-    'celebrate',
-    'encourage',
-    'shrug',
-    'stop',
-    'wait',
-    'comeHere',
-    'handsOpen',
-    'noPeek',
-    'readingBook',
-    'crossArms',
-    'writeOnBoard',
-    'heartHands',
-    'bow',
-    'applause',
-    'victory',
-    'salute',
-    'secretTip',
-    'stretch',
-    'listeningEar',
-    'eureka',
-    'facepalm',
-    'flex',
-    'shushing',
-    'adjustGlasses',
-    'highFive',
-    'fingerGuns',
-    'handsOnHips',
+    "idle",
+    "wave",
+    "pointLeft",
+    "pointRight",
+    "pointUp",
+    "pointDown",
+    "present",
+    "explainOneHand",
+    "explainBothHands",
+    "thinking",
+    "handOnChin",
+    "thumbsUp",
+    "doubleThumbsUp",
+    "celebrate",
+    "encourage",
+    "shrug",
+    "stop",
+    "wait",
+    "comeHere",
+    "handsOpen",
+    "noPeek",
+    "readingBook",
+    "crossArms",
+    "writeOnBoard",
+    "heartHands",
+    "bow",
+    "applause",
+    "victory",
+    "salute",
+    "secretTip",
+    "stretch",
+    "listeningEar",
+    "eureka",
+    "facepalm",
+    "flex",
+    "shushing",
+    "adjustGlasses",
+    "highFive",
+    "fingerGuns",
+    "handsOnHips",
   ];
 
   // Full Teaching Sequence Demo implementation (Requirement #44)
@@ -162,30 +164,30 @@ export function CharacterShowcasePage() {
     setDemoActive(true);
 
     const steps = [
-      { name: 'IDLE', fn: () => teacher.play('idle'), delay: 1800 },
-      { name: 'THINKING', fn: () => teacher.play('thinking'), delay: 2000 },
-      { name: 'SPEAKING', fn: () => teacher.play('speaking'), delay: 2200 },
-      { name: 'EXPLAINING', fn: () => teacher.play('explaining'), delay: 2500 },
+      { name: "IDLE", fn: () => teacher.play("idle"), delay: 1800 },
+      { name: "THINKING", fn: () => teacher.play("thinking"), delay: 2000 },
+      { name: "SPEAKING", fn: () => teacher.play("speaking"), delay: 2200 },
+      { name: "EXPLAINING", fn: () => teacher.play("explaining"), delay: 2500 },
       {
-        name: 'POINT AT BOARD',
+        name: "POINT AT BOARD",
         fn: () => {
           if (diagramRef.current) {
             teacher.pointAt({ targetElement: diagramRef.current });
           } else {
-            teacher.play('pointing');
+            teacher.play("pointing");
           }
         },
         delay: 2200,
       },
-      { name: 'LOOK AT BOARD', fn: () => teacher.lookAt('left'), delay: 1800 },
-      { name: 'LOOK AT STUDENT', fn: () => teacher.lookAt('student'), delay: 1800 },
-      { name: 'QUESTION', fn: () => teacher.play('question'), delay: 2200 },
-      { name: 'NO PEEK', fn: () => teacher.play('noPeek', 3500), delay: 3800 },
-      { name: 'LISTENING', fn: () => teacher.play('listening'), delay: 2200 },
-      { name: 'CORRECT', fn: () => teacher.play('correct'), delay: 2200 },
-      { name: 'CELEBRATE', fn: () => teacher.play('celebrate'), delay: 2500 },
-      { name: 'EXPLAINING', fn: () => teacher.play('explaining'), delay: 2200 },
-      { name: 'IDLE', fn: () => teacher.play('idle'), delay: 1500 },
+      { name: "LOOK AT BOARD", fn: () => teacher.lookAt("left"), delay: 1800 },
+      { name: "LOOK AT STUDENT", fn: () => teacher.lookAt("student"), delay: 1800 },
+      { name: "QUESTION", fn: () => teacher.play("question"), delay: 2200 },
+      { name: "NO PEEK", fn: () => teacher.play("noPeek", 3500), delay: 3800 },
+      { name: "LISTENING", fn: () => teacher.play("listeningEar"), delay: 2200 },
+      { name: "CORRECT", fn: () => teacher.play("correct"), delay: 2200 },
+      { name: "CELEBRATE", fn: () => teacher.play("celebrate"), delay: 2500 },
+      { name: "EXPLAINING", fn: () => teacher.play("explaining"), delay: 2200 },
+      { name: "IDLE", fn: () => teacher.play("idle"), delay: 1500 },
     ];
 
     for (const s of steps) {
@@ -217,7 +219,8 @@ export function CharacterShowcasePage() {
               </span>
             </h1>
             <p className="text-xs text-slate-400">
-              High-Quality Vector Pixar-Style Character Rig with Contextual Awareness & Gesture Control
+              High-Quality Vector Pixar-Style Character Rig with Contextual Awareness & Gesture
+              Control
             </p>
           </div>
         </div>
@@ -229,12 +232,16 @@ export function CharacterShowcasePage() {
             disabled={demoActive}
             className={`px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all shadow-lg ${
               demoActive
-                ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300 animate-pulse cursor-wait'
-                : 'bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-sky-500/25 hover:scale-[1.02] active:scale-[0.98]'
+                ? "bg-amber-500/20 border border-amber-500/40 text-amber-300 animate-pulse cursor-wait"
+                : "bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-sky-500/25 hover:scale-[1.02] active:scale-[0.98]"
             }`}
           >
-            {demoActive ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-            <span>{demoActive ? `Running: ${demoStep}` : 'PLAY DEMO LESSON'}</span>
+            {demoActive ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Play className="w-4 h-4 fill-current" />
+            )}
+            <span>{demoActive ? `Running: ${demoStep}` : "PLAY DEMO LESSON"}</span>
           </button>
         </div>
       </header>
@@ -248,13 +255,21 @@ export function CharacterShowcasePage() {
             <div className="flex items-center gap-2">
               <Info className="w-4 h-4 text-sky-400 flex-shrink-0" />
               <span>
-                Click <strong>&quot;Look At&quot;</strong>, <strong>&quot;Point At&quot;</strong>, or <strong>&quot;Present&quot;</strong> on any target below to test real-time positional kinematics and gaze angle calculations!
+                Click <strong>&quot;Look At&quot;</strong>, <strong>&quot;Point At&quot;</strong>,
+                or <strong>&quot;Present&quot;</strong> on any target below to test real-time
+                positional kinematics and gaze angle calculations!
               </span>
             </div>
             <div className="flex items-center gap-4 text-[11px] font-mono text-slate-400">
-              <div>State: <span className="text-sky-400 font-bold">{teacher.state}</span></div>
-              <div>Expr: <span className="text-pink-400 font-bold">{teacher.expression}</span></div>
-              <div>Gesture: <span className="text-emerald-400 font-bold">{teacher.gesture}</span></div>
+              <div>
+                State: <span className="text-sky-400 font-bold">{teacher.state}</span>
+              </div>
+              <div>
+                Expr: <span className="text-pink-400 font-bold">{teacher.expression}</span>
+              </div>
+              <div>
+                Gesture: <span className="text-emerald-400 font-bold">{teacher.gesture}</span>
+              </div>
             </div>
           </div>
 
@@ -270,7 +285,9 @@ export function CharacterShowcasePage() {
                   <BookOpen className="w-4 h-4" />
                   <span>[Diagram] Photosynthesis</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Target A</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                  Target A
+                </span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
                 Diagram showing light-dependent reaction pathways in plant thylakoid membranes.
@@ -291,7 +308,7 @@ export function CharacterShowcasePage() {
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: diagramRef.current! });
-                    teacher.play('present');
+                    teacher.play("present");
                   }}
                   className="flex-1 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[11px] font-medium transition-colors"
                 >
@@ -310,7 +327,9 @@ export function CharacterShowcasePage() {
                   <Sparkles className="w-4 h-4" />
                   <span>[Important Concept] E = mc²</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Target B</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                  Target B
+                </span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
                 Mass-energy equivalence principle formulating mass into pure relativistic energy.
@@ -331,7 +350,7 @@ export function CharacterShowcasePage() {
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: conceptRef.current! });
-                    teacher.play('present');
+                    teacher.play("present");
                   }}
                   className="flex-1 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[11px] font-medium transition-colors"
                 >
@@ -350,23 +369,26 @@ export function CharacterShowcasePage() {
                   <HelpCircle className="w-4 h-4" />
                   <span>[Question] Recall Challenge</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Target C</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                  Target C
+                </span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-                &ldquo;What is the primary cellular powerhouse responsible for ATP production?&rdquo;
+                &ldquo;What is the primary cellular powerhouse responsible for ATP
+                production?&rdquo;
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: questionRef.current! });
-                    teacher.play('question');
+                    teacher.play("question");
                   }}
                   className="flex-1 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-medium transition-colors"
                 >
                   Ask Question
                 </button>
                 <button
-                  onClick={() => teacher.play('noPeek', 3500)}
+                  onClick={() => teacher.play("noPeek", 3500)}
                   className="flex-1 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 text-[11px] font-medium transition-colors"
                 >
                   No Peek 🙈
@@ -384,7 +406,9 @@ export function CharacterShowcasePage() {
                   <CheckCircle2 className="w-4 h-4" />
                   <span>[Answer] Mitochondria</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Target D</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                  Target D
+                </span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
                 Correct answer verified. Triggers student praise and celebratory teacher feedback.
@@ -393,7 +417,7 @@ export function CharacterShowcasePage() {
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: answerRef.current! });
-                    teacher.play('correct');
+                    teacher.play("correct");
                   }}
                   className="flex-1 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-medium transition-colors"
                 >
@@ -402,7 +426,7 @@ export function CharacterShowcasePage() {
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: answerRef.current! });
-                    teacher.play('celebrate');
+                    teacher.play("celebrate");
                   }}
                   className="flex-1 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[11px] font-medium transition-colors"
                 >
@@ -421,16 +445,19 @@ export function CharacterShowcasePage() {
                   <Box className="w-4 h-4" />
                   <span>[3D Experience] Interactive Human Heart Simulation</span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Target E</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                  Target E
+                </span>
               </div>
               <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-                Fullscreen WebGL 3D anatomical organ simulation allowing rotatable blood flow investigation.
+                Fullscreen WebGL 3D anatomical organ simulation allowing rotatable blood flow
+                investigation.
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: threeDRef.current! });
-                    teacher.play('presenting');
+                    teacher.play("presenting");
                   }}
                   className="py-1.5 px-4 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-pink-300 text-[11px] font-medium transition-colors"
                 >
@@ -464,55 +491,55 @@ export function CharacterShowcasePage() {
           {/* Tab Navigation */}
           <div className="p-3 border-b border-slate-800 bg-slate-950 flex items-center gap-1 overflow-x-auto">
             <button
-              onClick={() => setActiveTab('states')}
+              onClick={() => setActiveTab("states")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                activeTab === 'states'
-                  ? 'bg-sky-500 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                activeTab === "states"
+                  ? "bg-sky-500 text-white shadow-md"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }`}
             >
               <Play className="w-3.5 h-3.5" />
               <span>States</span>
             </button>
             <button
-              onClick={() => setActiveTab('movement')}
+              onClick={() => setActiveTab("movement")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                activeTab === 'movement'
-                  ? 'bg-purple-500 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                activeTab === "movement"
+                  ? "bg-purple-500 text-white shadow-md"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }`}
             >
               <Move className="w-3.5 h-3.5" />
               <span>Move</span>
             </button>
             <button
-              onClick={() => setActiveTab('gaze')}
+              onClick={() => setActiveTab("gaze")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                activeTab === 'gaze'
-                  ? 'bg-amber-500 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                activeTab === "gaze"
+                  ? "bg-amber-500 text-white shadow-md"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Gaze</span>
             </button>
             <button
-              onClick={() => setActiveTab('expressions')}
+              onClick={() => setActiveTab("expressions")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                activeTab === 'expressions'
-                  ? 'bg-pink-500 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                activeTab === "expressions"
+                  ? "bg-pink-500 text-white shadow-md"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }`}
             >
               <Smile className="w-3.5 h-3.5" />
               <span>Face</span>
             </button>
             <button
-              onClick={() => setActiveTab('gestures')}
+              onClick={() => setActiveTab("gestures")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-                activeTab === 'gestures'
-                  ? 'bg-emerald-500 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                activeTab === "gestures"
+                  ? "bg-emerald-500 text-white shadow-md"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }`}
             >
               <Hand className="w-3.5 h-3.5" />
@@ -522,7 +549,7 @@ export function CharacterShowcasePage() {
 
           {/* Tab Content Panel */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
-            {activeTab === 'states' && (
+            {activeTab === "states" && (
               <div className="space-y-3">
                 <div className="text-slate-300 font-semibold flex items-center justify-between">
                   <span>Core Character States ({coreStates.length})</span>
@@ -535,8 +562,8 @@ export function CharacterShowcasePage() {
                       onClick={() => teacher.play(st.id)}
                       className={`px-3 py-2 rounded-xl border text-left font-medium transition-all ${
                         teacher.state === st.id
-                          ? 'bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-500/20'
-                          : 'bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80'
+                          ? "bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-500/20"
+                          : "bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80"
                       }`}
                     >
                       {st.label}
@@ -546,7 +573,7 @@ export function CharacterShowcasePage() {
               </div>
             )}
 
-            {activeTab === 'movement' && (
+            {activeTab === "movement" && (
               <div className="space-y-3">
                 <div className="text-slate-300 font-semibold flex items-center justify-between">
                   <span>Spatial Position (moveTo)</span>
@@ -559,8 +586,8 @@ export function CharacterShowcasePage() {
                       onClick={() => teacher.moveTo(pos.id)}
                       className={`px-3 py-2 rounded-xl border text-left font-medium transition-all ${
                         teacher.position === pos.id
-                          ? 'bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/20'
-                          : 'bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80'
+                          ? "bg-purple-500 border-purple-400 text-white shadow-lg shadow-purple-500/20"
+                          : "bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80"
                       }`}
                     >
                       {pos.label}
@@ -570,7 +597,7 @@ export function CharacterShowcasePage() {
               </div>
             )}
 
-            {activeTab === 'gaze' && (
+            {activeTab === "gaze" && (
               <div className="space-y-3">
                 <div className="text-slate-300 font-semibold flex items-center justify-between">
                   <span>Gaze Controller (lookAt)</span>
@@ -579,7 +606,7 @@ export function CharacterShowcasePage() {
                 <div className="grid grid-cols-2 gap-2">
                   {gazeDirections.map((gz) => (
                     <button
-                      key={typeof gz.id === 'string' ? gz.id : 'coords'}
+                      key={typeof gz.id === "string" ? gz.id : "coords"}
                       onClick={() => teacher.lookAt(gz.id)}
                       className="px-3 py-2 rounded-xl border bg-slate-800/80 border-slate-700/80 hover:bg-slate-700/80 text-amber-300 font-medium text-left transition-colors"
                     >
@@ -590,7 +617,7 @@ export function CharacterShowcasePage() {
               </div>
             )}
 
-            {activeTab === 'expressions' && (
+            {activeTab === "expressions" && (
               <div className="space-y-3">
                 <div className="text-slate-300 font-semibold flex items-center justify-between">
                   <span>Facial Expression Library ({expressions.length})</span>
@@ -603,8 +630,8 @@ export function CharacterShowcasePage() {
                       onClick={() => teacher.setExpression(exp)}
                       className={`px-2 py-1.5 rounded-lg border text-[11px] capitalize truncate ${
                         teacher.expression === exp
-                          ? 'bg-pink-500 border-pink-400 text-white'
-                          : 'bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80'
+                          ? "bg-pink-500 border-pink-400 text-white"
+                          : "bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80"
                       }`}
                     >
                       {exp}
@@ -614,7 +641,7 @@ export function CharacterShowcasePage() {
               </div>
             )}
 
-            {activeTab === 'gestures' && (
+            {activeTab === "gestures" && (
               <div className="space-y-3">
                 <div className="text-slate-300 font-semibold flex items-center justify-between">
                   <span>Arm & Hand Gestures ({gestures.length})</span>
@@ -627,8 +654,8 @@ export function CharacterShowcasePage() {
                       onClick={() => teacher.setGesture(gst)}
                       className={`px-2 py-1.5 rounded-lg border text-[11px] capitalize truncate ${
                         teacher.gesture === gst
-                          ? 'bg-emerald-500 border-emerald-400 text-white'
-                          : 'bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80'
+                          ? "bg-emerald-500 border-emerald-400 text-white"
+                          : "bg-slate-800/80 border-slate-700/80 text-slate-300 hover:bg-slate-700/80"
                       }`}
                     >
                       {gst}
