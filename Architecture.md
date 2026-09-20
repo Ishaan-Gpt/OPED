@@ -314,3 +314,69 @@ PK: SESSION#{sessionId}       SK: RECITATION#{segmentIndex}#{attempt}
 4. **Recitation Evaluation loop (§4.4)** — the hard part; build and tune Match Agent prompts against real student transcripts before wiring it into the live UI, since prompt leniency (how forgiving of phrasing vs. how strict on concepts) needs real data to calibrate.
 5. **Mastery Scoring (§4.5) + outcome reporting** — last, since it depends on real attempt data existing.
 6. **3D portal mode** integrates independently once the board/canvas frontend and the content pipeline are both stable — it's a rendering concern, not a data/agent concern, so it can run in parallel with steps 2-4 on a separate track.
+
+---
+
+## 8. Architecture Enhancement: Closing the Gaps
+
+This builds on the baseline architecture. It's written honestly: some of the previously-unused services genuinely make the product better, and are called out as real 10x levers.
+
+### 8.1. What's Actually Changing
+
+| Service | Verdict | Role |
+|---|---|---|
+| **SQS** | ✅ Add | Decouples Lesson Compilation from request spikes; dead-letter queue for failed agent steps |
+| **SNS** | ✅ Add | Fan-out for mastery alerts, struggling-student alerts, ops alerts |
+| **SageMaker AI** | ✅ Add — this is the real 10x lever | Fine-tuned recitation-matching model, replacing a generic Bedrock call |
+| **Fargate** | ✅ Add | A persistent, always-warm service for the recitation hot path (kills Lambda cold-start jitter) |
+| **Amplify Hosting** | ✅ Add | CI/CD and PR preview environments |
+| **App Runner** | ✅ Add | Small containerized admin/teacher dashboard |
+| **Route 53** | ✅ Add | Custom domain, health-check failover |
+| **EKS / ECS / EC2 / RDS** | ❌ Skip | Fargate and Aurora Serverless cover these needs without ops overhead |
+
+### 8.2. SQS — Decoupling the Compilation Path
+- **API Gateway → CompileRequestQueue (SQS, FIFO, MessageGroupId = chapterId) → Lambda consumer**
+- Prevents Bedrock throttling when many students request the same chapter simultaneously.
+- Second use: Dead-letter queue on the Recitation Evaluation Step Function.
+- Third use: NCERT ingestion pipeline becomes queue-driven.
+
+### 8.3. SNS — Notification Fan-Out
+- **StrugglingStudentTopic**: Published by Mastery Scoring Agent when readiness < threshold.
+- **MasteryReportTopic**: Published by nightly EventBridge job.
+- **OpsAlertTopic**: Published by CloudWatch alarms.
+
+### 8.4. SageMaker — The Real 10x Lever
+1. **Fine-tuned Recitation Match Model**: Purpose-built accuracy on Indian child speech patterns & NCERT phrasing. Bypasses general Bedrock latency.
+2. **Fine-tuned NCERT Retrieval/Embedding Model**: Improves Query Router chapter-matching accuracy.
+
+### 8.5. Fargate — Killing Cold-Start Jitter on the Hot Path
+- Run the Recitation Evaluation orchestration as a small, always-warm **Fargate service** behind an internal ALB.
+- Removes the 1-2 second Lambda cold start tax from the latency-critical recitation loop.
+- Minimum 2 tasks running at all times.
+
+### 8.6. Amplify Hosting & App Runner
+- **Amplify**: Moves Next.js app to automatic CI/CD with PR previews.
+- **App Runner**: Low-traffic internal teacher/admin dashboard.
+
+### 8.7. Route 53
+- Custom domain, health checks, and failover routing.
+
+### 8.8. Updated Architecture Diagram (delta only)
+
+```text
+                    ┌───────────────┐
+   API Gateway ───► │  SQS (FIFO)    │──► Lambda consumer ──► Step Functions
+   (compile req)    │ CompileQueue   │      (cache-check gate)  (Lesson Compiler)
+                    └───────────────┘
+
+   API Gateway ───► VPC Link ───► ALB ───► Fargate Service (always-warm)
+   (recitation)                              │         │
+                                       Transcribe   SageMaker Endpoint
+                                                     (Match Agent, fine-tuned)
+                                                          │
+                                                    (fallback) Bedrock
+
+   Mastery Agent ───► SNS ─┬─► SES (parent/teacher email)
+                            ├─► Lambda (dashboard "flagged" write)
+                            └─► CloudWatch (aggregate health signal)
+```
