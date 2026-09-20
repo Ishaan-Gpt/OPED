@@ -1,4 +1,4 @@
-﻿import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import type { NcertModule } from "@/config/rules";
 import { RULES } from "@/config/rules";
@@ -50,7 +50,6 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
   const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
   const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
-  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
   const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
   const [videoMoment, setVideoMoment] = useState<{ title: string; url: string | null } | null>(
     null,
