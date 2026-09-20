@@ -33,6 +33,49 @@ A Bedrock bearer token was pasted into a chat during development (`AWS_BEARER_TO
 
 ---
 
+## Fixing Bedrock access — step by step in the console
+
+Do this in AWS console, region **`ap-south-1`** (check the region dropdown top-right first).
+
+**1. Enable model access (nothing works without this)**
+1. Search "Bedrock" → open **Amazon Bedrock**.
+2. Left sidebar → **Model access**.
+3. **Modify model access** → check **Claude 3.5 Sonnet v2** (Anthropic) and **Nova Pro** (Amazon) → submit.
+4. Wait for both to show green "Access granted" (Nova is instant; Anthropic may ask you to accept usage terms, still instant).
+
+**2. Rotate the leaked API key**
+1. Bedrock console → **API keys** → open the existing key → **revoke/delete** it.
+2. **Generate API key** → create a new one → copy the value immediately (shown once) → give it only to whoever is updating `.env.local`.
+
+**3. Fix the permissions on that key's identity (this is what's currently broken — "Operation not allowed")**
+1. On the API key's detail page, note the IAM user/role it's attached to.
+2. **IAM** console → **Users** (or **Roles**) → open that identity → **Add permissions** → **Create inline policy** → JSON tab:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Action": ["bedrock:InvokeModel", "bedrock:Converse", "bedrock:ConverseStream"],
+    "Resource": "*"
+  }]
+}
+```
+3. Save.
+
+**4. Get real AWS credentials for the Knowledge Base (bearer token can't do this)**
+1. **IAM** → **Users** → **Create user** (e.g. `oped-app-service`).
+2. **Add permissions** → inline policy → JSON:
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{ "Effect": "Allow", "Action": ["bedrock:Retrieve"], "Resource": "*" }]
+}
+```
+3. Open the new user → **Security credentials** tab → **Create access key** → "Application running outside AWS" → copy the **Access Key ID** and **Secret Access Key** (shown once, save them now).
+4. Hand these two values, plus the new Bedrock API key from step 2, back to the app team to drop into `.env.local`. Note: `src/lib/teacher/decide.ts`'s Knowledge Base call currently uses the bearer token and will need a small follow-up code change to sign requests with these access keys (SigV4) instead, once you have them.
+
+---
+
 ## 0. Prerequisites
 
 - An AWS account with billing enabled, region **`ap-south-1`** (Mumbai) — matches the rest of the app's AWS usage.
