@@ -24,75 +24,39 @@ Respond with ONLY compact JSON, no prose, matching one of:
 {"action":"generate_video","videoBrief":{"title":"...","bullets":["...","...","..."],"accent":"#2f9d8b","targetSeconds":10}}
 Keep bullets short (under 12 words each), max 4 bullets, targetSeconds between 4 and 15.`;
 
-async function retrieveGrounding(query: string): Promise<string | null> {
-  const kbId = process.env["AWS_KNOWLEDGE_BASE_ID"];
-  const token = process.env["AWS_BEARER_TOKEN_BEDROCK"];
-  const region = process.env["AWS_REGION"] ?? "ap-south-1";
-  if (!kbId || !token) return null;
+async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
+  const apiKey = process.env["GROQ_API_KEY"];
+  if (!apiKey) return FALLBACK;
 
-  try {
-    const res = await fetch(
-      `https://bedrock-agent-runtime.${region}.amazonaws.com/knowledgebases/${kbId}/retrieve`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          retrievalQuery: { text: query },
-          retrievalConfiguration: { vectorSearchConfiguration: { numberOfResults: 3 } },
-        }),
-      },
-    );
-    if (!res.ok) return null;
-    const json = (await res.json()) as { retrievalResults?: { content?: { text?: string } }[] };
-    return (
-      (json.retrievalResults ?? [])
-        .map((r) => r.content?.text)
-        .filter(Boolean)
-        .join("\n") || null
-    );
-  } catch {
-    return null;
-  }
-}
-
-async function callBedrock(
-  context: TeacherContext,
-  grounding: string | null,
-): Promise<TeacherDecision> {
-  const token = process.env["AWS_BEARER_TOKEN_BEDROCK"];
-  const region = process.env["AWS_REGION"] ?? "ap-south-1";
-  if (!token) return FALLBACK;
-
-  const modelId = "anthropic.claude-3-5-sonnet-20241022-v2:0";
+  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-120b";
   const userMessage = [
     `Chapter: ${context.boardHeading}`,
     `Exam concept to secure: ${context.examConcept}`,
     `Board notes: ${context.notes.join(" | ")}`,
-    grounding ? `Reference material: ${grounding}` : null,
     `Current stage: ${context.stage}`,
     `Current narration line: "${context.currentLine}"`,
-  ]
-    .filter(Boolean)
-    .join("\n");
+  ].join("\n");
 
   try {
-    const res = await fetch(
-      `https://bedrock-runtime.${region}.amazonaws.com/model/${modelId}/converse`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: [{ text: SYSTEM_PROMPT }],
-          messages: [{ role: "user", content: [{ text: userMessage }] }],
-          inferenceConfig: { maxTokens: 400, temperature: 0.4 },
-        }),
-      },
-    );
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: userMessage },
+        ],
+        temperature: 0.4,
+        max_tokens: 600,
+        response_format: { type: "json_object" },
+      }),
+    });
     if (!res.ok) return FALLBACK;
     const json = (await res.json()) as {
-      output?: { message?: { content?: { text?: string }[] } };
+      choices?: { message?: { content?: string } }[];
     };
-    const text = json.output?.message?.content?.map((c) => c.text).join("") ?? "";
+    const text = json.choices?.[0]?.message?.content ?? "";
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) return FALLBACK;
     const parsed = JSON.parse(match[0]) as TeacherDecision;
@@ -112,11 +76,10 @@ async function callBedrock(
 
 /**
  * The adaptive teacher's single decision point: continue narrating, or generate a short video.
- * Server-only (reads AWS env vars) — called from the dev API middleware in vite.config.ts
+ * Server-only (reads GROQ_API_KEY) — called from the dev API middleware in vite.config.ts
  * locally, and from the deployed Lambda proxy in production. Never import this from client code;
  * use src/lib/teacher/client.ts instead.
  */
 export async function decideTeacherMove(context: TeacherContext): Promise<TeacherDecision> {
-  const grounding = await retrieveGrounding(`${context.boardHeading}: ${context.currentLine}`);
-  return callBedrock(context, grounding);
+  return callGroq(context);
 }

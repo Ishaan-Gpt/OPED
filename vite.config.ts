@@ -1,10 +1,15 @@
 import { defineConfig } from "vite";
 import type { Plugin } from "vite";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { config as loadDotenv } from "dotenv";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+
+// Vite only loads .env files into import.meta.env for client code, never into process.env.
+// The dev API middleware below runs in plain Node and reads process.env directly, so load it here.
+loadDotenv({ path: ".env.local" });
 
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
