@@ -12,6 +12,7 @@ const sampleProps: VideoBrief = {
   ],
   accent: "#2f9d8b",
   targetSeconds: 10,
+  visualKind: "ray",
 };
 
 export function RemotionRoot() {

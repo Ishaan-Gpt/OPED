@@ -1,3 +1,14 @@
+export const VISUAL_KINDS = [
+  "reaction",
+  "ray",
+  "atom",
+  "photosynthesis",
+  "graph",
+  "generic",
+] as const;
+
+export type VisualKind = (typeof VISUAL_KINDS)[number];
+
 export interface VideoBrief {
   title: string;
   bullets: string[];
@@ -5,6 +16,8 @@ export interface VideoBrief {
   accent?: string;
   /** desired clip length in seconds, capped to MAX_VIDEO_SECONDS */
   targetSeconds?: number;
+  /** which animated illustration best matches the concept; defaults to "generic" */
+  visualKind?: VisualKind;
 }
 
 export const FPS = 30;

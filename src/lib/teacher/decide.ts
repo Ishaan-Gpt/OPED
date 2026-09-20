@@ -1,4 +1,5 @@
 import type { VideoBrief } from "../../../remotion/types";
+import { VISUAL_KINDS } from "../../../remotion/types";
 
 export interface TeacherContext {
   boardHeading: string;
@@ -19,10 +20,22 @@ After each narration beat you decide the single next best move for the student's
 You may either let the lesson continue as normal, or trigger a short (max 15 second) generated
 explainer video when — and only when — the current concept is genuinely easier to grasp in motion
 (e.g. a ray diagram, a process, a transformation) than as static text.
+
+When you trigger a video, you must also pick "visualKind" — the animated illustration the video
+will actually show. Choose the one that best matches the concept, from exactly these options:
+- "reaction": a test tube with bubbling, color-changing liquid — chemical reactions, acids/bases, mixing
+- "ray": a light ray hitting a mirror and reflecting — optics, reflection, refraction, angles
+- "atom": electrons orbiting a nucleus — atomic structure, bonding, particles
+- "photosynthesis": sunlight hitting a leaf producing glucose — plant/biological processes, energy flow
+- "graph": a line graph drawing itself — equations, data trends, functions, proportional relationships
+- "generic": abstract orbiting shapes — use only if nothing else fits
+Never invent a visualKind outside this list.
+
 Respond with ONLY compact JSON, no prose, matching one of:
 {"action":"continue"}
-{"action":"generate_video","videoBrief":{"title":"...","bullets":["...","...","..."],"accent":"#2f9d8b","targetSeconds":10}}
-Keep bullets short (under 12 words each), max 4 bullets, targetSeconds between 4 and 15.`;
+{"action":"generate_video","videoBrief":{"title":"...","bullets":["...","...","..."],"accent":"#2f9d8b","targetSeconds":10,"visualKind":"reaction"}}
+Keep bullets short (under 12 words each), max 4 bullets, targetSeconds between 4 and 15.
+Valid visualKind values: ${VISUAL_KINDS.join(", ")}.`;
 
 async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
   const apiKey = process.env["GROQ_API_KEY"];
@@ -65,6 +78,9 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
       parsed.videoBrief?.title &&
       parsed.videoBrief?.bullets?.length
     ) {
+      if (!VISUAL_KINDS.includes(parsed.videoBrief.visualKind as never)) {
+        parsed.videoBrief.visualKind = "generic";
+      }
       return parsed;
     }
     if (parsed.action === "continue") return parsed;
