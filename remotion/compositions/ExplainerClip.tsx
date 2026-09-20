@@ -13,7 +13,17 @@ import { GenericScene } from "./scenes/GenericScene";
 const CHALK = "#f3f1e7";
 const TEAL = "#2f9d8b";
 
-const SCENES: Record<VisualKind, (props: { accent: string }) => JSX.Element> = {
+export interface SceneProps {
+  accent: string;
+  /** which beat (0-based) the narration is currently on */
+  beatIndex: number;
+  /** total number of beats in this clip */
+  beatCount: number;
+  /** frame relative to the start of the current beat */
+  beatLocalFrame: number;
+}
+
+const SCENES: Record<VisualKind, (props: SceneProps) => JSX.Element> = {
   reaction: ReactionScene,
   ray: RayScene,
   atom: AtomScene,
@@ -178,7 +188,12 @@ export function ExplainerClip({
             }}
           >
             <SignalPulse localFrame={beatLocalFrame} accent={accent} />
-            <Scene accent={accent} />
+            <Scene
+              accent={accent}
+              beatIndex={beatIndex}
+              beatCount={beats.length}
+              beatLocalFrame={beatLocalFrame}
+            />
           </div>
 
           {/* Lower-third broadcast-style caption, anchored to the frame rather than floating text */}
