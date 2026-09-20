@@ -17,6 +17,7 @@ export const SCENE_THEMES: Record<VisualKind, SceneTheme> = {
   convexMirror: { environment: "night", base: "#0f1a22", glow: "#2f9d8b" },
   prism: { environment: "night", base: "#12141f", glow: "#8b5cf6" },
   atom: { environment: "space", base: "#0c1220", glow: "#7c9cff" },
+  rutherfordAtom: { environment: "space", base: "#0c1220", glow: "#7c9cff" },
   photosynthesis: { environment: "sky", base: "#0e2420", glow: "#6fbf73" },
   graph: { environment: "blueprint", base: "#0d1b2a", glow: "#e07a5f" },
   cell: { environment: "sky", base: "#12241f", glow: "#8dd6a8" },

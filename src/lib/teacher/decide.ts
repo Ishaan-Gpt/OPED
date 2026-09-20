@@ -15,6 +15,19 @@ export type TeacherDecision =
 
 const FALLBACK: TeacherDecision = { action: "continue" };
 
+/**
+ * The model doesn't reliably follow the visualKind guidance for a few easily-confused pairs
+ * (Rutherford's nucleus discovery vs. general Bohr shell-building both look like "atom" content
+ * to it at this temperature). Keyword overrides catch the cases prose instructions alone miss.
+ */
+function refineVisualKind(context: TeacherContext, brief: VideoBrief): VideoBrief["visualKind"] {
+  const text = `${context.currentLine} ${brief.title} ${brief.bullets.join(" ")}`.toLowerCase();
+  if (/rutherford|gold foil|alpha particle/.test(text)) return "rutherfordAtom";
+  if (/concave/.test(text)) return "concaveMirror";
+  if (/convex/.test(text)) return "convexMirror";
+  return brief.visualKind;
+}
+
 const SYSTEM_PROMPT = `You are an AI classroom teacher directing a live NCERT lesson blackboard.
 After each narration beat you decide the single next best move for the student's understanding.
 You may either let the lesson continue as normal, or trigger a short (max 15 second) generated
@@ -40,7 +53,12 @@ when truly nothing else fits, from exactly these options:
   inverted image — use specifically for CONCAVE mirrors (converging mirrors)
 - "convexMirror": a curved mirror where rays diverge outward, forming a virtual, upright, smaller
   image behind the mirror — use specifically for CONVEX mirrors (diverging mirrors)
-- "atom": electrons orbiting a nucleus — atomic structure, bonding, particles
+- "atom": a nucleus with electron shells filling in one by one — Bohr's model, shell capacity
+  (2n² rule), K/L/M shells, general "building the atom" content
+- "rutherfordAtom": the gold foil experiment — alpha particles fired at a foil, most pass straight
+  through empty space, a rare one deflects off a tiny dense nucleus — use for RUTHERFORD's model
+  specifically, even if the line doesn't say "gold foil" explicitly (e.g. "nearly all the mass sits
+  in a tiny, positively charged nucleus" is Rutherford's finding and belongs here, NOT in "atom")
 - "photosynthesis": sunlight hitting a leaf producing glucose — plant/biological processes, energy flow
 - "graph": a line graph drawing itself — data trends, proportional relationships, statistics
 - "cell": a cell membrane forming with a nucleus and organelles — cell biology, tissues, organisms
@@ -99,9 +117,8 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
       parsed.videoBrief?.title &&
       parsed.videoBrief?.bullets?.length
     ) {
-      if (!VISUAL_KINDS.includes(parsed.videoBrief.visualKind as never)) {
-        parsed.videoBrief.visualKind = "generic";
-      }
+      const refined = refineVisualKind(context, parsed.videoBrief) ?? "generic";
+      parsed.videoBrief.visualKind = VISUAL_KINDS.includes(refined as never) ? refined : "generic";
       return parsed;
     }
     if (parsed.action === "continue") return parsed;

@@ -5,6 +5,7 @@ export const VISUAL_KINDS = [
   "convexMirror",
   "prism",
   "atom",
+  "rutherfordAtom",
   "photosynthesis",
   "graph",
   "cell",
