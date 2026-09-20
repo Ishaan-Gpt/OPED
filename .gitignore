@@ -38,3 +38,11 @@ temp_unzip
 img2threejs/
 .amplify-hosting/
 .agents/
+
+# Env secrets
+.env
+
+# Remotion render output
+/out/
+public/generated/
+.remotion/

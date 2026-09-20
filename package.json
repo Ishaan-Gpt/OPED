@@ -9,12 +9,17 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "remotion:studio": "remotion studio remotion/index.ts",
+    "remotion:render": "remotion render remotion/index.ts ExplainerClip out/test.mp4"
   },
   "overrides": {
     "rolldown": "1.2.1"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1136.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.972.70",
+    "@aws-sdk/credential-providers": "^3.1136.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -44,6 +49,10 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-three/drei": "^10",
     "@react-three/fiber": "^9",
+    "@remotion/bundler": "^4.0.526",
+    "@remotion/cli": "^4.0.526",
+    "@remotion/lambda": "^4.0.526",
+    "@remotion/renderer": "^4.0.526",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.101.1",
     "@tanstack/react-router": "1.170.18",
@@ -64,6 +73,7 @@
     "react-hook-form": "^7.71.2",
     "react-resizable-panels": "^4.6.5",
     "recharts": "^2.15.4",
+    "remotion": "^4.0.526",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
@@ -80,6 +90,7 @@
     "@types/react-dom": "^19.2.0",
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^5.2.0",
+    "dotenv": "^18.0.1",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",

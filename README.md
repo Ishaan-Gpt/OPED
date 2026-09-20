@@ -1,11 +1,13 @@
-# Animated AI Teacher Character Engine
+# OPED — AI Powered Blackboard & Animated Teacher Engine
 
-A standalone, high-quality vector animated cartoon AI teacher system built as a reusable React component suite for educational web applications.
+This repository contains the OPED digital blackboard application powered by React, Vite, TanStack Router, Remotion, and AWS CDK services.
 
 ## 🌟 Quick Links
 
-* **Showcase & Interactive Test Suite**: Navigate to `/showcase` in your browser.
+* **Main Application**: `http://localhost:3000`
+* **AI Teacher Character Showcase**: Navigate to `/showcase` in your browser.
 * **Character Documentation**: See [`src/character/README.md`](file:///Users/keshav/oped/src/character/README.md) for complete API documentation, controller methods, and integration guides.
+* **System Architecture**: See [`Architecture.md`](file:///Users/keshav/oped/Architecture.md) and [`abc.md`](file:///Users/keshav/oped/abc.md).
 
 ## 🚀 Quick Start
 
@@ -20,7 +22,7 @@ npm run dev
 npm run build
 ```
 
-## 🧩 Component Usage Example
+## 🧩 Character Component Usage Example
 
 ```tsx
 import { AnimatedTeacher, useCharacterController } from './character';
@@ -42,3 +44,7 @@ export function LessonScreen() {
   );
 }
 ```
+
+## 🏗️ Backend Services Architecture
+
+This frontend is backed by AWS CDK infrastructure (Lambda, DynamoDB, API Gateway, Fargate) located in the `/services` folder.
