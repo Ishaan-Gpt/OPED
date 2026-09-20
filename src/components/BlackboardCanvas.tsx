@@ -8,8 +8,10 @@ import CaptionsBar from "@/components/CaptionsBar";
 import ArtifactViewer from "@/components/ArtifactViewer";
 import RecitationHUD from "@/components/RecitationHUD";
 import { BrandMark, CheckSealIcon, CubeIcon, TeacherIcon } from "@/components/icons";
+import { Sparkles } from "lucide-react";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
 import type { CharacterState, ExpressionType, GestureType, GazeTarget, PointTarget } from "@/character/types";
+import { streamTeacherResponse } from "@/lib/bedrock";
 
 const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
 
@@ -31,6 +33,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [teacherRepeat, setTeacherRepeat] = useState(0);
   const [isTeacherActive, setIsTeacherActive] = useState(true);
   const [teacherGreeting, setTeacherGreeting] = useState<string | null>(null);
+  const [question, setQuestion] = useState("");
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isThinking, setIsThinking] = useState(false);
 
   const lines = module.narration;
   const caption = useMemo(() => {
@@ -183,7 +188,27 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       gaze: "student",
       pointTarget: { target: "board" },
     };
-  }, [teacherGreeting, open3D, stage, teacherRepeat, readiness, speaking, lineIndex]);
+  }, [teacherGreeting, aiResponse, isThinking, open3D, stage, teacherRepeat, readiness, speaking, lineIndex]);
+
+  const handleAskTeacher = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!question.trim() || isThinking) return;
+    const q = question;
+    setQuestion("");
+    setIsThinking(true);
+    setAiResponse("");
+    try {
+      const context = `Topic: ${module.title}. Notes: ${module.notes.join(", ")}`;
+      for await (const text of streamTeacherResponse(q, context)) {
+        setIsThinking(false);
+        setAiResponse((prev) => (prev || "") + text);
+      }
+    } catch (err) {
+      console.error(err);
+      setAiResponse("Oops, I lost my connection. Please try again!");
+      setIsThinking(false);
+    }
+  };
 
   const handleTeacherClick = useCallback(() => {
     setTeacherGreeting("I'm Dr. Rao! Focus on each note on the board, then recite it back to secure 100% exam readiness.");
@@ -342,17 +367,35 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         {isTeacherActive ? (
           <AnimatedTeacher
             key="ai-teacher-active"
-            state={teacherProps.state}
-            expression={teacherProps.expression}
-            gesture={teacherProps.gesture}
+            state={isThinking ? "thinking" : aiResponse ? "speaking" : teacherProps.state}
+            expression={aiResponse ? "focused" : teacherProps.expression}
+            gesture={aiResponse ? "explainBothHands" : teacherProps.gesture}
             position="bottom-right"
             scale={0.88}
             gazeTarget={teacherProps.gaze}
             pointTarget={teacherProps.pointTarget}
-            speakingText={teacherGreeting ?? (speaking ? caption : undefined)}
-            isAudioSpeaking={speaking || !!teacherGreeting}
-            onClick={handleTeacherClick}
+            speakingText={aiResponse ?? teacherGreeting ?? (speaking ? caption : undefined)}
+            isAudioSpeaking={speaking || !!teacherGreeting || !!aiResponse}
+            onClick={aiResponse ? () => setAiResponse(null) : handleTeacherClick}
             className="cursor-pointer select-none"
+            thoughtContent={
+              <form onSubmit={handleAskTeacher} className="mt-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <input
+                  type="text"
+                  placeholder="Ask Dr. Rao a question..."
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  className="w-full min-w-[200px] rounded-full bg-white/10 px-3 py-1.5 text-xs text-white placeholder-white/50 outline-none focus:bg-white/20"
+                />
+                <button
+                  type="submit"
+                  disabled={!question.trim() || isThinking}
+                  className="rounded-full bg-teal p-1.5 text-white disabled:opacity-50"
+                >
+                  <Sparkles size={14} />
+                </button>
+              </form>
+            }
           />
         ) : (
           <motion.button
