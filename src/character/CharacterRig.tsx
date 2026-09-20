@@ -525,7 +525,6 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
           <motion.g
             animate={{
               rotate: boneAngles.headRotate + boneAngles.headTilt,
-              y: [0, -1, 0],
             }}
             transition={{ type: 'spring', stiffness: 110, damping: 12 }}
             style={{ transformOrigin: '160px 180px' }}
