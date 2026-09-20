@@ -43,10 +43,10 @@ Keep bullets short (under 12 words each), max 4 bullets, targetSeconds between 4
 Valid visualKind values: ${VISUAL_KINDS.join(", ")}.`;
 
 async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
-  const apiKey = process.env["GROQ_API_KEY"];
+  const apiKey = process.env["GROQ_API_KEY"] ?? process.env["VITE_GROQ_API_KEY"];
   if (!apiKey) return FALLBACK;
 
-  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-120b";
+  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-20b";
   const userMessage = [
     `Chapter: ${context.boardHeading}`,
     `Exam concept to secure: ${context.examConcept}`,
