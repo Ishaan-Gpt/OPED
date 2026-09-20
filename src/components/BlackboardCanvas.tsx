@@ -8,13 +8,26 @@ import CaptionsBar from "@/components/CaptionsBar";
 import ArtifactViewer from "@/components/ArtifactViewer";
 import RecitationHUD from "@/components/RecitationHUD";
 import { BrandMark, CheckSealIcon, CubeIcon, TeacherIcon } from "@/components/icons";
+import { Sparkles } from "lucide-react";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
-import type { CharacterState, ExpressionType, GestureType, GazeTarget, PointTarget, PositionPreset } from "@/character/types";
+import type {
+  CharacterState,
+  ExpressionType,
+  GestureType,
+  GazeTarget,
+  PointTarget,
+  PositionPreset,
+} from "@/character/types";
 import { DemoControls } from "@/demo/DemoControls";
+import { decideTeacherMove } from "@/lib/teacher/client";
+import { generateLessonVideo } from "@/lib/remotion/client";
+import { streamTeacherResponse } from "@/lib/bedrock";
+import MasteryOutcome from "@/components/MasteryOutcome";
 
 const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
+const VideoMoment = lazy(() => import("@/components/VideoMoment"));
 
-type Stage = "understanding" | "artifact" | "recall";
+type Stage = "understanding" | "artifact" | "recall" | "mastery";
 
 interface Props {
   module: NcertModule;
@@ -38,7 +51,13 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
   const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
   const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
-  const [customPosition, setCustomPosition] = useState<PositionPreset>('bottom-right');
+  const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
+  const [videoMoment, setVideoMoment] = useState<{ title: string; url: string | null } | null>(
+    null,
+  );
+  const [question, setQuestion] = useState("");
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isThinking, setIsThinking] = useState(false);
 
   const lines = module.narration;
   const caption = useMemo(() => {
@@ -48,6 +67,44 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         : "Listen twice, then recite it back to me.";
     return lines[Math.min(lineIndex, lines.length - 1)]?.text ?? "";
   }, [stage, lineIndex, lines, teacherRepeat, module.examConcept]);
+
+  const advanceLine = useCallback(() => {
+    if (lineIndex + 1 < lines.length) setLineIndex(lineIndex + 1);
+    else {
+      setSpeaking(false);
+      setStage("artifact");
+    }
+  }, [lineIndex, lines]);
+
+  // After each narration beat, the AI teacher decides whether the concept
+  // needs a short generated video instead of just continuing to the next line.
+  const consultTeacher = useCallback(async () => {
+    const current = lines[lineIndex];
+    try {
+      const decision = await decideTeacherMove({
+        boardHeading: module.boardHeading,
+        notes: module.notes,
+        examConcept: module.examConcept,
+        currentLine: current?.text ?? "",
+        stage: "understanding",
+      });
+      if (decision.action === "generate_video") {
+        setSpeaking(false);
+        setVideoMoment({ title: decision.videoBrief.title, url: null });
+        const clip = await generateLessonVideo(decision.videoBrief);
+        setVideoMoment({ title: decision.videoBrief.title, url: clip.url });
+        return;
+      }
+    } catch {
+      // Bedrock unreachable or misconfigured — lesson just continues normally.
+    }
+    advanceLine();
+  }, [lineIndex, lines, module, advanceLine]);
+
+  const closeVideoMoment = useCallback(() => {
+    setVideoMoment(null);
+    advanceLine();
+  }, [advanceLine]);
 
   // Narration playback with synchronized captions
   useEffect(() => {
@@ -59,13 +116,10 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     }
     setSpeaking(true);
     const t = setTimeout(() => {
-      if (lineIndex + 1 < lines.length) setLineIndex(lineIndex + 1);
-      else {
-        setSpeaking(false);
-        setStage("artifact");
-      }
+      consultTeacher();
     }, current.hold * 1000);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage, lineIndex, lines]);
 
   const reciteTwice = useCallback(() => {
@@ -88,6 +142,15 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     const t = setTimeout(() => setShow3DPrompt(true), 900);
     return () => clearTimeout(t);
   }, [stage]);
+
+  useEffect(() => {
+    if (readiness < 100 || stage === "mastery") return undefined;
+    const t = setTimeout(() => {
+      setStage("mastery");
+      setTeacherGreeting("Incredible work! You are fully prepared for your exam on this topic.");
+    }, 2500); // Wait 2.5s to let the student see the 100% badge before transitioning
+    return () => clearTimeout(t);
+  }, [readiness, stage]);
 
   // Synchronize teacher posture, expression, and gestures with classroom activity
   const teacherProps = useMemo<{
@@ -193,8 +256,30 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     };
   }, [teacherGreeting, open3D, stage, teacherRepeat, readiness, speaking, lineIndex]);
 
+  const handleAskTeacher = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!question.trim() || isThinking) return;
+    const q = question;
+    setQuestion("");
+    setIsThinking(true);
+    setAiResponse("");
+    try {
+      const context = `Topic: ${module.title}. Notes: ${module.notes.join(", ")}`;
+      for await (const text of streamTeacherResponse(q, context)) {
+        setIsThinking(false);
+        setAiResponse((prev) => (prev || "") + text);
+      }
+    } catch (err) {
+      console.error(err);
+      setAiResponse("Oops, I lost my connection. Please try again!");
+      setIsThinking(false);
+    }
+  };
+
   const handleTeacherClick = useCallback(() => {
-    setTeacherGreeting("I'm Dr. Rao! Focus on each note on the board, then recite it back to secure 100% exam readiness.");
+    setTeacherGreeting(
+      "I'm Dr. Rao! Focus on each note on the board, then recite it back to secure 100% exam readiness.",
+    );
     const t = setTimeout(() => {
       setTeacherGreeting(null);
     }, 4500);
@@ -207,12 +292,12 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         <div className="flex items-center gap-3">
           <BrandMark size={32} />
           <div>
-          <p className="text-[0.62rem] uppercase tracking-[0.22em] text-white/60">
-            NCERT ┬╖ Class {module.grade} ┬╖ {module.subject} ┬╖ Chapter {module.chapter}
-          </p>
-          <h1 className="font-[family-name:var(--font-display)] text-xl text-white sm:text-2xl">
-            {module.title}
-          </h1>
+            <p className="text-[0.62rem] uppercase tracking-[0.22em] text-white/60">
+              NCERT · Class {module.grade} · {module.subject} · Chapter {module.chapter}
+            </p>
+            <h1 className="font-[family-name:var(--font-display)] text-xl text-white sm:text-2xl">
+              {module.title}
+            </h1>
           </div>
         </div>
         <div className="flex items-center gap-2.5">
@@ -233,7 +318,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               <CheckSealIcon size={16} />
             </span>
             Exam readiness
-            <span className={readiness >= 100 ? "text-teal-soft" : "text-royal-soft"}>{readiness}%</span>
+            <span className={readiness >= 100 ? "text-teal-soft" : "text-royal-soft"}>
+              {readiness}%
+            </span>
           </div>
           <button
             onClick={onExit}
@@ -265,7 +352,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
                   transition={{ delay: 0.25 + i * 0.35, duration: 0.5 }}
                   className="flex gap-2.5 font-[family-name:var(--font-chalk)] text-[1.05rem] leading-snug text-chalk/90"
                 >
-                  <span className="mt-1 text-teal-soft">Γùª</span>
+                  <span className="mt-1 text-teal-soft">◦</span>
                   {n}
                 </motion.li>
               ))}
@@ -286,7 +373,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
                 onClick={reciteTwice}
                 className="mt-4 inline-flex items-center gap-2 rounded-full bg-chalk px-4 py-2.5 text-sm font-medium text-[#22312d] transition-transform hover:scale-[1.02] active:scale-95"
               >
-                <TeacherIcon size={17} /> I'm ready ΓÇö start the recall test
+                <TeacherIcon size={17} /> I'm ready — start the recall test
               </button>
             )}
           </section>
@@ -310,7 +397,6 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               </span>
             </button>
           </aside>
-
         </motion.div>
         <AnimatePresence>
           {show3DPrompt && !open3D && (
@@ -326,8 +412,8 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               <span
                 className="ml-1 text-xs text-[#22312d]/50"
                 onClick={(e) => {
-                e.stopPropagation();
-                setShow3DPrompt(false);
+                  e.stopPropagation();
+                  setShow3DPrompt(false);
                 }}
               >
                 dismiss
@@ -340,9 +426,29 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       <AnimatePresence>
         {open3D && (
           <Suspense fallback={null}>
-            <ThreeDModal kind={module.threeD} title={module.threeDTitle} onClose={() => setOpen3D(false)} />
+            <ThreeDModal
+              kind={module.threeD}
+              title={module.threeDTitle}
+              onClose={() => setOpen3D(false)}
+            />
           </Suspense>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {videoMoment && (
+          <Suspense fallback={null}>
+            <VideoMoment
+              title={videoMoment.title}
+              url={videoMoment.url}
+              onClose={closeVideoMoment}
+            />
+          </Suspense>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {stage === "mastery" && <MasteryOutcome module={module} onNewTopic={onExit} />}
       </AnimatePresence>
 
       {/* AI Teacher Character Integration */}
@@ -353,21 +459,46 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               onClick={() => setShowStudioControls((v) => !v)}
               className="flex items-center gap-1.5 rounded-full border border-teal-soft/40 bg-[#18231f]/90 px-3 py-1 text-[11px] font-medium text-teal-soft shadow-lg backdrop-blur-md transition-all hover:border-teal-soft hover:bg-[#18231f]"
             >
-              <span>Γ£¿ 3D Character Studio</span>
+              <span>✨ 3D Character Studio</span>
             </button>
             <AnimatedTeacher
               key="ai-teacher-active"
-              state={customState || teacherProps.state}
-              expression={customExpression || teacherProps.expression}
-              gesture={customGesture || teacherProps.gesture}
+              state={
+                customState ||
+                (isThinking ? "thinking" : aiResponse ? "speaking" : teacherProps.state)
+              }
+              expression={customExpression || (aiResponse ? "focused" : teacherProps.expression)}
+              gesture={customGesture || (aiResponse ? "explainBothHands" : teacherProps.gesture)}
               position={customPosition}
               scale={0.88}
               gazeTarget={customGaze || teacherProps.gaze}
               pointTarget={customPoint || teacherProps.pointTarget}
-              speakingText={teacherGreeting ?? (speaking ? caption : undefined)}
-              isAudioSpeaking={speaking || !!teacherGreeting}
-              onClick={handleTeacherClick}
+              speakingText={aiResponse ?? teacherGreeting ?? (speaking ? caption : undefined)}
+              isAudioSpeaking={speaking || !!teacherGreeting || !!aiResponse}
+              onClick={aiResponse ? () => setAiResponse(null) : handleTeacherClick}
               className="cursor-pointer select-none"
+              thoughtContent={
+                <form
+                  onSubmit={handleAskTeacher}
+                  className="mt-2 flex items-center gap-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="text"
+                    placeholder="Ask Dr. Rao a question..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    className="w-full min-w-[200px] rounded-full bg-white/10 px-3 py-1.5 text-xs text-white placeholder-white/50 outline-none focus:bg-white/20"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!question.trim() || isThinking}
+                    className="rounded-full bg-teal p-1.5 text-white disabled:opacity-50"
+                  >
+                    <Sparkles size={14} />
+                  </button>
+                </form>
+              }
             />
           </div>
         ) : (
