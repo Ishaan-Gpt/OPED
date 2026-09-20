@@ -57,6 +57,19 @@ function devTeacherApiPlugin(): Plugin {
             if (!module) return sendJson(res, 502, { message: "Lesson generation failed" });
             return sendJson(res, 200, module);
           }
+          if (req.url === "/api/teacher/chat") {
+            const { streamTeacherChat } = await import("./src/lib/teacher/chat");
+            const { userPrompt, context } = (await readJsonBody(req)) as {
+              userPrompt?: string;
+              context?: string;
+            };
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "text/plain; charset=utf-8");
+            for await (const chunk of streamTeacherChat(userPrompt ?? "", context ?? "")) {
+              res.write(chunk);
+            }
+            return res.end();
+          }
         } catch (error) {
           console.error(error);
           return sendJson(res, 500, {
