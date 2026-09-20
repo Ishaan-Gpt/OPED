@@ -4,6 +4,10 @@ export const VISUAL_KINDS = [
   "atom",
   "photosynthesis",
   "graph",
+  "cell",
+  "circuit",
+  "map",
+  "equation",
   "generic",
 ] as const;
 

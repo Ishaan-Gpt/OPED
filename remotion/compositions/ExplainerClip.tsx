@@ -8,6 +8,10 @@ import { RayScene } from "./scenes/RayScene";
 import { AtomScene } from "./scenes/AtomScene";
 import { PhotosynthesisScene } from "./scenes/PhotosynthesisScene";
 import { GraphScene } from "./scenes/GraphScene";
+import { CellScene } from "./scenes/CellScene";
+import { CircuitScene } from "./scenes/CircuitScene";
+import { MapScene } from "./scenes/MapScene";
+import { EquationScene } from "./scenes/EquationScene";
 import { GenericScene } from "./scenes/GenericScene";
 
 const CHALK = "#f3f1e7";
@@ -29,6 +33,10 @@ const SCENES: Record<VisualKind, (props: SceneProps) => JSX.Element> = {
   atom: AtomScene,
   photosynthesis: PhotosynthesisScene,
   graph: GraphScene,
+  cell: CellScene,
+  circuit: CircuitScene,
+  map: MapScene,
+  equation: EquationScene,
   generic: GenericScene,
 };
 

@@ -22,13 +22,18 @@ explainer video when — and only when — the current concept is genuinely easi
 (e.g. a ray diagram, a process, a transformation) than as static text.
 
 When you trigger a video, you must also pick "visualKind" — the animated illustration the video
-will actually show. Choose the one that best matches the concept, from exactly these options:
+will actually show. Pick the closest real match, even if imperfect — only fall back to "generic"
+when truly nothing else fits, from exactly these options:
 - "reaction": a test tube with bubbling, color-changing liquid — chemical reactions, acids/bases, mixing
 - "ray": a light ray hitting a mirror and reflecting — optics, reflection, refraction, angles
 - "atom": electrons orbiting a nucleus — atomic structure, bonding, particles
 - "photosynthesis": sunlight hitting a leaf producing glucose — plant/biological processes, energy flow
-- "graph": a line graph drawing itself — equations, data trends, functions, proportional relationships
-- "generic": abstract orbiting shapes — use only if nothing else fits
+- "graph": a line graph drawing itself — data trends, proportional relationships, statistics
+- "cell": a cell membrane forming with a nucleus and organelles — cell biology, tissues, organisms
+- "circuit": a wire loop with a switch, current, and a bulb lighting up — electricity, circuits, conductors
+- "map": a region outline with a compass rose and a route/pin — geography, directions, locations, social studies
+- "equation": an algebraic equation solving step by step — algebra, solving for a variable, arithmetic rules
+- "generic": abstract orbiting shapes — last resort only
 Never invent a visualKind outside this list.
 
 Respond with ONLY compact JSON, no prose, matching one of:
