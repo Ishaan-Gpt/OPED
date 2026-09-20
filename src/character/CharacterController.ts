@@ -47,6 +47,17 @@ export const STATE_PRESETS: Record<CharacterState, StatePreset> = {
   secretTip: { expression: 'playful', gesture: 'secretTip', gaze: 'student' },
   stretch: { expression: 'relieved', gesture: 'stretch', gaze: 'up' },
   listeningEar: { expression: 'question', gesture: 'listeningEar', gaze: 'student' },
+  eureka: { expression: 'eureka', gesture: 'eureka', gaze: 'up' },
+  facepalm: { expression: 'facepalm', gesture: 'facepalm', gaze: 'down' },
+  flex: { expression: 'determined', gesture: 'flex', gaze: 'student' },
+  shushing: { expression: 'shushing', gesture: 'shushing', gaze: 'student' },
+  adjustGlasses: { expression: 'smartGlasses', gesture: 'adjustGlasses', gaze: 'student' },
+  highFive: { expression: 'excited', gesture: 'highFive', gaze: 'student' },
+  fingerGuns: { expression: 'playful', gesture: 'fingerGuns', gaze: 'student' },
+  handsOnHips: { expression: 'proud', gesture: 'handsOnHips', gaze: 'student' },
+  heartEyes: { expression: 'heartEyes', gesture: 'heartOverhead', gaze: 'student' },
+  starEyes: { expression: 'starEyes', gesture: 'cheeringRally', gaze: 'student' },
+  cheeringRally: { expression: 'excited', gesture: 'cheeringRally', gaze: 'student' },
 };
 
 export interface CharacterControllerReturn {

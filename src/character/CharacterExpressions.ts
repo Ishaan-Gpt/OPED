@@ -8,12 +8,12 @@ export interface ExpressionParams {
     rightHeight: number;
   };
   eyes: {
-    shape: 'normal' | 'happy' | 'excited' | 'curious' | 'thinking' | 'wide' | 'closed' | 'wink' | 'focused' | 'amazed';
+    shape: 'normal' | 'happy' | 'excited' | 'curious' | 'thinking' | 'wide' | 'closed' | 'wink' | 'focused' | 'amazed' | 'heart' | 'star';
     pupilOffset: { x: number; y: number };
     lidOpenness: number;
   };
   mouth: {
-    type: 'neutral' | 'smile' | 'bigSmile' | 'speaking' | 'surprised' | 'thinking' | 'concerned' | 'open' | 'gentle' | 'proud' | 'puzzled' | 'grin' | 'mindBlown';
+    type: 'neutral' | 'smile' | 'bigSmile' | 'speaking' | 'surprised' | 'thinking' | 'concerned' | 'open' | 'gentle' | 'proud' | 'puzzled' | 'grin' | 'mindBlown' | 'shush' | 'gasp' | 'smirk';
     openWidth: number;
     openHeight: number;
   };
@@ -129,5 +129,40 @@ export const EXPRESSION_PRESETS: Record<ExpressionType, ExpressionParams> = {
     eyebrows: { leftAngle: 8, rightAngle: -8, leftHeight: 2, rightHeight: 2 },
     eyes: { shape: 'focused', pupilOffset: { x: 0, y: -1 }, lidOpenness: 0.8 },
     mouth: { type: 'neutral', openWidth: 30, openHeight: 4 },
+  },
+  heartEyes: {
+    eyebrows: { leftAngle: -10, rightAngle: 10, leftHeight: -5, rightHeight: -5 },
+    eyes: { shape: 'heart', pupilOffset: { x: 0, y: 0 }, lidOpenness: 1.1 },
+    mouth: { type: 'bigSmile', openWidth: 42, openHeight: 18 },
+  },
+  starEyes: {
+    eyebrows: { leftAngle: -12, rightAngle: 12, leftHeight: -6, rightHeight: -6 },
+    eyes: { shape: 'star', pupilOffset: { x: 0, y: 0 }, lidOpenness: 1.25 },
+    mouth: { type: 'grin', openWidth: 46, openHeight: 22 },
+  },
+  eureka: {
+    eyebrows: { leftAngle: -14, rightAngle: 10, leftHeight: -6, rightHeight: -2 },
+    eyes: { shape: 'amazed', pupilOffset: { x: 0, y: -4 }, lidOpenness: 1.2 },
+    mouth: { type: 'gasp', openWidth: 30, openHeight: 18 },
+  },
+  facepalm: {
+    eyebrows: { leftAngle: 12, rightAngle: 12, leftHeight: 2, rightHeight: 2 },
+    eyes: { shape: 'closed', pupilOffset: { x: 0, y: 0 }, lidOpenness: 0.05 },
+    mouth: { type: 'concerned', openWidth: 26, openHeight: 6 },
+  },
+  sleepy: {
+    eyebrows: { leftAngle: 0, rightAngle: 0, leftHeight: 2, rightHeight: 2 },
+    eyes: { shape: 'closed', pupilOffset: { x: 0, y: 2 }, lidOpenness: 0.15 },
+    mouth: { type: 'thinking', openWidth: 22, openHeight: 6 },
+  },
+  shushing: {
+    eyebrows: { leftAngle: -4, rightAngle: 4, leftHeight: -1, rightHeight: -1 },
+    eyes: { shape: 'normal', pupilOffset: { x: 0, y: 0 }, lidOpenness: 0.95 },
+    mouth: { type: 'shush', openWidth: 14, openHeight: 10 },
+  },
+  smartGlasses: {
+    eyebrows: { leftAngle: -8, rightAngle: -2, leftHeight: -4, rightHeight: 0 },
+    eyes: { shape: 'focused', pupilOffset: { x: 2, y: -2 }, lidOpenness: 0.85 },
+    mouth: { type: 'smirk', openWidth: 32, openHeight: 8 },
   },
 };
