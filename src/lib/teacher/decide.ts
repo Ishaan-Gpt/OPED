@@ -21,6 +21,15 @@ You may either let the lesson continue as normal, or trigger a short (max 15 sec
 explainer video when — and only when — the current concept is genuinely easier to grasp in motion
 (e.g. a ray diagram, a process, a transformation) than as static text.
 
+CRITICAL: the video must be about the CURRENT NARRATION LINE specifically, not the whole chapter.
+The chapter/notes/exam-concept fields are background context only, to help you understand the
+subject — do NOT summarize all of them into one generic "full cycle" video. If the current line is
+about one narrow sub-step (e.g. just how water enters the stem), the video's title and all 4 bullets
+must stay on that one sub-step in more depth, not restate the entire process from the beginning.
+Two different narration lines in the same chapter must never produce near-identical bullets — if you
+notice your bullets would basically repeat what an earlier beat already covered, narrow your focus
+further into just this line's specific detail instead.
+
 When you trigger a video, you must also pick "visualKind" — the animated illustration the video
 will actually show. Pick the closest real match, even if imperfect — only fall back to "generic"
 when truly nothing else fits, from exactly these options:
@@ -53,11 +62,13 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
 
   const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-20b";
   const userMessage = [
+    `THE LINE TO MAKE A VIDEO ABOUT (if you decide to): "${context.currentLine}"`,
+    ``,
+    `Background context only — do not summarize all of this into the video:`,
     `Chapter: ${context.boardHeading}`,
-    `Exam concept to secure: ${context.examConcept}`,
-    `Board notes: ${context.notes.join(" | ")}`,
+    `Exam concept for the whole chapter: ${context.examConcept}`,
+    `Board notes for the whole chapter: ${context.notes.join(" | ")}`,
     `Current stage: ${context.stage}`,
-    `Current narration line: "${context.currentLine}"`,
   ].join("\n");
 
   try {
