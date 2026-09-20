@@ -128,6 +128,8 @@ Defaults are fine for our use case (short ≤15s clips), but if renders ever tim
 npx remotion lambda functions deploy --region=ap-south-1 --timeout=180
 ```
 
+**WebGL note:** the video compositions use `@remotion/effects` (the light-leak overlay), which needs a WebGL2-capable renderer. The app code already passes `chromiumOptions: { gl: "angle" }` on every render call (local and Lambda), so no extra deploy flag is needed here — just make sure you're deploying a recent enough Remotion Lambda function (this project is on 4.0.526) since ANGLE support on Lambda's software-only GPU requires a reasonably current version.
+
 ## 4. Deploy the "site" (the bundled Remotion compositions)
 
 This uploads the actual video compositions (`remotion/` folder in the repo) to S3 so Lambda can render them:

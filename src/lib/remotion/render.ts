@@ -64,6 +64,8 @@ async function renderOnLambda(brief: VideoBrief): Promise<RenderedClip> {
     inputProps: brief as unknown as Record<string, unknown>,
     codec: "h264",
     framesPerLambda: 20,
+    // @remotion/effects (lightLeak() etc.) render via WebGL2 — needs ANGLE, not the default.
+    chromiumOptions: { gl: "angle" },
   });
 
   for (;;) {
