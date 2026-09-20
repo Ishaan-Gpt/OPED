@@ -25,7 +25,12 @@ When you trigger a video, you must also pick "visualKind" — the animated illus
 will actually show. Pick the closest real match, even if imperfect — only fall back to "generic"
 when truly nothing else fits, from exactly these options:
 - "reaction": a test tube with bubbling, color-changing liquid — chemical reactions, acids/bases, mixing
-- "ray": a light ray hitting a mirror and reflecting — optics, reflection, refraction, angles
+- "ray": a flat (plane) mirror with a ray bouncing off it, angle of incidence = angle of reflection —
+  use ONLY for the general law of reflection or a plane/flat mirror, NOT for curved mirrors
+- "concaveMirror": a curved mirror where parallel rays converge through a real focus to form a real,
+  inverted image — use specifically for CONCAVE mirrors (converging mirrors)
+- "convexMirror": a curved mirror where rays diverge outward, forming a virtual, upright, smaller
+  image behind the mirror — use specifically for CONVEX mirrors (diverging mirrors)
 - "atom": electrons orbiting a nucleus — atomic structure, bonding, particles
 - "photosynthesis": sunlight hitting a leaf producing glucose — plant/biological processes, energy flow
 - "graph": a line graph drawing itself — data trends, proportional relationships, statistics

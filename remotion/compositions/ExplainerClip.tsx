@@ -5,6 +5,8 @@ import { SCENE_THEMES } from "./theme";
 import { Environment } from "./Environment";
 import { ReactionScene } from "./scenes/ReactionScene";
 import { RayScene } from "./scenes/RayScene";
+import { ConcaveMirrorScene } from "./scenes/ConcaveMirrorScene";
+import { ConvexMirrorScene } from "./scenes/ConvexMirrorScene";
 import { AtomScene } from "./scenes/AtomScene";
 import { PhotosynthesisScene } from "./scenes/PhotosynthesisScene";
 import { GraphScene } from "./scenes/GraphScene";
@@ -30,6 +32,8 @@ export interface SceneProps {
 const SCENES: Record<VisualKind, (props: SceneProps) => JSX.Element> = {
   reaction: ReactionScene,
   ray: RayScene,
+  concaveMirror: ConcaveMirrorScene,
+  convexMirror: ConvexMirrorScene,
   atom: AtomScene,
   photosynthesis: PhotosynthesisScene,
   graph: GraphScene,

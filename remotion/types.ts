@@ -1,6 +1,8 @@
 export const VISUAL_KINDS = [
   "reaction",
   "ray",
+  "concaveMirror",
+  "convexMirror",
   "atom",
   "photosynthesis",
   "graph",
