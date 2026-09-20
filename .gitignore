@@ -37,6 +37,7 @@ dist-ssr
 temp_unzip
 .amplify-hosting/
 .agents/
+.claude/
 
 # Env secrets
 .env

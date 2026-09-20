@@ -34,6 +34,8 @@ async function renderLocally(brief: VideoBrief): Promise<RenderedClip> {
     codec: "h264",
     outputLocation,
     inputProps: brief as unknown as Record<string, unknown>,
+    // @remotion/effects (lightLeak() etc.) render via WebGL2 — needs ANGLE, not the default.
+    chromiumOptions: { gl: "angle" },
   });
 
   return {
