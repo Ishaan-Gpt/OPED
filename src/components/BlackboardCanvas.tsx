@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { NcertModule } from "@/config/rules";
 import { RULES } from "@/config/rules";
 import { motionTokens } from "@/styles/designSystem";
@@ -20,6 +20,7 @@ import type {
 } from "@/character/types";
 import { DemoControls } from "@/demo/DemoControls";
 import { decideTeacherMove } from "@/lib/teacher/client";
+import type { VisualKind } from "../../remotion/types";
 import { generateLessonVideo } from "@/lib/remotion/client";
 import { streamTeacherResponse } from "@/lib/bedrock";
 import MasteryOutcome from "@/components/MasteryOutcome";
@@ -55,6 +56,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [videoMoment, setVideoMoment] = useState<{ title: string; url: string | null } | null>(
     null,
   );
+  // Which visualKinds have already been shown as a video in this lesson — a ref (not state)
+  // since it only needs to be read/appended inside consultTeacher, never trigger a re-render.
+  const usedVisualKindsRef = useRef<VisualKind[]>([]);
   const [question, setQuestion] = useState("");
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isThinking, setIsThinking] = useState(false);
@@ -87,10 +91,17 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         examConcept: module.examConcept,
         currentLine: current?.text ?? "",
         stage: "understanding",
+        usedVisualKinds: usedVisualKindsRef.current,
       });
       if (decision.action === "generate_video") {
         setSpeaking(false);
         setVideoMoment({ title: decision.videoBrief.title, url: null });
+        if (decision.videoBrief.visualKind) {
+          usedVisualKindsRef.current = [
+            ...usedVisualKindsRef.current,
+            decision.videoBrief.visualKind,
+          ];
+        }
         const clip = await generateLessonVideo(decision.videoBrief);
         setVideoMoment({ title: decision.videoBrief.title, url: clip.url });
         return;

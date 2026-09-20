@@ -1,4 +1,4 @@
-import type { VideoBrief } from "../../../remotion/types";
+import type { VideoBrief, VisualKind } from "../../../remotion/types";
 import { VISUAL_KINDS } from "../../../remotion/types";
 
 export interface TeacherContext {
@@ -8,12 +8,114 @@ export interface TeacherContext {
   /** the narration line the student is currently on */
   currentLine: string;
   stage: "understanding" | "artifact" | "recall";
+  /** visualKinds already shown as a video earlier in this same lesson — never repeat one */
+  usedVisualKinds?: VisualKind[];
 }
 
 export type TeacherDecision =
   { action: "continue" } | { action: "generate_video"; videoBrief: VideoBrief };
 
 const FALLBACK: TeacherDecision = { action: "continue" };
+
+/**
+ * Each scene's animation is a FIXED 4-beat sequence (it doesn't read the bullet text — it just
+ * plays beat 0's visual, then beat 1's, etc). So the bullets MUST describe exactly these four
+ * beats, in this order, for whichever visualKind is picked — otherwise the video's captions say
+ * one thing while the animation shows something unrelated ("literally something else").
+ */
+const CANONICAL_BEATS: Partial<Record<VisualKind, [string, string, string, string]>> = {
+  reaction: [
+    "reagent is added to the tube",
+    "liquids mix and swirl together",
+    "the mixture fizzes with bubbles",
+    "the reaction settles/completes",
+  ],
+  ray: [
+    "incident ray travels toward the mirror",
+    "ray reflects off the flat mirror",
+    "normal line and both angles are marked",
+    "angle of incidence equals angle of reflection",
+  ],
+  concaveMirror: [
+    "object is placed beyond the centre of curvature",
+    "a ray parallel to the axis reflects through the focus",
+    "a second ray through the pole confirms it",
+    "a real, inverted image forms where rays cross",
+  ],
+  convexMirror: [
+    "object is placed in front of the mirror",
+    "a ray parallel to the axis travels toward the mirror",
+    "the ray reflects outward, diverging",
+    "a virtual, upright, smaller image forms behind the mirror",
+  ],
+  prism: [
+    "a beam of white light travels toward the prism",
+    "the beam enters the prism and refracts",
+    "a VIBGYOR spectrum fans out on exit",
+    "violet bends most, red bends least",
+  ],
+  refraction: [
+    "a ray travels through the first medium toward the boundary",
+    "the ray bends toward the normal entering the denser medium",
+    "both angles (incidence and refraction) are labelled",
+    "conclusion: the ray slows down and bends toward the normal",
+  ],
+  atom: [
+    "the nucleus (protons + neutrons) is placed at the centre",
+    "the first shell (K) fills with up to 2 electrons",
+    "the second shell (L) fills with up to 8 electrons",
+    "shell capacity rule 2n² is shown",
+  ],
+  rutherfordAtom: [
+    "alpha particles are fired at a thin gold foil",
+    "most particles pass straight through empty space",
+    "a rare particle deflects sharply off the nucleus",
+    "conclusion: the nucleus is tiny, dense and positive",
+  ],
+  photosynthesis: [
+    "carbon dioxide enters the leaf through the stomata",
+    "water rises up through the stem into the leaf",
+    "sunlight is captured by chlorophyll in the leaf",
+    "glucose is produced and oxygen is released",
+  ],
+  graph: [
+    "the axes are drawn in",
+    "data points are plotted one by one",
+    "a line connects the points",
+    "the key trend/steepest section is highlighted",
+  ],
+  cell: [
+    "the cell membrane forms",
+    "the nucleus appears at the centre",
+    "organelles (mitochondria) populate the cytoplasm",
+    "the labelled parts are recapped",
+  ],
+  circuit: [
+    "the wire loop connects the components",
+    "the switch closes",
+    "current flows around the loop",
+    "the bulb lights up",
+  ],
+  map: [
+    "the region outline is drawn",
+    "the compass rose appears",
+    "a route traces across the map",
+    "a location pin drops",
+  ],
+  equation: [
+    "the original equation is shown",
+    "the first operation is applied to both sides",
+    "the equation is simplified further",
+    "the final answer is isolated and boxed",
+  ],
+};
+
+const CANONICAL_BEATS_TEXT = Object.entries(CANONICAL_BEATS)
+  .map(
+    ([kind, beats]) =>
+      `  "${kind}": beat1=${beats[0]}; beat2=${beats[1]}; beat3=${beats[2]}; beat4=${beats[3]}`,
+  )
+  .join("\n");
 
 /**
  * The model doesn't reliably follow the visualKind guidance for a few easily-confused pairs
@@ -36,14 +138,17 @@ You may either let the lesson continue as normal, or trigger a short (max 15 sec
 explainer video when — and only when — the current concept is genuinely easier to grasp in motion
 (e.g. a ray diagram, a process, a transformation) than as static text.
 
-CRITICAL: the video must be about the CURRENT NARRATION LINE specifically, not the whole chapter.
-The chapter/notes/exam-concept fields are background context only, to help you understand the
-subject — do NOT summarize all of them into one generic "full cycle" video. If the current line is
-about one narrow sub-step (e.g. just how water enters the stem), the video's title and all 4 bullets
-must stay on that one sub-step in more depth, not restate the entire process from the beginning.
-Two different narration lines in the same chapter must never produce near-identical bullets — if you
-notice your bullets would basically repeat what an earlier beat already covered, narrow your focus
-further into just this line's specific detail instead.
+CRITICAL — the animation for each visualKind is a FIXED 4-beat sequence; it does not read your
+bullets, it just plays its own 4 beats in order. Your 4 bullets MUST describe exactly those 4 beats,
+in order, for whichever visualKind you pick, or the captions will say something the animation isn't
+showing. The canonical 4 beats per visualKind are:
+${CANONICAL_BEATS_TEXT}
+Only pick a visualKind whose canonical 4-beat story is genuinely what the current line is about. If
+the current line is a narrow point that doesn't match any canonical 4-beat story below, prefer
+"continue" over forcing a mismatched video.
+
+If a visualKind is listed as ALREADY USED earlier in this lesson, do not pick it again — prefer
+"continue", or a different visualKind only if it's a genuinely better fit than reusing one.
 
 When you trigger a video, you must also pick "visualKind" — the animated illustration the video
 will actually show. Pick the closest real match, even if imperfect — only fall back to "generic"
@@ -78,7 +183,8 @@ Never invent a visualKind outside this list.
 Respond with ONLY compact JSON, no prose, matching one of:
 {"action":"continue"}
 {"action":"generate_video","videoBrief":{"title":"...","bullets":["...","...","..."],"accent":"#2f9d8b","targetSeconds":10,"visualKind":"reaction"}}
-Keep bullets short (under 12 words each), max 4 bullets, targetSeconds between 4 and 15.
+Keep bullets short (under 12 words each), exactly 4 bullets matching the 4 canonical beats above,
+targetSeconds between 4 and 15.
 Valid visualKind values: ${VISUAL_KINDS.join(", ")}.`;
 
 async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
@@ -86,6 +192,7 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
   if (!apiKey) return FALLBACK;
 
   const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-20b";
+  const usedKinds = context.usedVisualKinds ?? [];
   const userMessage = [
     `THE LINE TO MAKE A VIDEO ABOUT (if you decide to): "${context.currentLine}"`,
     ``,
@@ -94,7 +201,10 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
     `Exam concept for the whole chapter: ${context.examConcept}`,
     `Board notes for the whole chapter: ${context.notes.join(" | ")}`,
     `Current stage: ${context.stage}`,
-  ].join("\n");
+    usedKinds.length ? `ALREADY USED this lesson (do not repeat): ${usedKinds.join(", ")}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -107,7 +217,7 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
           { role: "user", content: userMessage },
         ],
         temperature: 0.4,
-        max_tokens: 600,
+        max_tokens: 700,
         response_format: { type: "json_object" },
       }),
     });
@@ -125,7 +235,10 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
       parsed.videoBrief?.bullets?.length
     ) {
       const refined = refineVisualKind(context, parsed.videoBrief) ?? "generic";
-      parsed.videoBrief.visualKind = VISUAL_KINDS.includes(refined as never) ? refined : "generic";
+      const kind = VISUAL_KINDS.includes(refined as never) ? refined : "generic";
+      // Deterministic guard: prose instructions alone don't reliably stop repeats, so enforce it.
+      if (usedKinds.includes(kind)) return FALLBACK;
+      parsed.videoBrief.visualKind = kind;
       return parsed;
     }
     if (parsed.action === "continue") return parsed;
