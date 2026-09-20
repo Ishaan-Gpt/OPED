@@ -1,4 +1,4 @@
-﻿import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import type { NcertModule } from "@/config/rules";
 import { RULES } from "@/config/rules";
@@ -50,12 +50,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
   const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
   const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
-  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
-<<<<<<< HEAD
-  const [customPosition, setCustomPosition] = useState<PositionPreset>('bottom-right');
-=======
   const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
->>>>>>> 34ffe7eef27d1334e946afc963e92f5c29764fb4
   const [videoMoment, setVideoMoment] = useState<{ title: string; url: string | null } | null>(
     null,
   );
@@ -258,19 +253,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       gaze: "student",
       pointTarget: { target: "board" },
     };
-<<<<<<< HEAD
-  }, [
-    teacherGreeting,
-    open3D,
-    stage,
-    teacherRepeat,
-    readiness,
-    speaking,
-    lineIndex,
-  ]);
-=======
   }, [teacherGreeting, open3D, stage, teacherRepeat, readiness, speaking, lineIndex]);
->>>>>>> 34ffe7eef27d1334e946afc963e92f5c29764fb4
 
   const handleAskTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -479,14 +462,10 @@ export function BlackboardCanvas({ module, onExit }: Props) {
             </button>
             <AnimatedTeacher
               key="ai-teacher-active"
-<<<<<<< HEAD
-              state={customState || (isThinking ? "thinking" : aiResponse ? "speaking" : teacherProps.state)}
-=======
               state={
                 customState ||
                 (isThinking ? "thinking" : aiResponse ? "speaking" : teacherProps.state)
               }
->>>>>>> 34ffe7eef27d1334e946afc963e92f5c29764fb4
               expression={customExpression || (aiResponse ? "focused" : teacherProps.expression)}
               gesture={customGesture || (aiResponse ? "explainBothHands" : teacherProps.gesture)}
               position={customPosition}
