@@ -8,11 +8,26 @@ This is the step-by-step guide for deploying the video-rendering side of the app
 
 ---
 
+## Architecture: this app is a static SPA, not a Node server
+
+`amplify.yml` only uploads the built `dist/` folder — there's no Node server running in production. That means the video-generation and teacher-decision logic **cannot** run as a normal backend route; it has to live somewhere the browser can call directly over HTTPS.
+
+- **`src/lib/teacher/decide.ts`** and **`src/lib/remotion/render.ts`** hold the real server-only logic (Node APIs, AWS calls). These are never imported by client code.
+- **`src/lib/teacher/client.ts`** and **`src/lib/remotion/client.ts`** are what `BlackboardCanvas.tsx` actually calls — plain `fetch("/api/teacher/decide")` / `fetch("/api/video/generate")`.
+- **In local dev**, `vite.config.ts` has a small middleware plugin (`devTeacherApiPlugin`) that serves those two `/api/...` routes directly out of `decide.ts`/`render.ts` — no AWS needed to develop locally.
+- **In production**, those two routes don't exist (static hosting). The fix: deploy `decide.ts`'s and `render.ts`'s logic as two standalone **Lambda Function URLs** — exactly the pattern already used for the chat teacher in `src/lib/bedrock.ts` (`LAMBDA_URL = "https://....lambda-url.ap-south-1.on.aws/"`). Then update `client.ts` in both files to call those URLs instead of the relative `/api/...` paths.
+
+This is the next piece of AWS work after the Lambda render setup below: wrap `decideTeacherMove`/`generateLessonVideo` in two small Lambda handlers (same shape as whatever function backs `src/lib/bedrock.ts`) and give the app team the Function URLs.
+
+---
+
 ## ⚠️ Security first
 
 A Bedrock bearer token was pasted into a chat during development (`AWS_BEARER_TOKEN_BEDROCK=ABSK...`). Treat it as **compromised**:
 
 1. In the AWS Bedrock console, revoke/regenerate that API key.
+
+**Also, as tested on 2026-09-20:** that key currently returns `400 Operation not allowed` on every `Converse` call (tried Claude 3.5 Sonnet v2 and Nova Pro, plain and cross-region `apac.` profile IDs) — consistent across all of them, meaning the IAM identity behind it isn't granted `bedrock:InvokeModel`/`bedrock:Converse`, or those models aren't enabled under **Model access** in the Bedrock console for this account/region. The Knowledge Base retrieve endpoint (`bedrock-agent-runtime`) also rejects this bearer token outright with a 403 — that API needs full AWS SigV4 credentials (access key/secret or a role), a Bedrock API key doesn't cover it. Both need fixing before the adaptive teacher will do anything beyond its safe fallback ("continue" / no grounding).
 2. Put the new value **only** in a local `.env.local` file (already gitignored — never commit it).
 3. Same rule applies to every credential below: real values go in `.env.local` or your deployment platform's secret/env-var store (Amplify Console → App settings → Environment variables), never in a committed file.
 

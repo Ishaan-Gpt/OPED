@@ -1,4 +1,3 @@
-import { createServerFn } from "@tanstack/react-start";
 import path from "node:path";
 import type { VideoBrief } from "../../../remotion/types";
 import { clampFrames } from "../../../remotion/types";
@@ -79,10 +78,13 @@ async function renderOnLambda(brief: VideoBrief): Promise<RenderedClip> {
   }
 }
 
-/** Renders a short (<=15s) explainer clip for the given brief and returns a playable URL. */
-export const generateLessonVideo = createServerFn({ method: "POST" })
-  .validator((brief: VideoBrief) => brief)
-  .handler(async ({ data }) => {
-    const target = process.env["REMOTION_RENDER_TARGET"] === "lambda" ? "lambda" : "local";
-    return target === "lambda" ? renderOnLambda(data) : renderLocally(data);
-  });
+/**
+ * Renders a short (<=15s) explainer clip for the given brief and returns a playable URL.
+ * Server-only (uses node:fs, child processes via @remotion/bundler/renderer) — called from the
+ * dev API middleware in vite.config.ts locally, and from the deployed Lambda proxy in production.
+ * Never import this from client code; use src/lib/remotion/client.ts instead.
+ */
+export async function generateLessonVideo(brief: VideoBrief): Promise<RenderedClip> {
+  const target = process.env["REMOTION_RENDER_TARGET"] === "lambda" ? "lambda" : "local";
+  return target === "lambda" ? renderOnLambda(brief) : renderLocally(brief);
+}

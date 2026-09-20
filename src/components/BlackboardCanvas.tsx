@@ -17,8 +17,8 @@ import type {
   GazeTarget,
   PointTarget,
 } from "@/character/types";
-import { decideTeacherMove } from "@/lib/teacher/decide";
-import { generateLessonVideo } from "@/lib/remotion/render";
+import { decideTeacherMove } from "@/lib/teacher/client";
+import { generateLessonVideo } from "@/lib/remotion/client";
 import { streamTeacherResponse } from "@/lib/bedrock";
 
 const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
@@ -72,18 +72,16 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     const current = lines[lineIndex];
     try {
       const decision = await decideTeacherMove({
-        data: {
-          boardHeading: module.boardHeading,
-          notes: module.notes,
-          examConcept: module.examConcept,
-          currentLine: current?.text ?? "",
-          stage: "understanding",
-        },
+        boardHeading: module.boardHeading,
+        notes: module.notes,
+        examConcept: module.examConcept,
+        currentLine: current?.text ?? "",
+        stage: "understanding",
       });
       if (decision.action === "generate_video") {
         setSpeaking(false);
         setVideoMoment({ title: decision.videoBrief.title, url: null });
-        const clip = await generateLessonVideo({ data: decision.videoBrief });
+        const clip = await generateLessonVideo(decision.videoBrief);
         setVideoMoment({ title: decision.videoBrief.title, url: clip.url });
         return;
       }

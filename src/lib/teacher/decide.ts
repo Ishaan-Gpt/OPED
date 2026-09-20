@@ -1,4 +1,3 @@
-import { createServerFn } from "@tanstack/react-start";
 import type { VideoBrief } from "../../../remotion/types";
 
 export interface TeacherContext {
@@ -111,10 +110,13 @@ async function callBedrock(
   }
 }
 
-/** The adaptive teacher's single decision point: continue narrating, or generate a short video. */
-export const decideTeacherMove = createServerFn({ method: "POST" })
-  .validator((context: TeacherContext) => context)
-  .handler(async ({ data }) => {
-    const grounding = await retrieveGrounding(`${data.boardHeading}: ${data.currentLine}`);
-    return callBedrock(data, grounding);
-  });
+/**
+ * The adaptive teacher's single decision point: continue narrating, or generate a short video.
+ * Server-only (reads AWS env vars) — called from the dev API middleware in vite.config.ts
+ * locally, and from the deployed Lambda proxy in production. Never import this from client code;
+ * use src/lib/teacher/client.ts instead.
+ */
+export async function decideTeacherMove(context: TeacherContext): Promise<TeacherDecision> {
+  const grounding = await retrieveGrounding(`${context.boardHeading}: ${context.currentLine}`);
+  return callBedrock(context, grounding);
+}
