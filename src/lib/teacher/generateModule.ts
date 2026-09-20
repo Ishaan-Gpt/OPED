@@ -73,7 +73,7 @@ export async function generateLessonModule(req: ModuleRequest): Promise<NcertMod
   const apiKey = process.env["GROQ_API_KEY"];
   if (!apiKey) return null;
 
-  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-120b";
+  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-20b";
   const userMessage = [
     `Class: ${req.grade}`,
     `Subject: ${req.subject}`,

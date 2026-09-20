@@ -41,7 +41,7 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
   const apiKey = process.env["GROQ_API_KEY"];
   if (!apiKey) return FALLBACK;
 
-  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-120b";
+  const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-20b";
   const userMessage = [
     `Chapter: ${context.boardHeading}`,
     `Exam concept to secure: ${context.examConcept}`,
