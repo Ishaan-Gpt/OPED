@@ -70,7 +70,7 @@ function isValid(x: unknown): x is GeneratedFields {
  * use src/lib/teacher/generateModuleClient.ts instead.
  */
 export async function generateLessonModule(req: ModuleRequest): Promise<NcertModule | null> {
-  const apiKey = process.env["GROQ_API_KEY"];
+  const apiKey = process.env["GROQ_API_KEY"] ?? process.env["VITE_GROQ_API_KEY"];
   if (!apiKey) return null;
 
   const model = process.env["GROQ_MODEL"] ?? "openai/gpt-oss-20b";
