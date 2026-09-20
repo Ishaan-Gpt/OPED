@@ -25,7 +25,7 @@ Keep your responses extremely concise (1-2 sentences), encouraging, and easy to 
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile", // State-of-the-art reasoning model on Groq
+      model: "openai/gpt-oss-20b",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
