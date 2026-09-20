@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { RULES, resolveQuery, suggestions, type NcertModule } from "@/config/rules";
 import { motionTokens } from "@/styles/designSystem";
 import { AlertIcon, EnterIcon, SearchIcon } from "@/components/icons";
+import { generateLessonModule } from "@/lib/teacher/generateModuleClient";
 
 export const BOARD_LAYOUT_ID = "classroom-blackboard-frame";
 
@@ -15,17 +16,35 @@ export function SearchMorph({ onLaunch }: Props) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLaunching, setIsLaunching] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    const result = resolveQuery(value);
+  const runQuery = async (query: string) => {
+    const result = resolveQuery(query);
     if (result.ok && result.module) {
       setError(null);
       setIsLaunching(true);
-      onLaunch(result.module, value);
-    } else {
-      setError(result.message ?? RULES.guidance);
+      onLaunch(result.module, query);
+      return;
     }
+    if (result.generatable) {
+      setError(null);
+      setIsGenerating(true);
+      const generated = await generateLessonModule({ ...result.generatable, topic: query });
+      setIsGenerating(false);
+      if (generated) {
+        setIsLaunching(true);
+        onLaunch(generated, query);
+        return;
+      }
+      setError("Couldn't prepare that chapter right now — try again in a moment.");
+      return;
+    }
+    setError(result.message ?? RULES.guidance);
+  };
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    void runQuery(value);
   };
 
   return (
@@ -64,13 +83,33 @@ export function SearchMorph({ onLaunch }: Props) {
             />
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-teal px-4 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] active:scale-95"
+              disabled={isGenerating}
+              className="inline-flex items-center gap-2 rounded-full bg-teal px-4 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60"
             >
-              <EnterIcon size={17} />
-              <span className="hidden sm:inline">Enter class</span>
+              {isGenerating ? (
+                <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              ) : (
+                <EnterIcon size={17} />
+              )}
+              <span className="hidden sm:inline">
+                {isGenerating ? "Preparing chapter…" : "Enter class"}
+              </span>
             </button>
           </div>
         </motion.form>
+
+        <AnimatePresence>
+          {isGenerating && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-4 text-center text-sm text-ink/50"
+            >
+              This chapter isn't pre-loaded yet — the AI teacher is writing it now, just a moment…
+            </motion.p>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {error && (
@@ -103,11 +142,7 @@ export function SearchMorph({ onLaunch }: Props) {
                 onClick={() => {
                   setValue(s);
                   setError(null);
-                  const result = resolveQuery(s);
-                  if (result.ok && result.module) {
-                    setIsLaunching(true);
-                    onLaunch(result.module, s);
-                  }
+                  void runQuery(s);
                 }}
                 className="rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-xs text-ink/65 transition-colors hover:border-teal/40 hover:text-teal"
               >
