@@ -50,9 +50,18 @@ export const NCERT_INDEX: NcertModule[] = [
     ],
     narration: [
       { text: "Open your notebook. Today we master Light — Reflection and Refraction.", hold: 3.4 },
-      { text: "Reflection: the angle of incidence is always equal to the angle of reflection.", hold: 3.8 },
-      { text: "A concave mirror converges rays to a real focus; a convex mirror diverges them.", hold: 4 },
-      { text: "Refraction happens because light changes speed when it enters a denser medium.", hold: 3.8 },
+      {
+        text: "Reflection: the angle of incidence is always equal to the angle of reflection.",
+        hold: 3.8,
+      },
+      {
+        text: "A concave mirror converges rays to a real focus; a convex mirror diverges them.",
+        hold: 4,
+      },
+      {
+        text: "Refraction happens because light changes speed when it enters a denser medium.",
+        hold: 3.8,
+      },
       { text: "Watch the ray diagram — move the object and see the image shift.", hold: 3.2 },
     ],
     artifact: "ray-slider",
@@ -80,9 +89,18 @@ export const NCERT_INDEX: NcertModule[] = [
     ],
     narration: [
       { text: "Class, today we build the atom — shell by shell.", hold: 3 },
-      { text: "Rutherford's model: nearly all mass sits in a tiny, positively charged nucleus.", hold: 4 },
-      { text: "Bohr fixed the flaw: electrons revolve only in discrete, stable orbits.", hold: 3.8 },
-      { text: "Each shell holds a maximum of 2n squared electrons — K two, L eight, M eighteen.", hold: 4.2 },
+      {
+        text: "Rutherford's model: nearly all mass sits in a tiny, positively charged nucleus.",
+        hold: 4,
+      },
+      {
+        text: "Bohr fixed the flaw: electrons revolve only in discrete, stable orbits.",
+        hold: 3.8,
+      },
+      {
+        text: "Each shell holds a maximum of 2n squared electrons — K two, L eight, M eighteen.",
+        hold: 4.2,
+      },
     ],
     artifact: "cell-labels",
     artifactTitle: "Label the shells",
@@ -137,7 +155,10 @@ export const NCERT_INDEX: NcertModule[] = [
     ],
     narration: [
       { text: "One beam of white light hides seven colours. Let's release them.", hold: 3.4 },
-      { text: "A glass prism bends each colour by a different amount — that is dispersion.", hold: 4 },
+      {
+        text: "A glass prism bends each colour by a different amount — that is dispersion.",
+        hold: 4,
+      },
       { text: "Violet bends most because its wavelength is shortest; red bends least.", hold: 4 },
     ],
     artifact: "prism-spectrum",
@@ -220,6 +241,9 @@ export interface SearchResult {
   ok: boolean;
   module?: NcertModule;
   message?: string;
+  /** present when no pre-scripted module matched but there's enough structure (class + subject)
+   * to generate one live instead of just showing the guidance message */
+  generatable?: { grade: number; subject: string; chapter: number | undefined };
 }
 
 const normalize = (s: string) =>
@@ -255,8 +279,10 @@ export function resolveQuery(raw: string): SearchResult {
     if (hit) return { ok: true, module: hit };
   }
 
-  // 2. Class + subject
-  if (grade && subject) {
+  // 2. Class + subject, no specific chapter given — only a fallback when the student didn't
+  // name a chapter at all; if they did (e.g. "chapter 12") and it's not indexed, fall through
+  // to generation instead of silently substituting a different chapter's content.
+  if (grade && subject && chapter === undefined) {
     const hit = NCERT_INDEX.find((m) => m.grade === grade && m.subject === subject);
     if (hit) return { ok: true, module: hit };
   }
@@ -265,7 +291,12 @@ export function resolveQuery(raw: string): SearchResult {
   const scored = NCERT_INDEX.map((m) => {
     let score = 0;
     if (grade === m.grade) score += 2;
-    if (normalize(m.title).split(" ").some((w) => w.length > 3 && q.includes(w))) score += 2;
+    if (
+      normalize(m.title)
+        .split(" ")
+        .some((w) => w.length > 3 && q.includes(w))
+    )
+      score += 2;
     for (const a of m.aliases) if (q.includes(normalize(a))) score += 3;
     return { m, score };
   })
@@ -274,6 +305,11 @@ export function resolveQuery(raw: string): SearchResult {
 
   const best = scored[0];
   if (best) return { ok: true, module: best.m };
+
+  // No pre-scripted chapter matches, but the query has enough structure to generate one live.
+  if (grade && grade >= RULES.grades.min && grade <= RULES.grades.max && subject) {
+    return { ok: false, generatable: { grade, subject, chapter } };
+  }
 
   return { ok: false, message: RULES.guidance };
 }

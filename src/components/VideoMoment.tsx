@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { CloseIcon } from "@/components/icons";
 
 interface Props {
@@ -10,6 +11,15 @@ interface Props {
 
 /** Full-screen adaptive explainer clip, generated on the fly by the AI teacher. */
 export function VideoMoment({ title, url, onClose }: Props) {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (url) return;
+    const start = Date.now();
+    const t = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
+    return () => clearInterval(t);
+  }, [url]);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 1.06 }}
@@ -30,7 +40,8 @@ export function VideoMoment({ title, url, onClose }: Props) {
       ) : (
         <div className="flex flex-col items-center gap-3 text-chalk/70">
           <span className="size-8 animate-spin rounded-full border-2 border-chalk/25 border-t-teal-soft" />
-          <p className="text-sm">Generating a quick explainer clip…</p>
+          <p className="text-sm">Generating a quick explainer clip… ({elapsed}s)</p>
+          <p className="text-xs text-chalk/40">Usually takes 20-40s — still working, not stuck.</p>
         </div>
       )}
 

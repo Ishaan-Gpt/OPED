@@ -38,6 +38,7 @@ temp_unzip
 img2threejs/
 .amplify-hosting/
 .agents/
+.claude/
 
 # Env secrets
 .env

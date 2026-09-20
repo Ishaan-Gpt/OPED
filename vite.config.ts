@@ -50,6 +50,13 @@ function devTeacherApiPlugin(): Plugin {
             const clip = await generateLessonVideo(brief as never);
             return sendJson(res, 200, clip);
           }
+          if (req.url === "/api/lesson/generate") {
+            const { generateLessonModule } = await import("./src/lib/teacher/generateModule");
+            const request = await readJsonBody(req);
+            const module = await generateLessonModule(request as never);
+            if (!module) return sendJson(res, 502, { message: "Lesson generation failed" });
+            return sendJson(res, 200, module);
+          }
         } catch (error) {
           console.error(error);
           return sendJson(res, 500, {
