@@ -20,9 +20,7 @@ const SCENES: Record<VisualKind, (props: { accent: string }) => JSX.Element> = {
   generic: GenericScene,
 };
 
-/** Fades a child in/out around [start, end] with a soft crossfade window. */
-function useCrossfade(start: number, end: number, fade = 10) {
-  const frame = useCurrentFrame();
+function crossfadeAt(frame: number, start: number, end: number, fade: number) {
   return interpolate(frame, [start, start + fade, end - fade, end], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -42,7 +40,7 @@ function Backdrop({ accent }: { accent: string }) {
         transform: `scale(${kenBurns}) translateX(${drift}px)`,
       }}
     >
-      {Array.from({ length: 14 }, (_, i) => {
+      {Array.from({ length: 10 }, (_, i) => {
         const seed = i * 53;
         const x = (seed % 100) + Math.sin((frame + seed) / 40) * 3;
         const y = ((seed * 7) % 100) + Math.cos((frame + seed) / 50) * 3;
@@ -57,7 +55,7 @@ function Backdrop({ accent }: { accent: string }) {
               height: 3 + (i % 3),
               borderRadius: "50%",
               background: CHALK,
-              opacity: 0.12,
+              opacity: 0.1,
             }}
           />
         );
@@ -66,7 +64,37 @@ function Backdrop({ accent }: { accent: string }) {
   );
 }
 
-/** Cinematic multi-scene explainer, driven entirely by the teacher's video brief. */
+/** Expanding ring that pulses once at the start of a beat, to draw the eye to what's changing. */
+function SignalPulse({ localFrame, accent }: { localFrame: number; accent: string }) {
+  const scale = interpolate(localFrame, [0, 22], [0.5, 1.7], { extrapolateRight: "clamp" });
+  const opacity = interpolate(localFrame, [0, 4, 22], [0, 0.55, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  if (opacity <= 0) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        margin: "auto",
+        width: "70%",
+        aspectRatio: "1",
+        borderRadius: "50%",
+        border: `2px solid ${accent}`,
+        transform: `scale(${scale})`,
+        opacity,
+      }}
+    />
+  );
+}
+
+/**
+ * Cinematic explainer driven by the teacher's video brief: a title hook, then one continuous
+ * animated illustration paced into short beats (one per bullet) — each beat gets its own caption
+ * placed right at the illustration, a signaling pulse, and a small camera punch/pan, instead of
+ * dumping all bullets on screen at once.
+ */
 export function ExplainerClip({
   title,
   bullets,
@@ -75,27 +103,50 @@ export function ExplainerClip({
 }: VideoBrief) {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
-
-  const introEnd = Math.min(45, Math.round(durationInFrames * 0.28));
-  const outroStart = durationInFrames - Math.min(55, Math.round(durationInFrames * 0.32));
   const Scene = SCENES[visualKind] ?? SCENES.generic;
 
-  const introOpacity = useCrossfade(0, introEnd);
+  const introEnd = Math.min(40, Math.round(durationInFrames * 0.24));
+  const introOpacity = crossfadeAt(frame, 0, introEnd, 10);
   const introScale = spring({ frame, fps, config: { damping: 14 } });
 
-  const visualOpacity = useCrossfade(introEnd - 10, outroStart + 10);
-  const visualScale = interpolate(frame, [introEnd, outroStart], [0.9, 1], {
+  const visualStart = introEnd - 8;
+  const visualOpacity = crossfadeAt(frame, visualStart, durationInFrames, 10);
+  const settleIn = interpolate(frame, [visualStart, visualStart + 15], [0.92, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const outroOpacity = useCrossfade(outroStart, durationInFrames);
+  const beats = (bullets.length ? bullets : [title]).slice(0, 4);
+  const beatSpan = Math.max(1, durationInFrames - visualStart);
+  const beatLen = Math.floor(beatSpan / beats.length);
+
+  const beatIndex = Math.min(beats.length - 1, Math.floor((frame - visualStart) / beatLen));
+  const beatStart = visualStart + beatIndex * beatLen;
+  const beatLocalFrame = frame - beatStart;
+  const beatEnd = beatIndex === beats.length - 1 ? durationInFrames : beatStart + beatLen;
+
+  // Quick punch-in at the start of each beat, settling back — simulates a camera cut.
+  const punch = interpolate(beatLocalFrame, [0, 6, 18], [1, 1.05, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  // Alternating pan per beat gives each one a slightly different framing.
+  const pan = interpolate(beatLocalFrame, [0, 16], [beatIndex % 2 === 0 ? -14 : 14, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const captionOpacity = crossfadeAt(frame, beatStart, beatEnd, Math.min(10, beatLen / 3));
+  const captionY = interpolate(beatLocalFrame, [0, 10], [10, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <AbsoluteFill style={{ backgroundColor: BOARD, fontFamily: '"Outfit", system-ui, sans-serif' }}>
       <Backdrop accent={accent} />
 
-      {/* Scene 1: title */}
+      {/* Hook: title */}
       <AbsoluteFill
         style={{
           alignItems: "center",
@@ -118,69 +169,66 @@ export function ExplainerClip({
         </div>
       </AbsoluteFill>
 
-      {/* Scene 2: animated illustration */}
+      {/* Continuous illustration, paced into beats */}
       <AbsoluteFill
         style={{
           alignItems: "center",
           justifyContent: "center",
           opacity: visualOpacity,
-          transform: `scale(${visualScale})`,
         }}
       >
-        <div style={{ width: "56%", maxWidth: 420, filter: `drop-shadow(0 0 30px ${accent}44)` }}>
+        <div
+          style={{
+            position: "relative",
+            width: "58%",
+            maxWidth: 440,
+            transform: `scale(${settleIn * punch}) translateX(${pan}px)`,
+            filter: `drop-shadow(0 0 30px ${accent}44)`,
+          }}
+        >
+          <SignalPulse localFrame={beatLocalFrame} accent={accent} />
           <Scene accent={accent} />
         </div>
+
         <div
           style={{
             position: "absolute",
-            bottom: "10%",
+            bottom: "14%",
             fontSize: 30,
+            fontWeight: 600,
             color: CHALK,
-            opacity: 0.9,
+            opacity: captionOpacity,
+            transform: `translateY(${captionY}px)`,
             textAlign: "center",
-            padding: "0 12%",
+            padding: "0 10%",
+            textShadow: "0 2px 12px rgba(0,0,0,0.5)",
           }}
         >
-          {bullets[0]}
+          {beats[beatIndex]}
         </div>
-      </AbsoluteFill>
 
-      {/* Scene 3: recap */}
-      <AbsoluteFill
-        style={{
-          justifyContent: "center",
-          opacity: outroOpacity,
-          padding: "0 12%",
-        }}
-      >
-        {bullets.slice(0, 4).map((bullet, i) => {
-          const localStart = outroStart + i * 8;
-          const localFrame = frame - localStart;
-          const itemOpacity = interpolate(localFrame, [0, 10], [0, 1], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-          });
-          const x = interpolate(localFrame, [0, 10], [-24, 0], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
-          });
-          return (
+        {/* Beat progress dots — shows the student how many points remain, like chapter markers */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "7%",
+            display: "flex",
+            gap: 8,
+          }}
+        >
+          {beats.map((_, i) => (
             <div
               key={i}
               style={{
-                display: "flex",
-                gap: 16,
-                alignItems: "flex-start",
-                opacity: itemOpacity,
-                transform: `translateX(${x}px)`,
-                marginBottom: 18,
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: i === beatIndex ? accent : "rgba(243,241,231,0.25)",
+                transition: "background 0.2s",
               }}
-            >
-              <span style={{ color: accent, fontSize: 28 }}>●</span>
-              <span style={{ color: CHALK, fontSize: 28, lineHeight: 1.4 }}>{bullet}</span>
-            </div>
-          );
-        })}
+            />
+          ))}
+        </div>
       </AbsoluteFill>
     </AbsoluteFill>
   );

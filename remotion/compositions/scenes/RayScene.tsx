@@ -5,12 +5,15 @@ const CHALK = "#f3f1e7";
 /** Animated ray of light hitting a mirror and reflecting off at an equal angle. */
 export function RayScene({ accent }: { accent: string }) {
   const frame = useCurrentFrame();
-  const t = interpolate(frame, [0, 35], [0, 1], { extrapolateRight: "clamp" });
+  // Loops the whole bounce every 75 frames so it keeps demonstrating on longer clips
+  // instead of freezing after the first pass.
+  const cycle = frame % 75;
+  const t = interpolate(cycle, [0, 35], [0, 1], { extrapolateRight: "clamp" });
   const mirrorX = 260;
   const hitY = 200;
   const inX = interpolate(t, [0, 1], [40, mirrorX]);
   const inY = interpolate(t, [0, 1], [60, hitY]);
-  const outT = interpolate(frame, [30, 60], [0, 1], {
+  const outT = interpolate(cycle, [30, 60], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
