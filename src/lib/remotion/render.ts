@@ -10,13 +10,24 @@ export interface RenderedClip {
 const ENTRY_POINT = path.join(process.cwd(), "remotion", "index.ts");
 const COMPOSITION_ID = "ExplainerClip";
 
+// Bundling the whole Remotion project takes several seconds and never changes between
+// requests within a running server process, so do it once and reuse it.
+let bundleLocationPromise: Promise<string> | null = null;
+
+async function getBundleLocation(): Promise<string> {
+  if (!bundleLocationPromise) {
+    const { bundle } = await import("@remotion/bundler");
+    bundleLocationPromise = bundle({ entryPoint: ENTRY_POINT });
+  }
+  return bundleLocationPromise;
+}
+
 async function renderLocally(brief: VideoBrief): Promise<RenderedClip> {
-  const { bundle } = await import("@remotion/bundler");
   const { renderMedia, selectComposition } = await import("@remotion/renderer");
   const { randomUUID } = await import("node:crypto");
   const fs = await import("node:fs");
 
-  const bundleLocation = await bundle({ entryPoint: ENTRY_POINT });
+  const bundleLocation = await getBundleLocation();
   const composition = await selectComposition({
     serveUrl: bundleLocation,
     id: COMPOSITION_ID,

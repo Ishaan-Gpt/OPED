@@ -7,7 +7,7 @@ export function LightLeakOverlay({ seed = 0, hueShift = 0 }: { seed?: number; hu
   const { durationInFrames, width, height } = useVideoConfig();
 
   return (
-    <AbsoluteFill style={{ mixBlendMode: "screen", opacity: 0.55 }}>
+    <AbsoluteFill style={{ mixBlendMode: "screen", opacity: 0.16 }}>
       <Solid
         width={width}
         height={height}

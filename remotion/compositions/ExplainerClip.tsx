@@ -133,7 +133,7 @@ export function ExplainerClip({
 
   return (
     <AbsoluteFill style={{ fontFamily: '"Outfit", system-ui, sans-serif' }}>
-      <CameraMotionBlur shutterAngle={160} samples={6}>
+      <CameraMotionBlur shutterAngle={160} samples={4}>
         <AbsoluteFill
           style={{
             perspective: 900,
