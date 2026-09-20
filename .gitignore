@@ -36,3 +36,5 @@ dist-ssr
 *.zip
 temp_unzip
 img2threejs/
+.amplify-hosting/
+.agents/

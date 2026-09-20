@@ -1,10 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "@tanstack/react-router";
+import { getRouter } from "./router";
+import "./styles.css";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const router = getRouter();
+
+const rootElement = document.getElementById("root");
+if (rootElement && !rootElement.hasAttribute("data-rendered")) {
+  rootElement.setAttribute("data-rendered", "true");
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>
+  );
+}

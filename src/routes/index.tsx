@@ -8,6 +8,7 @@ import BlackboardCanvas from "@/components/BlackboardCanvas";
 import { BrandMark, ChalkIcon } from "@/components/icons";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Chalkroom — NCERT Classes 4–10, 100% Exam Readiness" },
