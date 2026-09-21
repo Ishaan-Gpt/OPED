@@ -514,9 +514,7 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
                 strokeWidth="15"
                 strokeLinecap="round"
               />
-              <g transform="translate(54, 308)">
-                {render3DHand(boneAngles.leftHandPose, false)}
-              </g>
+              <g transform="translate(54, 308)">{render3DHand(boneAngles.leftHandPose, false)}</g>
             </motion.g>
           </motion.g>
 
@@ -559,7 +557,10 @@ export const CharacterRig: React.FC<CharacterRigProps> = ({
               rotate: boneAngles.headRotate + boneAngles.headTilt,
               y: [0, -1, 0],
             }}
-            transition={{ type: "spring", stiffness: 110, damping: 12 }}
+            transition={{
+              rotate: { type: "spring", stiffness: 110, damping: 12 },
+              y: { duration: 2.4, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
+            }}
             style={{ transformOrigin: "160px 180px" }}
           >
             <CharacterFace

@@ -9,7 +9,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // Vite only loads .env files into import.meta.env for client code, never into process.env.
 // The dev API middleware below runs in plain Node and reads process.env directly, so load it here.
-loadDotenv({ path: ".env.local" });
+loadDotenv({ path: [".env", ".env.local"] });
 
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
@@ -56,6 +56,19 @@ function devTeacherApiPlugin(): Plugin {
             const module = await generateLessonModule(request as never);
             if (!module) return sendJson(res, 502, { message: "Lesson generation failed" });
             return sendJson(res, 200, module);
+          }
+          if (req.url === "/api/teacher/chat") {
+            const { streamTeacherChat } = await import("./src/lib/teacher/chat");
+            const { userPrompt, context } = (await readJsonBody(req)) as {
+              userPrompt?: string;
+              context?: string;
+            };
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "text/plain; charset=utf-8");
+            for await (const chunk of streamTeacherChat(userPrompt ?? "", context ?? "")) {
+              res.write(chunk);
+            }
+            return res.end();
           }
         } catch (error) {
           console.error(error);

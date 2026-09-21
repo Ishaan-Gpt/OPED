@@ -5,22 +5,57 @@ import { SCENE_THEMES } from "./theme";
 import { Environment } from "./Environment";
 import { ReactionScene } from "./scenes/ReactionScene";
 import { RayScene } from "./scenes/RayScene";
+import { ConcaveMirrorScene } from "./scenes/ConcaveMirrorScene";
+import { ConvexMirrorScene } from "./scenes/ConvexMirrorScene";
+import { PrismScene } from "./scenes/PrismScene";
+import { RefractionScene } from "./scenes/RefractionScene";
 import { AtomScene } from "./scenes/AtomScene";
+import { RutherfordAtomScene } from "./scenes/RutherfordAtomScene";
 import { PhotosynthesisScene } from "./scenes/PhotosynthesisScene";
 import { GraphScene } from "./scenes/GraphScene";
+import { CellScene } from "./scenes/CellScene";
+import { CircuitScene } from "./scenes/CircuitScene";
+import { MapScene } from "./scenes/MapScene";
+import { EquationScene } from "./scenes/EquationScene";
 import { GenericScene } from "./scenes/GenericScene";
 
 const CHALK = "#f3f1e7";
 const TEAL = "#2f9d8b";
 
-const SCENES: Record<VisualKind, (props: { accent: string }) => JSX.Element> = {
+export interface SceneProps {
+  accent: string;
+  /** which beat (0-based) the narration is currently on */
+  beatIndex: number;
+  /** total number of beats in this clip */
+  beatCount: number;
+  /** frame relative to the start of the current beat */
+  beatLocalFrame: number;
+}
+
+const SCENES: Record<VisualKind, (props: SceneProps) => JSX.Element> = {
   reaction: ReactionScene,
   ray: RayScene,
+  concaveMirror: ConcaveMirrorScene,
+  convexMirror: ConvexMirrorScene,
+  prism: PrismScene,
+  refraction: RefractionScene,
   atom: AtomScene,
+  rutherfordAtom: RutherfordAtomScene,
   photosynthesis: PhotosynthesisScene,
   graph: GraphScene,
+  cell: CellScene,
+  circuit: CircuitScene,
+  map: MapScene,
+  equation: EquationScene,
   generic: GenericScene,
 };
+
+/** Deterministic small hash so each video gets its own camera "personality" instead of a fixed template. */
+function seedFrom(text: string): number {
+  let h = 0;
+  for (let i = 0; i < text.length; i++) h = (h * 31 + text.charCodeAt(i)) >>> 0;
+  return h;
+}
 
 function crossfadeAt(frame: number, start: number, end: number, fade: number) {
   return interpolate(frame, [start, start + fade, end - fade, end], [0, 1, 1, 0], {
@@ -71,18 +106,27 @@ export function ExplainerClip({
   const Scene = SCENES[visualKind] ?? SCENES.generic;
   const theme = SCENE_THEMES[visualKind] ?? SCENE_THEMES.generic;
 
+  // Every video gets its own camera "personality" derived from its title, instead of the exact
+  // same drift/zoom/pan pattern every time — noise seed offset, dolly target, tilt strength and
+  // pan direction all vary per clip so different topics don't feel like the same template reused.
+  const seed = seedFrom(title);
+  const seedOffset = seed % 1000;
+  const dollyTarget = 1.06 + ((seed >> 3) % 10) / 100; // 1.06–1.15
+  const tiltStrength = 0.6 + ((seed >> 6) % 8) / 10; // 0.6–1.3x
+  const panSign = seed % 2 === 0 ? 1 : -1;
+
   // Organic handheld camera: Perlin noise instead of perfect sine waves, so drift never
   // repeats in an obviously mechanical way. Small amplitude — a real camera operator's hand,
   // not a shake-cam.
   const t = frame / fps;
-  const handheldX = noise2D("cam-x", t * 0.35, 0) * 6;
-  const handheldY = noise2D("cam-y", t * 0.35, 50) * 4;
-  const handheldRotate = noise2D("cam-rot", t * 0.25, 100) * 0.6;
-  const tiltX = noise2D("cam-tilt-x", t * 0.2, 200) * 3;
-  const tiltY = noise2D("cam-tilt-y", t * 0.2, 300) * 4;
+  const handheldX = noise2D("cam-x", t * 0.35, seedOffset) * 6;
+  const handheldY = noise2D("cam-y", t * 0.35, seedOffset + 50) * 4;
+  const handheldRotate = noise2D("cam-rot", t * 0.25, seedOffset + 100) * 0.6;
+  const tiltX = noise2D("cam-tilt-x", t * 0.2, seedOffset + 200) * 3 * tiltStrength;
+  const tiltY = noise2D("cam-tilt-y", t * 0.2, seedOffset + 300) * 4 * tiltStrength;
 
   // Slow continuous dolly-in across the whole clip, on top of the handheld drift.
-  const dolly = interpolate(frame, [0, durationInFrames], [1, 1.1]);
+  const dolly = interpolate(frame, [0, durationInFrames], [1, dollyTarget]);
 
   const introEnd = Math.min(40, Math.round(durationInFrames * 0.24));
   const introOpacity = crossfadeAt(frame, 0, introEnd, 10);
@@ -95,8 +139,12 @@ export function ExplainerClip({
     extrapolateRight: "clamp",
   });
 
-  const beats = (bullets.length ? bullets : [title]).slice(0, 4);
+  // Beats need enough time to actually be read and understood — cramming 4 beats into a short
+  // clip makes each one flash by. Prefer fewer, longer beats over more, rushed ones.
   const beatSpan = Math.max(1, durationInFrames - visualStart);
+  const MIN_BEAT_FRAMES = 75; // 2.5s @ 30fps
+  const maxBeats = Math.max(1, Math.min(4, Math.floor(beatSpan / MIN_BEAT_FRAMES)));
+  const beats = (bullets.length ? bullets : [title]).slice(0, maxBeats);
   const beatLen = Math.floor(beatSpan / beats.length);
 
   const beatIndex = Math.min(beats.length - 1, Math.floor((frame - visualStart) / beatLen));
@@ -112,7 +160,8 @@ export function ExplainerClip({
     config: { damping: 20, stiffness: 90 },
   });
   const punch = interpolate(reframe, [0, 1], [1, 1.04]);
-  const pan = interpolate(reframe, [0, 1], [beatIndex % 2 === 0 ? -16 : 16, 0]);
+  const panDir = beatIndex % 2 === 0 ? panSign : -panSign;
+  const pan = interpolate(reframe, [0, 1], [panDir * 16, 0]);
 
   const captionOpacity = crossfadeAt(frame, beatStart, beatEnd, Math.min(10, beatLen / 3));
   const captionY = interpolate(beatLocalFrame, [0, 10], [10, 0], {
@@ -178,7 +227,12 @@ export function ExplainerClip({
             }}
           >
             <SignalPulse localFrame={beatLocalFrame} accent={accent} />
-            <Scene accent={accent} />
+            <Scene
+              accent={accent}
+              beatIndex={beatIndex}
+              beatCount={beats.length}
+              beatLocalFrame={beatLocalFrame}
+            />
           </div>
 
           {/* Lower-third broadcast-style caption, anchored to the frame rather than floating text */}
