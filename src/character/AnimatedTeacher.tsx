@@ -22,6 +22,19 @@ import { GESTURE_PRESETS } from "./CharacterGestures";
 import { calculateGaze } from "./CharacterGaze";
 import { calculatePointingAngles } from "./CharacterPointing";
 import { STATE_PRESETS } from "./CharacterController";
+import { Teacher, TeacherPose } from "../../character/src/components/classroom/Teacher";
+
+const mapStateToTeacherPose = (state?: CharacterState, gesture?: GestureType): TeacherPose => {
+  if (state === "noPeek" || gesture === "noPeek") return "nopeek";
+  if (state === "wave" || gesture === "wave") return "waving";
+  if (state === "pointing" || state === "presenting" || gesture === "pointLeft" || gesture === "pointRight" || gesture === "pointUp") return "pointing";
+  if (state === "explaining" || state === "speaking") return "explaining";
+  if (state === "thinking" || state === "question" || state === "puzzled" || state === "confused") return "thinking";
+  if (state === "celebrate" || state === "correct" || state === "proud" || state === "victory") return "celebrating";
+  if (state === "listeningEar" || state === "focused") return "listening";
+  if (state === "idle") return "idle";
+  return "teaching";
+};
 
 const POSITION_STYLES: Record<PositionPreset, string> = {
   "bottom-right": "bottom-4 right-4 md:bottom-6 md:right-8",
@@ -35,7 +48,7 @@ const POSITION_STYLES: Record<PositionPreset, string> = {
 
 export const AnimatedTeacher = forwardRef<
   TeacherRefHandle,
-  CharacterProps & { avatarStyle?: "standard" | "nft" }
+  CharacterProps & { avatarStyle?: "pulled" | "standard" | "nft" }
 >(
   (
     {
@@ -48,6 +61,7 @@ export const AnimatedTeacher = forwardRef<
       pointTarget: initialPropsPointTarget,
       speakingText,
       isAudioSpeaking: initialPropsSpeaking = false,
+      avatarStyle = "pulled",
       onAnimationComplete,
       className = "",
       showThoughtBubble,
@@ -249,6 +263,36 @@ export const AnimatedTeacher = forwardRef<
       typeof currentPosition === "object"
         ? { left: `${currentPosition.x}px`, top: `${currentPosition.y}px` }
         : {};
+
+    if (avatarStyle === "pulled") {
+      const teacherPose = mapStateToTeacherPose(activeState, activeGesture);
+      return (
+        <motion.div
+          ref={containerRef}
+          layout
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: scale }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{
+            type: "spring",
+            stiffness: 90,
+            damping: 16,
+          }}
+          className={`fixed z-30 pointer-events-auto flex flex-col items-end ${positionClass} ${className}`}
+          style={customPositionStyle}
+          onAnimationComplete={() => onAnimationComplete && onAnimationComplete(activeState)}
+        >
+          <div className="w-56 h-auto sm:w-64 relative">
+            <Teacher
+              pose={teacherPose}
+              speech={speakingText || null}
+              onPoke={onClick}
+              draggable={true}
+            />
+          </div>
+        </motion.div>
+      );
+    }
 
     return (
       <motion.div

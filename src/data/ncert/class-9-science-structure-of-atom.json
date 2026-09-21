@@ -1,0 +1,155 @@
+{
+  "id": "c9-sci-4",
+  "grade": 9,
+  "subject": "Science",
+  "chapterNumber": 4,
+  "chapterTitle": "Structure of the Atom",
+  "syllabus": "NCERT Class 9 Chemistry",
+  "summary": "Subatomic particles are electron (e⁻), proton (p⁺), and neutron (n⁰). Rutherford discovered the small, dense, positively charged nucleus using alpha-particle scattering. Bohr proposed discrete non-radiating orbits (energy levels K, L, M, N). Bohr-Bury rule states shell capacity is 2n² and outermost orbit has maximum 8 electrons. Atomic number Z = protons; Mass number A = protons + neutrons. Isotopes share Z; isobars share A.",
+  
+  "pages": [
+    {
+      "pageNumber": 1,
+      "pageType": "notes",
+      "heading": "1. Discovery of Subatomic Particles",
+      "notes": [
+        "• Dalton believed atoms were indivisible spheres, but subatomic discoveries proved internal structure.",
+        "• Electron (e⁻): Discovered by J.J. Thomson (Cathode rays), charge = -1, negligible mass.",
+        "• Proton (p⁺): Discovered by E. Goldstein (Canal rays), charge = +1, mass = 1 u.",
+        "• Neutron (n⁰): Discovered by J. Chadwick (1932), neutral charge, mass = 1 u (absent in standard Hydrogen ¹H)."
+      ],
+      "spokenLines": [
+        { "text": "Welcome to class! Today we journey into NCERT Chapter 4: Structure of the Atom.", "hold": 3.8 },
+        { "text": "For centuries, scientists believed the atom was a solid, indivisible ball.", "hold": 3.8 },
+        { "text": "That changed when Thomson discovered electrons in cathode rays, Goldstein found protons, and Chadwick discovered neutrons.", "hold": 4.5 },
+        { "text": "Let us see how these three subatomic particles are arranged inside the atom.", "hold": 3.8 }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "pageType": "video",
+      "heading": "2. Rutherford's Gold Foil Scattering Experiment",
+      "videoKind": "rutherfordAtom",
+      "videoTitle": "Rutherford Alpha Scattering Experiment",
+      "spokenLines": [
+        { "text": "Watch this animation of Rutherford firing energetic alpha particles at thin gold foil.", "hold": 4.0 },
+        { "text": "Most alpha particles pass straight through without any deflection, proving the atom is mostly empty space.", "hold": 4.2 },
+        { "text": "Suddenly, one in 12,000 particles rebounds directly backward — revealing the tiny, dense, positively charged nucleus!", "hold": 4.5 }
+      ]
+    },
+    {
+      "pageNumber": 3,
+      "pageType": "artifact",
+      "heading": "3. Interactive Shell Distribution (Bohr-Bury Rule)",
+      "artifactKind": "cell-labels",
+      "artifactTitle": "Interactive Shell Capacity & Octet Builder",
+      "spokenLines": [
+        { "text": "Now interact with the shell model on the board.", "hold": 3.2 },
+        { "text": "Bohr and Bury established that shell capacity follows two n squared: K holds two, L holds eight, M holds eighteen.", "hold": 4.5 },
+        { "text": "Remember the octet rule: the outermost valence shell can never hold more than eight electrons.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 4,
+      "pageType": "3d",
+      "heading": "4. 3D Bohr Atom: Discrete Non-Radiating Shells",
+      "threeDKind": "atom",
+      "threeDTitle": "3D Interactive Bohr Atom & Orbiting Electrons",
+      "spokenLines": [
+        { "text": "Orbit around the 3D Bohr atom model on the board.", "hold": 3.4 },
+        { "text": "At the center sits the heavy nucleus holding protons and neutrons.", "hold": 3.8 },
+        { "text": "Electrons orbit strictly in discrete energy levels K and L without radiating energy, keeping the atom stable.", "hold": 4.5 }
+      ]
+    },
+    {
+      "pageNumber": 5,
+      "pageType": "notes",
+      "heading": "5. Atomic Number, Mass Number & Isotopes",
+      "notes": [
+        "• Atomic Number (Z) = Number of Protons = Number of Electrons in neutral atom.",
+        "• Mass Number (A) = Protons + Neutrons (Nucleons).  Notation: ᴬ_Z X.",
+        "• Isotopes: Same Atomic Number (Z), Different Mass Number (A). E.g., ³⁵₁₇Cl and ³⁷₁₇Cl.",
+        "• Isobars: Same Mass Number (A), Different Atomic Number (Z). E.g., ⁴⁰₁₈Ar and ⁴⁰₂₀Ca."
+      ],
+      "spokenLines": [
+        { "text": "Here is your exam summary for atomic identities.", "hold": 3.2 },
+        { "text": "Atomic number Z tells you the protons, and Mass number A is protons plus neutrons.", "hold": 4.0 },
+        { "text": "Isotopes share the same chemical identity but differ in weight, while Isobars have the same total mass.", "hold": 4.2 }
+      ]
+    }
+  ],
+
+  "memorize": {
+    "conceptTitle": "Bohr-Bury 2n² Shell Rule & Mass Number Formula",
+    "teacherRecitationPrompt": "Student, recite the exact Bohr-Bury shell capacity formula, shell names, and the definition of mass number!",
+    "expectedRecitation": "Maximum number of electrons in a shell is given by the formula 2n squared, so K holds 2, L holds 8, M holds 18, and mass number A equals protons plus neutrons.",
+    "mustIncludeKeywords": [
+      "2n2",
+      "2n squared",
+      "shell",
+      "k=2",
+      "l=8",
+      "m=18",
+      "mass number",
+      "protons",
+      "neutrons",
+      "a = p + n"
+    ],
+    "coachingHint": "State the 2n² formula, name K=2, L=8, M=18, and state that Mass Number A = protons + neutrons."
+  },
+
+  "practice": {
+    "title": "NCERT End of Chapter Interactive Practice",
+    "questions": [
+      {
+        "id": "q1",
+        "type": "fill-in-the-blanks",
+        "question": "The maximum number of electrons that can be accommodated in the outermost orbit of an atom is _____.",
+        "correctAnswer": "8",
+        "acceptableAnswers": ["8", "eight", "octet"],
+        "explanation": "According to the Bohr-Bury scheme, the outermost orbit cannot accommodate more than 8 electrons (octet rule)."
+      },
+      {
+        "id": "q2",
+        "type": "fill-in-the-blanks",
+        "question": "Neutrons are present in the nucleus of all atoms except standard _____.",
+        "correctAnswer": "hydrogen",
+        "acceptableAnswers": ["hydrogen", "protium", "H"],
+        "explanation": "Standard hydrogen (protium, ¹H₁) has 1 proton and 0 neutrons in its nucleus."
+      },
+      {
+        "id": "q3",
+        "type": "mcq",
+        "question": "Rutherford’s alpha-particle scattering experiment led to the discovery of the:",
+        "options": [
+          "Electron",
+          "Atomic Nucleus",
+          "Proton",
+          "Neutron"
+        ],
+        "correctAnswer": "Atomic Nucleus",
+        "explanation": "The deflection of 1 in 12,000 alpha particles by 180° proved the existence of a central, concentrated, positive nucleus."
+      },
+      {
+        "id": "q4",
+        "type": "mcq",
+        "question": "Atoms with the same atomic number (Z) but different mass numbers (A) are called:",
+        "options": [
+          "Isobars",
+          "Isotopes",
+          "Isotones",
+          "Isomers"
+        ],
+        "correctAnswer": "Isotopes",
+        "explanation": "Isotopes have identical chemical properties (same atomic number/protons) but different physical masses (different neutrons)."
+      },
+      {
+        "id": "q5",
+        "type": "true-false",
+        "question": "Electrons radiating energy while revolving in discrete orbits would cause an atom to collapse.",
+        "correctAnswer": "True",
+        "explanation": "Under classical Maxwell electrodynamics an accelerating charge radiates energy. Bohr postulated that electrons in discrete orbits do not radiate energy, explaining atomic stability."
+      }
+    ]
+  }
+}

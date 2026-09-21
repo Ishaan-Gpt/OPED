@@ -156,6 +156,8 @@ export const CharacterFace: React.FC<CharacterFaceProps> = ({
     );
   };
 
+  const isMale = config.gender !== 'female';
+
   return (
     <>
       {/* 3D Head Sphere Base */}
@@ -168,21 +170,47 @@ export const CharacterFace: React.FC<CharacterFaceProps> = ({
       <ellipse cx="99" cy="132" rx="9.5" ry="13" fill="url(#skin3DGrad)" stroke="#E2A988" strokeWidth="1" />
       <ellipse cx="221" cy="132" rx="9.5" ry="13" fill="url(#skin3DGrad)" stroke="#E2A988" strokeWidth="1" />
 
-      {/* Pearl Earrings */}
-      <circle cx="95" cy="138" r="4.5" fill="url(#pearlGrad)" stroke="#E2E8F0" strokeWidth="0.8" />
-      <circle cx="93.5" cy="136.5" r="1.5" fill="#FFFFFF" />
-      <circle cx="225" cy="138" r="4.5" fill="url(#pearlGrad)" stroke="#E2E8F0" strokeWidth="0.8" />
-      <circle cx="223.5" cy="136.5" r="1.5" fill="#FFFFFF" />
+      {/* Earrings (only if female) */}
+      {!isMale && (
+        <>
+          <circle cx="95" cy="138" r="4.5" fill="url(#pearlGrad)" stroke="#E2E8F0" strokeWidth="0.8" />
+          <circle cx="93.5" cy="136.5" r="1.5" fill="#FFFFFF" />
+          <circle cx="225" cy="138" r="4.5" fill="url(#pearlGrad)" stroke="#E2E8F0" strokeWidth="0.8" />
+          <circle cx="223.5" cy="136.5" r="1.5" fill="#FFFFFF" />
+        </>
+      )}
 
-      {/* Hair Over Head */}
-      <path
-        d="M 96 130 C 88 68, 138 48, 160 48 C 190 48, 232 68, 224 130 C 214 90, 198 66, 160 68 C 124 66, 106 90, 96 130 Z"
-        fill="url(#hair3DGrad)"
-      />
-      <path
-        d="M 115 62 C 145 52, 185 58, 205 78 C 185 66, 145 66, 115 62 Z"
-        fill="url(#hairSheenGrad)"
-      />
+      {/* Hair Over Head - Smart Side-Parted Male Haircut vs Long Hair */}
+      {isMale ? (
+        <>
+          {/* Male Volumetric Side-Parted Hair */}
+          <path
+            d="M 96 122 C 86 64, 132 42, 160 42 C 192 42, 234 62, 224 122 C 218 94, 204 74, 162 76 C 122 74, 106 94, 96 122 Z"
+            fill="url(#hair3DGrad)"
+          />
+          {/* Side Hair Fade and Front Texture Quiff */}
+          <path
+            d="M 104 90 C 120 54, 175 48, 215 72 C 185 60, 135 62, 110 85 Z"
+            fill="url(#hairSheenGrad)"
+          />
+          <path
+            d="M 125 48 Q 155 42 195 56 Q 165 48 135 52 Z"
+            fill="#3B3645"
+            opacity="0.6"
+          />
+        </>
+      ) : (
+        <>
+          <path
+            d="M 96 130 C 88 68, 138 48, 160 48 C 190 48, 232 68, 224 130 C 214 90, 198 66, 160 68 C 124 66, 106 90, 96 130 Z"
+            fill="url(#hair3DGrad)"
+          />
+          <path
+            d="M 115 62 C 145 52, 185 58, 205 78 C 185 66, 145 66, 115 62 Z"
+            fill="url(#hairSheenGrad)"
+          />
+        </>
+      )}
 
       {/* Eyebrows */}
       <motion.g
@@ -193,7 +221,7 @@ export const CharacterFace: React.FC<CharacterFaceProps> = ({
         transition={{ type: 'spring', stiffness: 150, damping: 11 }}
         style={{ transformOrigin: '126px 98px' }}
       >
-        <path d="M 108 98 Q 126 88 144 96" fill="none" stroke="#18161D" strokeWidth="4.8" strokeLinecap="round" />
+        <path d="M 108 98 Q 126 88 144 96" fill="none" stroke="#18161D" strokeWidth={isMale ? "5.2" : "4.8"} strokeLinecap="round" />
       </motion.g>
 
       <motion.g
@@ -204,18 +232,18 @@ export const CharacterFace: React.FC<CharacterFaceProps> = ({
         transition={{ type: 'spring', stiffness: 150, damping: 11 }}
         style={{ transformOrigin: '194px 98px' }}
       >
-        <path d="M 176 96 Q 194 88 212 98" fill="none" stroke="#18161D" strokeWidth="4.8" strokeLinecap="round" />
+        <path d="M 176 96 Q 194 88 212 98" fill="none" stroke="#18161D" strokeWidth={isMale ? "5.2" : "4.8"} strokeLinecap="round" />
       </motion.g>
 
       {/* Eyes */}
       {renderEye(true)}
       {renderEye(false)}
 
-      {/* Cat-Eye Spectacles */}
+      {/* Spectacles (Sharp Professor Titanium Frames for Male) */}
       {config.glasses && (
-        <g stroke="#18181B" strokeWidth="3.2" fill="none">
-          <rect x="104" y="104" width="42" height="34" rx="12" />
-          <rect x="174" y="104" width="42" height="34" rx="12" />
+        <g stroke="#0F172A" strokeWidth="3.2" fill="none">
+          <rect x="104" y="104" width="42" height="34" rx={isMale ? "8" : "12"} />
+          <rect x="174" y="104" width="42" height="34" rx={isMale ? "8" : "12"} />
           <line x1="146" y1="118" x2="174" y2="118" strokeWidth="3.5" />
           <line x1="95" y1="115" x2="104" y2="117" strokeWidth="2.5" />
           <line x1="216" y1="117" x2="225" y2="115" strokeWidth="2.5" />
@@ -231,9 +259,13 @@ export const CharacterFace: React.FC<CharacterFaceProps> = ({
       {/* Mouth */}
       {renderMouth()}
 
-      {/* Cheek Blush */}
-      <ellipse cx="108" cy="144" rx="10.5" ry="6.5" fill="#FB7185" opacity="0.35" />
-      <ellipse cx="212" cy="144" rx="10.5" ry="6.5" fill="#FB7185" opacity="0.35" />
+      {/* Cheek Tone */}
+      {!isMale && (
+        <>
+          <ellipse cx="108" cy="144" rx="10.5" ry="6.5" fill="#FB7185" opacity="0.35" />
+          <ellipse cx="212" cy="144" rx="10.5" ry="6.5" fill="#FB7185" opacity="0.35" />
+        </>
+      )}
     </>
   );
 };

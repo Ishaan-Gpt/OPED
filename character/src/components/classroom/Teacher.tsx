@@ -177,6 +177,13 @@ export function Teacher({
       onTap={() => {
         if (!movedRef.current) onPoke?.();
       }}
+      style={{
+        ["--skin" as string]: "oklch(0.84 0.06 62)",
+        ["--skin-shade" as string]: "oklch(0.74 0.07 55)",
+        ["--teach-shirt" as string]: "oklch(0.62 0.12 165)",
+        ["--teach-shirt-light" as string]: "oklch(0.7 0.11 165)",
+        ["--muted-foreground" as string]: "oklch(0.554 0.046 257)",
+      }}
       className={`pointer-events-auto flex select-none flex-col items-end justify-end ${
         draggable ? "cursor-grab touch-none" : ""
       } ${className}`}
