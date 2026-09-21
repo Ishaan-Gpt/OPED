@@ -19,12 +19,19 @@ npm install
 cp .env.example .env.local
 # then edit .env.local and add GROQ_API_KEY
 
+# One-time: download the headless Chrome build Remotion renders videos with
+# (~150MB, needs internet, only has to run once per machine)
+npx remotion browser ensure
+
 # Start local dev server
 npm run dev
 
 # Build production bundle
 npm run build
 ```
+
+Node 18 or newer is required. Check with `node -v` — if it's older, update Node first
+(https://nodejs.org), everything else on this page assumes a modern Node.
 
 ## 🔑 Environment setup (required — read this if videos/AI aren't working)
 
@@ -54,6 +61,31 @@ falls back to "continue" so the app never crashes — it just quietly does nothi
 
 Everything else in `.env.example` (AWS Bedrock, Remotion Lambda) is only needed for the production
 AWS deployment path — see `REMOTION_AWS_DEPLOY.md`. Local dev only needs `GROQ_API_KEY`.
+
+### 🤖 Fastest path: paste this into your AI coding agent
+
+If you have Claude Code, Cursor, Copilot, or any other agent with terminal access, paste this
+whole block as one prompt and let it do the setup for you — it covers everything above:
+
+```
+Set up this repo to run locally with working AI video generation:
+1. Run `npm install`.
+2. Run `cp .env.example .env.local` (only if .env.local doesn't already exist).
+3. Tell me to get a free Groq API key at https://console.groq.com/keys, then open .env.local
+   and set GROQ_API_KEY=<the key I give you> (I'll paste it when you ask).
+4. Run `npx remotion browser ensure` (one-time headless Chrome download for Remotion, needs internet).
+5. Run `npm run dev` and confirm it starts cleanly on http://localhost:3000 without errors.
+6. Once it's running, verify AI decisions actually work by running this in another terminal:
+   curl -X POST http://localhost:3000/api/teacher/decide -H "Content-Type: application/json" -d "{\"boardHeading\":\"Light\",\"notes\":[\"reflection\"],\"examConcept\":\"x\",\"currentLine\":\"Watch the ray diagram.\",\"stage\":\"understanding\"}"
+   It should return JSON with "action":"generate_video" or "action":"continue" — NOT an error.
+7. Open http://localhost:3000, search "class 7 photosynthesis", and confirm a video actually
+   plays at some point during the lesson (try "class 10 science chapter 10" too if the first
+   one doesn't trigger a video — not every line triggers one, that's expected).
+Report back what worked and paste any error output verbatim if something fails.
+```
+
+No agent? Just work through the "Quick Start" and "Environment setup" sections above by hand —
+they're the same steps.
 
 ## 🧩 Character Component Usage Example
 
