@@ -44,7 +44,7 @@ export const palette = {
 
 export const typography = {
   display: '"Instrument Serif", "Fraunces", Georgia, serif',
-  script: '"Pinyon Script", cursive',
+  script: '"Alex Brush", "Great Vibes", "Parisienne", "Pinyon Script", cursive',
   body: '"DM Sans", "Outfit", system-ui, sans-serif',
   chalk: '"Caveat", "Comic Sans MS", cursive',
   mono: '"Space Mono", monospace',
