@@ -23,6 +23,7 @@ import { resolveQuery, RULES, suggestions, type NcertModule } from "@/config/rul
 import { generateLessonModule } from "@/lib/teacher/generateModuleClient";
 import BlackboardCanvas from "@/components/BlackboardCanvas";
 import AwardLoader from "@/components/AwardLoader";
+import InitialPagePreloader from "@/components/InitialPagePreloader";
 import StackSpread from "@/components/ui/stack-spread";
 import useLenis from "@/hooks/useLenis";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
@@ -263,6 +264,9 @@ function Index() {
 
   return (
     <div className="site-shell" ref={pageRef}>
+      {/* AWARDS LEVEL INITIAL PAGE ENTRY PRELOADER */}
+      <InitialPagePreloader />
+
       <header className="site-header">
         <a href="#top" className="brand" aria-label="OPED home">
           <BrandMark size={32} variant="black" />
