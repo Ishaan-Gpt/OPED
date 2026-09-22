@@ -23,7 +23,7 @@ import { resolveQuery, RULES, suggestions, type NcertModule } from "@/config/rul
 import { generateLessonModule } from "@/lib/teacher/generateModuleClient";
 import BlackboardCanvas from "@/components/BlackboardCanvas";
 import AwardLoader from "@/components/AwardLoader";
-import SitePreloader from "@/components/SitePreloader";
+import InitialPreloader from "@/components/InitialPreloader";
 import StackSpread from "@/components/ui/stack-spread";
 import useLenis from "@/hooks/useLenis";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
@@ -59,24 +59,43 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+const fadeUp = {
+  hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: "easeOut" } }
+};
+const fadeLeft = {
+  hidden: { opacity: 0, x: -30, filter: "blur(10px)" },
+  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: "easeOut" } }
+};
+const fadeRight = {
+  hidden: { opacity: 0, x: 30, filter: "blur(10px)" },
+  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: "easeOut" } }
+};
+const popIn = {
+  hidden: { opacity: 0, scale: 0.9, filter: "blur(10px)" },
+  visible: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.17, 0.55, 0.55, 1] } }
+};
+
 const subjects = [
-  { name: "Class 10 Science", topics: "Life Processes · Light · Electricity · Chemical Reactions", query: "Life Processes" },
-  { name: "Class 9 Mathematics", topics: "Number Systems · Polynomials · Coordinate Geometry", query: "Polynomials" },
-  { name: "Class 8 Science", topics: "Crop Production · Microorganisms · Force & Pressure", query: "Force and Pressure" },
-  { name: "Class 7 Mathematics", topics: "Integers · Fractions · Simple Equations · Geometry", query: "Nutrition in Plants" },
-  { name: "Classes 4–6", topics: "The World Around Us · Science · Mathematics · Social Studies", query: "Photosynthesis" },
+  { name: "Mathematics", topics: "Algebra · Geometry · Mensuration · Number Systems", query: "Algebra" },
+  { name: "Science", topics: "Physics · Chemistry · Biology", query: "Physics" },
+  { name: "Social Science", topics: "History · Geography · Civics", query: "History" },
+  { name: "English", topics: "Grammar · Comprehension · Writing", query: "Grammar" },
 ];
 
 const steps = [
-  { id: "01", label: "DELIVER", title: "Watch an idea\ncome to life.", accent: "life.", note: "The blackboard explains with words, visuals and examples. No recall demanded yet." },
-  { id: "02", label: "SENSE", title: "Now say it\nback to us.", accent: "us.", note: "Your teacher says the important line twice. Then listens to you explain it out loud." },
-  { id: "03", label: "VERIFY", title: "The idea, not\nthe exact words.", accent: "words.", note: "A hesitant half-right answer is different from a wrong one. OPED can tell." },
-  { id: "04", label: "BRANCH", title: "Didn't click?\nTry another way.", accent: "way.", note: "A new explanation meets you where you are, instead of repeating the same one louder." },
+  { id: "01", label: "ACTIVE RECALL", title: "Proof it's not\njust watching.", accent: "watching.", note: "A hesitant half-right answer is different from a wrong one. OPED can tell." },
+  { id: "02", label: "TARGETED FIXES", title: "Get matched with\nyour own gaps.", accent: "gaps.", note: "Weak concepts are flagged automatically, and a re-teach is queued. Less re-reading, more targeted fixing." },
+  { id: "03", label: "REVISION", title: "Schedule your next\nrevision pass.", accent: "pass.", note: "Before the exam catches you off guard. Add to revision plan with one click." },
 ];
 
-function Doodle({ children, direction = "right" }: { children: React.ReactNode; direction?: "right" | "left" }) {
+function Doodle({ children, direction = "right", className = "" }: { children: React.ReactNode; direction?: "right" | "left", className?: string }) {
   return (
-    <div className={`doodle doodle-${direction}`} aria-hidden="true">
+    <div className={`doodle doodle-${direction} ${className}`} aria-hidden="true">
       <span>{children}</span>
       <svg viewBox="0 0 95 50" fill="none">
         <path d="M4 6c19 11 9 29 37 23 16-3 8-23-4-13-11 9 15 25 48 17m-13-8 13 8-11 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -181,7 +200,7 @@ function BranchCard() {
   );
 }
 
-const visuals = [BlackboardCard, VoiceCard, VerifyCard, BranchCard];
+const visuals = [VoiceCard, VerifyCard, BranchCard];
 
 function Index() {
   useLenis();
@@ -191,6 +210,7 @@ function Index() {
   const [activeModule, setActiveModule] = useState<NcertModule | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeStoryStep, setActiveStoryStep] = useState(0);
   const [demoPlaying, setDemoPlaying] = useState(false);
 
   // 3D Pixar AI Teacher Controls
@@ -268,12 +288,12 @@ function Index() {
     <div className="site-shell" ref={pageRef}>
       {/* 3D SLANTED ZOOM SITE ENTRANCE PRELOADER */}
       {showPreloader && (
-        <SitePreloader onComplete={() => setShowPreloader(false)} />
+        <InitialPreloader onComplete={() => setShowPreloader(false)} />
       )}
 
       <header className="site-header">
         <a href="#top" className="brand" aria-label="OPED home">
-          <BrandMark size={32} variant="black" />
+          <BrandMark size={42} variant="black" />
           <span>OPED<span>.</span></span>
         </a>
         <button
@@ -297,11 +317,13 @@ function Index() {
             transition={{ duration: 0.6 }}
             className="hero-copy"
           >
-            <h1 className="font-serif">Learn it.<br /><span className="script-word">Prove it.</span></h1>
+            <Doodle direction="left" className="hero-doodle-1">Actually interactive</Doodle>
+            <h1 className="font-serif">An AI teacher that<br />won't let you <span className="script-word">Fake It.</span></h1>
             <p className="font-serif">Interactive NCERT chapter learning for Classes 4–10.</p>
             
             <div className="hero-search-wrap">
-              <Doodle direction="left">start anywhere</Doodle>
+              
+              <Doodle direction="right" className="hero-doodle-2">100% Free</Doodle>
               <form onSubmit={startLesson} className="hero-search" role="search">
                 <Search size={21} strokeWidth={1.5}/>
                 <input
@@ -359,96 +381,111 @@ function Index() {
               ))}
             </div>
 
-            <a href="#chapters" className="hero-scroll">SCROLL TO EXPLORE <ChevronDown size={15}/></a>
+            
           </motion.div>
         </section>
 
         {/* NCERT SUBJECTS & CHAPTER SELECTION */}
         <motion.section
           id="chapters"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-50px" }}
+          variants={staggerContainer}
           className="chapters-section content-width"
         >
-          <div className="section-heading reveal">
-            <Doodle direction="left">100% NCERT</Doodle>
-            <h2>One chapter at a time.<br /><span className="script-word">Actually understood.</span></h2>
-            <p>Classes 4 to 10. The chapters students really study, taught until they stick.</p>
-          </div>
-          <div className="subject-list">
+          <motion.div className="section-heading reveal" variants={fadeUp}>
+            <Doodle direction="left">Class 4 to 10</Doodle>
+            <motion.h2 variants={fadeUp}>Get exam-ready for<br /><span className="script-word">every Ncert chapter.</span></motion.h2>
+          </motion.div>
+          <motion.div className="subject-list" variants={staggerContainer}>
             {subjects.map((item, i) => (
-              <div
+              <motion.div
+                variants={fadeLeft}
                 className="subject-row group"
                 key={item.name}
                 onClick={() => void launchChapter(item.query)}
               >
                 <span className="subject-index">0{i + 1}</span>
-                <h3>{item.name}</h3>
-                <p>{item.topics}</p>
+                <motion.h3 variants={fadeLeft}>{item.name}</motion.h3>
+                <motion.p variants={fadeLeft}>{item.topics}</motion.p>
                 <ArrowUpRight size={18} strokeWidth={1.3} className="transition-transform group-hover:translate-x-1 group-hover:text-[var(--cyan)]" />
-              </div>
+              </motion.div>
             ))}
-          </div>
-          <p className="section-caption">BUILT FOR THE NCERT SYLLABUS. CLICK ANY SUBJECT TO START CLASSROOM LESSON.</p>
+          </motion.div>
         </motion.section>
 
         {/* CLASSROOM PHOTO SHOWCASE */}
         <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-50px" }}
+          variants={staggerContainer}
           className="classroom-section content-width"
         >
-          <div className="section-heading reveal">
-            <Doodle>no passive watch-time</Doodle>
-            <h2>Turn any screen into<br />a living <span className="script-word">Classroom.</span></h2>
-          </div>
-          <div className="classroom-photo">
+          <motion.div className="section-heading reveal" variants={fadeUp}>
+            <Doodle>no PDFs, no passive video</Doodle>
+            <motion.h2 variants={fadeUp}>Learn any chapter on an<br />immersive, all-in-one <span className="script-word">blackboard.</span></motion.h2>
+          </motion.div>
+          <motion.div className="classroom-photo" variants={popIn}>
             <img src={classroomImage} width={1536} height={1024} loading="lazy" alt="An original monochrome classroom with a large blackboard"/>
             <div className="photo-label">
               <span>THE BLACKBOARD IS THE CANVAS.</span>
               <span>TEXT / VISUALS / IDEAS</span>
             </div>
-          </div>
+          </motion.div>
         </motion.section>
 
         {/* THE OPED LOOP STORY SECTION */}
         <motion.section
           id="the-loop"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-50px" }}
+          variants={staggerContainer}
           className="story-section content-width"
         >
-          <div className="story-intro">
-            <span>THE OPED LOOP / 01—04</span>
-            <p>Information out.<br />Understanding back.</p>
-          </div>
           <div className="story-layout">
             <div className="story-left">
-              <div className="story-sticky">
+              <motion.div className="story-sticky" variants={fadeLeft}>
                 <Doodle direction="left">closes the loop</Doodle>
-                <h2>A lesson<br />that <span className="script-word">listens.</span></h2>
-                <p>Not a video that ends. Not a chatbot that waits. A lesson that responds to you.</p>
-                <div className="story-step-counter">DELIVER <span>→</span> SENSE <span>→</span> BRANCH <span>→</span> REWARD</div>
-              </div>
+                <div className="relative h-[250px] md:h-[300px]">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeStoryStep}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -30 }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                      className="absolute inset-0 pt-6"
+                    >
+                      <h2>{steps[activeStoryStep].title.split("\n")[0]}<br />
+                        <span className="script-word">
+                          {steps[activeStoryStep].title.split("\n")[1]}
+                        </span>
+                      </h2>
+                      <p className="mt-4">{steps[activeStoryStep].note}</p>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
             </div>
             <div className="story-right">
               {steps.map((step, i) => {
                 const Visual = visuals[i];
                 return (
-                  <article className="story-step" key={step.id}>
+                  <motion.article 
+                    className={`story-step ${activeStoryStep === i ? "active" : ""}`} 
+                    key={step.id} 
+                    variants={fadeRight}
+                    onViewportEnter={() => setActiveStoryStep(i)}
+                    viewport={{ margin: "-50% 0px -50% 0px" }}
+                  >
                     <div className="story-visual">{Visual && <Visual/>}</div>
                     <div className="story-step-copy">
                       <span>0{Number(step.id)} / {step.label}</span>
-                      <h3>{step.title.split("\n")[0]}<br/><em>{step.title.split("\n")[1]}</em></h3>
-                      <p>{step.note}</p>
                     </div>
-                  </article>
+                  </motion.article>
                 );
               })}
             </div>
@@ -457,19 +494,17 @@ function Index() {
 
         {/* EXAM READINESS SECTION */}
         <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-50px" }}
+          variants={staggerContainer}
           className="readiness-section content-width"
         >
-          <div className="readiness-copy reveal">
-            <Doodle>badges are dead</Doodle>
-            <h2>Not finished.<br /><span className="script-word">Ready.</span></h2>
-            <p>Every recitation helps build one honest picture: what you understand, what needs another pass, and whether you are ready for the exam.</p>
-            <span>ONE NUMBER THAT ACTUALLY MEANS SOMETHING.</span>
-          </div>
-          <div className="readiness-visual reveal">
+          <motion.div className="readiness-copy reveal" variants={fadeLeft}>
+            <Doodle>marks alone don't show what's solid</Doodle>
+            <motion.h2 variants={fadeUp}>Build a readiness score that<br /><span className="script-word text-[0.8em]">actually means something.</span></motion.h2>
+          </motion.div>
+          <motion.div className="readiness-visual reveal" variants={fadeRight}>
             <div className="readiness-header">
               <span>CHAPTER READINESS</span>
               <span>CLASS 10 / SCIENCE</span>
@@ -479,44 +514,49 @@ function Index() {
             <div className="readiness-item"><Check size={17}/><span>Photosynthesis</span><strong>UNDERSTOOD</strong></div>
             <div className="readiness-item"><Check size={17}/><span>Nutrition in humans</span><strong>UNDERSTOOD</strong></div>
             <div className="readiness-item"><span className="readiness-ring"/><span>Respiration</span><strong>ANOTHER PASS</strong></div>
-            <div className="readiness-footer">NO STREAKS. NO WATCH-TIME. JUST READINESS.</div>
-          </div>
+          </motion.div>
         </motion.section>
 
         {/* ZERO COST SECTION WITH SCROLL-TRIGGERED STACK SPREAD MOTION */}
         <StackSpread />
 
         {/* FINAL CTA SECTION */}
-        <section id="start" className="final-cta">
+        <motion.section 
+          id="start" 
+          className="final-cta"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false, margin: "-50px" }}
+          variants={staggerContainer}
+        >
           <div className="paper-curl" aria-hidden="true"/>
-          <div className="cta-content">
-            <span className="cta-kicker">YOUR NEXT CHAPTER IS WAITING.</span>
-            <h2>Start your<br /><span className="script-word">Chapter.</span></h2>
+          <motion.div className="cta-content" variants={fadeUp}>
+            <span className="cta-kicker">WE WANT YOU TO GET EXAM-READY. YOU LEARN, WE GROW.</span>
+            <motion.h2 variants={fadeUp}>Join our<br /><span className="script-word">Beta.</span></motion.h2>
             <div className="cta-search-wrap">
-              <Doodle direction="left">know that you know</Doodle>
-              <form onSubmit={startLesson} className="cta-search" role="search">
+              <Doodle direction="left">Beta Phase 2, opening soon.</Doodle>
+              <form onSubmit={(e) => { e.preventDefault(); alert("Thanks for joining the beta!"); }} className="cta-search">
                 <input
-                  aria-label="Search a chapter to start"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search a chapter (e.g. Photosynthesis)..."
+                  type="email"
+                  aria-label="Enter your email to join the beta"
+                  placeholder="Enter your email address..."
+                  required
                 />
-                <Button type="submit" aria-label="Start learning">
-                  Start learning <ArrowUpRight size={17}/>
+                <Button type="submit" aria-label="Join Beta">
+                  Join Beta <ArrowUpRight size={17}/>
                 </Button>
               </form>
             </div>
-            <span className="cta-small">FREE FOR STUDENTS. CLASSES 4—10. NCERT ONLY.</span>
-          </div>
-          <footer className="cta-footer">
+          </motion.div>
+          <motion.footer className="cta-footer" variants={fadeUp}>
             <a href="#top" className="brand">
               <BrandMark size={28} variant="white" />
               <span>OPED<span>.</span></span>
             </a>
             <span>LEARN IT. PROVE IT.</span>
             <a href="#top">BACK TO TOP ↑</a>
-          </footer>
-        </section>
+          </motion.footer>
+        </motion.section>
       </main>
 
       {/* FLOATING QUICK DOCK & MENU OVERLAY */}
