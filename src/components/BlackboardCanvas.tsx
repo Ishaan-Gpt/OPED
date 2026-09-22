@@ -31,6 +31,7 @@ import type { StudentMasteryState } from "@/lib/teacher/agentOrchestrator";
 import { calculateMastery, decideAgentNextStep } from "@/lib/teacher/agentOrchestrator";
 import { generateDynamicLessonPages } from "@/lib/teacher/dynamicSlideGenerator";
 import { speechPlayer } from "@/lib/audio/speechPlayer";
+import Experience from "@/components/Experience";
 
 interface Props {
   module: NcertModule;
@@ -121,6 +122,8 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
   const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
   const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
+  const [is3DClassroomActive, setIs3DClassroomActive] = useState<boolean>(true);
+  const boardCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const currentPage = pages[activePageIndex] ?? pages[0]!;
 
@@ -163,7 +166,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         bullets: module.notes.slice(0, 4) as [string, string, string, string],
         accent: "#2f9d8b",
         targetSeconds: 10,
-        visualKind: currentPage.videoKind,
+        visualKind: currentPage.videoKind as any,
       }).then((clip) => {
         setActiveVideoUrl(clip.url);
       });
@@ -586,12 +589,205 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     return () => clearTimeout(t);
   }, [classroomStage, masteryState, outcomeModule]);
 
+  const mainBoardCanvasElement = (
+    <motion.div
+      layoutId={BOARD_LAYOUT_ID}
+      transition={motionTokens.spring}
+      className={`board-frame relative w-full rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 ${
+        is3DClassroomActive ? "bg-[#0c1512]/95 border-2 border-[#8b5a2b] shadow-2xl" : ""
+      }`}
+    >
+      <div className="board-surface relative min-h-[400px] sm:min-h-[460px] p-6 sm:p-8 flex flex-col justify-between">
+        <AnimatePresence mode="wait">
+          {/* STAGE 1: LESSON PAGES (Notes -> Video -> Simulator -> 3D -> Summary) */}
+          {classroomStage === "lesson_pages" && currentPage && (
+            <motion.div
+              key={`page-${currentPage.pageNumber}-${currentPage.pageType}-${activePageIndex}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+              className="flex-1 flex flex-col justify-start w-full h-full"
+            >
+              {/* Page Type A: Chalk Notes */}
+              {currentPage.pageType === "notes" && (
+                <div className="flex-1 flex flex-col justify-start">
+                  <h2 className="chalk-title text-2xl sm:text-3xl text-chalk border-b border-chalk/15 pb-2.5">
+                    {currentPage.heading}
+                  </h2>
+                  <ul className="mt-5 space-y-4 flex-1">
+                    {currentPage.notes?.slice(0, visibleNotesCount).map((n, i) => (
+                      <motion.li
+                        key={n}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: i === visibleNotesCount - 1 ? 0.2 : 0 }}
+                        className="flex items-start gap-3.5 font-[family-name:var(--font-chalk)] text-[1.15rem] sm:text-[1.25rem] leading-relaxed text-chalk/90"
+                      >
+                        <span className="mt-1.5 size-2 rounded-full bg-white/70 shrink-0" />
+                        <span>{n}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Page Type B: Clean Borderless Full-Board Video with Seamless Looping */}
+              {currentPage.pageType === "video" && activeVideoUrl && (
+                <div className="flex-1 flex items-center justify-center w-full">
+                  <EmbeddedVideoPlayer
+                    title={currentPage.videoTitle || "Concept Video"}
+                    url={activeVideoUrl}
+                    loop={true}
+                  />
+                </div>
+              )}
+
+              {/* Page Type C: 2D Interactive Simulator */}
+              {currentPage.pageType === "artifact" && (
+                <div className="flex-1 flex flex-col justify-between w-full">
+                  <h3 className="chalk-title text-xl text-chalk mb-3">
+                    {currentPage.heading}
+                  </h3>
+                  <ArtifactViewer
+                    kind={currentPage.artifactKind || module.artifact}
+                    title={currentPage.artifactTitle || module.artifactTitle}
+                  />
+                </div>
+              )}
+
+              {/* Page Type D: Clean Borderless 3D Orbital Scene */}
+              {currentPage.pageType === "3d" && (
+                <div className="flex-1 flex flex-col justify-between w-full">
+                  <EmbeddedThreeDCanvas
+                    kind={currentPage.threeDKind || module.threeD}
+                    title={currentPage.threeDTitle || module.threeDTitle}
+                  />
+                </div>
+              )}
+
+              {/* Bottom Slide Action & Audio Controls */}
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handlePrevSlide}
+                    disabled={activePageIndex === 0}
+                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed border border-white/20 backdrop-blur-md text-white flex items-center gap-1 transition-all cursor-pointer"
+                  >
+                    <span>◀ Previous</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleReplayCurrentSlide}
+                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                    title="Replay explanation from Dr. Rao"
+                  >
+                    <Sparkles size={13} />
+                    <span>Replay Voice</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleNextSlide}
+                    className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                  >
+                    <span>{activePageIndex + 1 < pages.length ? "Next Concept ➔" : "Start Recitation ➔"}</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STAGE 2: MEMORIZE (ACTIVE RECALL) */}
+          {classroomStage === "memorize" && (
+            <motion.div
+              key="canvas-memorize"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col justify-center max-w-xl mx-auto w-full"
+            >
+              <div className="text-center mb-4">
+                <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-white/10 text-white border border-white/20 backdrop-blur-md">
+                  Step 2: Active Recall Recitation
+                </span>
+                <h3 className="font-[family-name:var(--font-display)] text-xl text-chalk mt-2">
+                  Recite the Core Exam Concept
+                </h3>
+              </div>
+
+              <RecitationHUD
+                module={module}
+                onReplay={startMemorizeStage}
+                onReadiness={handleRecitationReadiness}
+              />
+            </motion.div>
+          )}
+
+          {/* STAGE 3: PRACTICE (INTERACTIVE NCERT EXERCISES) */}
+          {classroomStage === "practice" && outcomeModule && (
+            <motion.div
+              key="canvas-practice"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex items-center justify-center w-full"
+            >
+              <PracticeHUD
+                practice={outcomeModule.practice}
+                onComplete={handlePracticeComplete}
+                onQuestionAnswered={handlePracticeQuestionAnswered}
+              />
+            </motion.div>
+          )}
+
+          {/* STAGE 4: CERTIFIED EXAM MASTERY */}
+          {classroomStage === "mastery" && (
+            <motion.div
+              key="canvas-mastery"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex items-center justify-center w-full"
+            >
+              <MasteryOutcome
+                module={module}
+                masteryState={masteryState}
+                onNewTopic={onExit}
+                onRetryChapter={() => {
+                  setClassroomStage("lesson_pages");
+                  setActivePageIndex(0);
+                  setCurrentLineIndex(0);
+                  setVisibleNotesCount(1);
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+
   return (
-    <div className="relative min-h-[100svh] wall-backdrop px-4 py-4 sm:px-8 flex flex-col justify-between">
+    <div className={`relative min-h-[100svh] px-4 py-4 sm:px-8 flex flex-col justify-between transition-all duration-500 overflow-hidden ${
+      is3DClassroomActive ? "bg-black" : "wall-backdrop"
+    }`}>
+      {/* FULLSCREEN 3D CLASSROOM VR VIEWPORT (Renders in background when 3D mode is toggled) */}
+      {is3DClassroomActive && (
+        <div className="fixed inset-0 w-screen h-screen z-0 pointer-events-auto">
+          <Experience isSpeaking={speaking || !!teacherGreeting}>
+            {mainBoardCanvasElement}
+          </Experience>
+        </div>
+      )}
+
       {/* Top Header & Exam Readiness */}
-      <header className="mx-auto w-full max-w-[1060px] flex items-center justify-between gap-3 pb-2.5">
+      <header className="relative z-10 mx-auto w-full max-w-[1060px] flex items-center justify-between gap-3 pb-2.5">
         <div className="flex items-center gap-3">
-          <BrandMark size={30} />
+          <BrandMark size={34} variant="white" />
           <div>
             <p className="text-[0.62rem] uppercase tracking-[0.22em] text-white/60">
               NCERT · Class {module.grade} {module.subject} · Chapter {module.chapter}
@@ -605,15 +801,15 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         {/* Multi-Page Lesson Navigator & Readiness */}
         <div className="flex items-center gap-3">
           {classroomStage === "lesson_pages" && (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/10 text-xs text-chalk/70 backdrop-blur">
-              <BookOpen className="w-3.5 h-3.5 text-teal-soft" />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs text-white backdrop-blur-md">
+              <BookOpen className="w-3.5 h-3.5 text-white/80" />
               <span>Slide {activePageIndex + 1} of {pages.length}</span>
               <div className="flex gap-1 ml-1.5">
                 {pages.map((_, i) => (
                   <span
                     key={i}
                     className={`size-1.5 rounded-full transition-all ${
-                      i === activePageIndex ? "bg-teal-soft w-3" : i < activePageIndex ? "bg-teal" : "bg-white/20"
+                      i === activePageIndex ? "bg-white w-3" : i < activePageIndex ? "bg-white/70" : "bg-white/20"
                     }`}
                   />
                 ))}
@@ -621,208 +817,55 @@ export function BlackboardCanvas({ module, onExit }: Props) {
             </div>
           )}
 
-          <div className="flex items-center gap-2 rounded-full bg-black/35 px-3.5 py-1.5 text-xs text-white/90 backdrop-blur border border-white/10">
-            <span className={masteryState.overallMasteryScore >= 70 ? "text-teal-soft" : "text-amber-400"}>
+          <div className="flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs text-white backdrop-blur-md border border-white/20">
+            <span className="text-white">
               <CheckSealIcon size={15} />
             </span>
             <span>Mastery</span>
-            <span className={`font-mono font-bold ${masteryState.overallMasteryScore >= 70 ? "text-teal-soft" : "text-amber-400"}`}>
+            <span className="font-mono font-bold text-white">
               {masteryState.overallMasteryScore}%
             </span>
           </div>
 
           <button
             type="button"
+            onClick={() => setIs3DClassroomActive((v) => !v)}
+            className={`rounded-full border px-3.5 py-1.5 text-xs hover:scale-105 cursor-pointer flex items-center gap-1.5 font-medium transition-all shadow-lg backdrop-blur-md ${
+              is3DClassroomActive
+                ? "border-white/40 bg-white/25 text-white"
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+            }`}
+          >
+            <span>{is3DClassroomActive ? "🎮 3D AI VR View" : "📝 2D Chalkmate Board"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={onExit}
-            className="rounded-full border border-white/25 px-3.5 py-1.5 text-xs text-white/80 hover:border-white/60 cursor-pointer"
+            className="rounded-full border border-white/20 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs text-white backdrop-blur-md cursor-pointer transition-all"
           >
             New topic
           </button>
         </div>
       </header>
 
-      {/* Main Omnipotent Morphing Blackboard Canvas Frame */}
-      <div className="flex-1 flex flex-col items-center justify-center my-auto w-full max-w-[1060px] mx-auto">
-        <motion.div
-          layoutId={BOARD_LAYOUT_ID}
-          transition={motionTokens.spring}
-          className="board-frame relative w-full rounded-3xl overflow-hidden shadow-2xl transition-all duration-500"
-        >
-          <div className="board-surface relative min-h-[400px] sm:min-h-[460px] p-6 sm:p-8 flex flex-col justify-between">
-            <AnimatePresence mode="wait">
-              {/* STAGE 1: LESSON PAGES (Notes -> Video -> Simulator -> 3D -> Summary) */}
-              {classroomStage === "lesson_pages" && currentPage && (
-                <motion.div
-                  key={`page-${currentPage.pageNumber}-${currentPage.pageType}-${activePageIndex}`}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.4 }}
-                  className="flex-1 flex flex-col justify-start w-full h-full"
-                >
-                  {/* Page Type A: Chalk Notes */}
-                  {currentPage.pageType === "notes" && (
-                    <div className="flex-1 flex flex-col justify-start">
-                      <h2 className="chalk-title text-2xl sm:text-3xl text-chalk border-b border-chalk/15 pb-2.5">
-                        {currentPage.heading}
-                      </h2>
-                      <ul className="mt-5 space-y-4 flex-1">
-                        {currentPage.notes?.slice(0, visibleNotesCount).map((n, i) => (
-                          <motion.li
-                            key={n}
-                            initial={{ opacity: 0, x: -12 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.4, delay: i === visibleNotesCount - 1 ? 0.2 : 0 }}
-                            className="flex items-start gap-3.5 font-[family-name:var(--font-chalk)] text-[1.15rem] sm:text-[1.25rem] leading-relaxed text-chalk/90"
-                          >
-                            <span className="mt-1.5 size-2 rounded-full bg-teal-soft shrink-0" />
-                            <span>{n}</span>
-                          </motion.li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+      {/* Main Omnipotent Morphing Blackboard Canvas Frame (Rendered in 2D mode, or floating captions overlay in 3D mode) */}
+      {!is3DClassroomActive ? (
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center my-auto w-full max-w-[1060px] mx-auto">
+          {mainBoardCanvasElement}
 
-                  {/* Page Type B: Clean Borderless Full-Board Video with Seamless Looping */}
-                  {currentPage.pageType === "video" && activeVideoUrl && (
-                    <div className="flex-1 flex items-center justify-center w-full">
-                      <EmbeddedVideoPlayer
-                        title={currentPage.videoTitle || "Concept Video"}
-                        url={activeVideoUrl}
-                        loop={true}
-                      />
-                    </div>
-                  )}
-
-                  {/* Page Type C: 2D Interactive Simulator */}
-                  {currentPage.pageType === "artifact" && (
-                    <div className="flex-1 flex flex-col justify-between w-full">
-                      <h3 className="chalk-title text-xl text-chalk mb-3">
-                        {currentPage.heading}
-                      </h3>
-                      <ArtifactViewer
-                        kind={currentPage.artifactKind || module.artifact}
-                        title={currentPage.artifactTitle || module.artifactTitle}
-                      />
-                    </div>
-                  )}
-
-                  {/* Page Type D: Clean Borderless 3D Orbital Scene */}
-                  {currentPage.pageType === "3d" && (
-                    <div className="flex-1 flex flex-col justify-between w-full">
-                      <EmbeddedThreeDCanvas
-                        kind={currentPage.threeDKind || module.threeD}
-                        title={currentPage.threeDTitle || module.threeDTitle}
-                      />
-                    </div>
-                  )}
-
-                  {/* Bottom Slide Action & Audio Controls */}
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handlePrevSlide}
-                        disabled={activePageIndex === 0}
-                        className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 disabled:opacity-30 disabled:cursor-not-allowed border border-white/10 flex items-center gap-1 transition-all cursor-pointer"
-                      >
-                        <span>◀ Previous</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleReplayCurrentSlide}
-                        className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 flex items-center gap-1.5 transition-all text-teal-soft cursor-pointer"
-                        title="Replay explanation from Dr. Rao"
-                      >
-                        <Sparkles size={13} />
-                        <span>Replay Voice</span>
-                      </button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handleNextSlide}
-                        className="px-4 py-1.5 rounded-lg bg-teal-soft/20 hover:bg-teal-soft/30 border border-teal-soft/40 text-teal-soft font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
-                      >
-                        <span>{activePageIndex + 1 < pages.length ? "Next Concept ➔" : "Start Recitation ➔"}</span>
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STAGE 2: MEMORIZE (ACTIVE RECALL) */}
-              {classroomStage === "memorize" && (
-                <motion.div
-                  key="canvas-memorize"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1 flex flex-col justify-center max-w-xl mx-auto w-full"
-                >
-                  <div className="text-center mb-4">
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-teal/20 text-teal-soft border border-teal-soft/30">
-                      Step 2: Active Recall Recitation
-                    </span>
-                    <h3 className="font-[family-name:var(--font-display)] text-xl text-chalk mt-2">
-                      Recite the Core Exam Concept
-                    </h3>
-                  </div>
-
-                  <RecitationHUD
-                    module={module}
-                    onReplay={startMemorizeStage}
-                    onReadiness={handleRecitationReadiness}
-                  />
-                </motion.div>
-              )}
-
-              {/* STAGE 3: PRACTICE (INTERACTIVE NCERT EXERCISES) */}
-              {classroomStage === "practice" && outcomeModule && (
-                <motion.div
-                  key="canvas-practice"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1 flex items-center justify-center w-full"
-                >
-                  <PracticeHUD
-                    practice={outcomeModule.practice}
-                    onComplete={handlePracticeComplete}
-                    onQuestionAnswered={handlePracticeQuestionAnswered}
-                  />
-                </motion.div>
-              )}
-
-              {/* STAGE 4: CERTIFIED EXAM MASTERY */}
-              {classroomStage === "mastery" && (
-                <motion.div
-                  key="canvas-mastery"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1 flex items-center justify-center w-full"
-                >
-                  <MasteryOutcome
-                    module={module}
-                    masteryState={masteryState}
-                    onNewTopic={onExit}
-                    onRetryChapter={() => {
-                      setClassroomStage("lesson_pages");
-                      setActivePageIndex(0);
-                      setCurrentLineIndex(0);
-                      setVisibleNotesCount(1);
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Dedicated Real-Time Word-by-Word Streaming Captions Bar Directly Below Canvas */}
+          <div className="w-full mt-3.5">
+            <CaptionsBar
+              caption={currentCaption}
+              speaking={speaking}
+              label={captionSpeaker}
+              isStudent={isStudentSpeaking}
+            />
           </div>
-        </motion.div>
-
-        {/* Dedicated Real-Time Word-by-Word Streaming Captions Bar Directly Below Canvas */}
-        <div className="w-full mt-3.5">
+        </div>
+      ) : (
+        <div className="relative z-10 w-full max-w-[1060px] mx-auto mb-2">
           <CaptionsBar
             caption={currentCaption}
             speaking={speaking}
@@ -830,7 +873,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
             isStudent={isStudentSpeaking}
           />
         </div>
-      </div>
+      )}
 
       {/* STUDENT NAME ONBOARDING POPUP MODAL */}
       <AnimatePresence>
@@ -845,37 +888,37 @@ export function BlackboardCanvas({ module, onExit }: Props) {
               initial={{ scale: 0.9, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md rounded-3xl bg-[#0e1715] border border-teal-soft/40 p-6 sm:p-8 shadow-2xl text-center flex flex-col gap-5 text-chalk"
+              className="w-full max-w-md rounded-3xl bg-zinc-900 border border-white/20 p-6 sm:p-8 shadow-2xl text-center flex flex-col gap-5 text-white backdrop-blur-xl"
             >
-              <div className="size-16 rounded-full bg-teal/20 border border-teal-soft/40 text-teal-soft mx-auto flex items-center justify-center">
+              <div className="size-16 rounded-full bg-white/10 border border-white/20 text-white mx-auto flex items-center justify-center backdrop-blur-md">
                 <TeacherIcon size={32} />
               </div>
 
               <div>
                 <h2 className="font-[family-name:var(--font-display)] text-2xl text-white">
-                  Welcome to Chalkroom!
+                  Welcome to OPED!
                 </h2>
-                <p className="text-sm text-chalk/70 mt-1.5 leading-relaxed">
+                <p className="text-sm text-white/70 mt-1.5 leading-relaxed">
                   I'm Dr. Rao, your interactive AI teacher. Before we start our blackboard lesson, what should I call you?
                 </p>
               </div>
 
               <form onSubmit={handleNameSubmit} className="flex flex-col gap-3">
                 <div className="relative">
-                  <User className="w-4 h-4 text-teal-soft absolute left-4 top-1/2 -translate-y-1/2" />
+                  <User className="w-4 h-4 text-white/70 absolute left-4 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     autoFocus
                     placeholder="Enter your name..."
                     value={nameInput}
                     onChange={(e) => setNameInput(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-black/50 border border-white/15 focus:border-teal-soft focus:ring-1 focus:ring-teal-soft text-white text-sm outline-none transition-all placeholder:text-chalk/35"
+                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-black/60 border border-white/20 focus:border-white/50 focus:ring-1 focus:ring-white/50 text-white text-sm outline-none transition-all placeholder:text-white/40"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-teal hover:bg-teal-soft text-white font-semibold text-sm transition-all shadow-lg shadow-teal/30 active:scale-95 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-all backdrop-blur-md active:scale-95 cursor-pointer shadow-lg"
                 >
                   <span>Start Classroom Lesson</span>
                   <EnterIcon size={16} />
@@ -892,10 +935,10 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         <button
           type="button"
           onClick={toggleMic}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-xl border transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md border transition-all cursor-pointer ${
             isMicActive
-              ? "bg-rose-600 border-rose-400 text-white animate-pulse shadow-rose-500/40"
-              : "bg-[#18231f]/95 border-teal-soft/40 text-teal-soft hover:bg-teal hover:text-white"
+              ? "bg-white/30 border-white/60 text-white animate-pulse"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/20"
           }`}
           title={isMicActive ? "Click to submit voice question" : "Click to speak with Dr. Rao"}
         >
@@ -916,10 +959,10 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         <button
           type="button"
           onClick={() => setIsChatOpen((v) => !v)}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-xl border transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md border transition-all cursor-pointer ${
             isChatOpen
-              ? "bg-teal border-teal-soft text-white"
-              : "bg-[#18231f]/95 border-teal-soft/40 text-teal-soft hover:bg-teal hover:text-white"
+              ? "bg-white/30 border-white/60 text-white"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/20"
           }`}
           title="Open Classroom Chat"
         >
@@ -941,9 +984,9 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         }}
       />
 
-      {/* AI Teacher Avatar in Bottom Corner (Clean without awkward bubble) */}
+      {/* AI Teacher Avatar in Bottom Corner (Hidden during 3D Classroom Mode) */}
       <AnimatePresence>
-        {isTeacherActive && (
+        {isTeacherActive && !is3DClassroomActive && (
           <div className="fixed bottom-16 right-5 z-30 pointer-events-none">
             <AnimatedTeacher
               key="ai-teacher-active"

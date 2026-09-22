@@ -286,7 +286,7 @@ export const AnimatedTeacher = forwardRef<
             <Teacher
               pose={teacherPose}
               speech={speakingText || null}
-              onPoke={onClick}
+              {...(onClick ? { onPoke: onClick } : {})}
               draggable={true}
             />
           </div>

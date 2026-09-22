@@ -3,7 +3,7 @@ import class9Atom from "./class-9-science-structure-of-atom.json";
 import class7Plants from "./class-7-science-nutrition-in-plants.json";
 import class8Light from "./class-8-science-light-dispersion.json";
 import type { ArtifactKind, ThreeDKind, NcertModule } from "../../config/rules";
-import type { VisualKind } from "../../remotion/types";
+export type VisualKind = string;
 
 export interface SpokenLine {
   text: string;
