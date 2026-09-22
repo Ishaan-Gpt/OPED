@@ -279,7 +279,10 @@ function Card({
 
   const translate = useTransform(
     [progress, pointer.x, pointer.y],
-    ([p, px, py]: number[]) => {
+    (values: number[]) => {
+      const p = values[0] ?? 0;
+      const px = values[1] ?? 0;
+      const py = values[2] ?? 0;
       const tx = stackOffset.x + (endX - stackOffset.x) * p;
       const ty = stackOffset.y + (endY - stackOffset.y) * p;
       const drift = depth * p;
