@@ -23,7 +23,7 @@ import { resolveQuery, RULES, suggestions, type NcertModule } from "@/config/rul
 import { generateLessonModule } from "@/lib/teacher/generateModuleClient";
 import BlackboardCanvas from "@/components/BlackboardCanvas";
 import AwardLoader from "@/components/AwardLoader";
-import InitialPagePreloader from "@/components/InitialPagePreloader";
+import SitePreloader from "@/components/SitePreloader";
 import StackSpread from "@/components/ui/stack-spread";
 import useLenis from "@/hooks/useLenis";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
@@ -250,6 +250,8 @@ function Index() {
   const currentTeacherGesture: GestureType = customGesture || (query ? 'pointLeft' : error ? 'thinking' : 'wave');
   const currentPointTarget: PointTarget = customPoint || { target: 'input' };
 
+  const [showPreloader, setShowPreloader] = useState(true);
+
   if (activeModule) {
     return (
       <BlackboardCanvas
@@ -264,8 +266,10 @@ function Index() {
 
   return (
     <div className="site-shell" ref={pageRef}>
-      {/* AWARDS LEVEL INITIAL PAGE ENTRY PRELOADER */}
-      <InitialPagePreloader />
+      {/* 3D SLANTED ZOOM SITE ENTRANCE PRELOADER */}
+      {showPreloader && (
+        <SitePreloader onComplete={() => setShowPreloader(false)} />
+      )}
 
       <header className="site-header">
         <a href="#top" className="brand" aria-label="OPED home">
