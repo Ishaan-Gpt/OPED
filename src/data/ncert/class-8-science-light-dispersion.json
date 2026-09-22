@@ -1,0 +1,152 @@
+{
+  "id": "c8-sci-11",
+  "grade": 8,
+  "subject": "Science",
+  "chapterNumber": 11,
+  "chapterTitle": "Light — Dispersion, Reflection & the Human Eye",
+  "syllabus": "NCERT Class 8 Physics",
+  "summary": "Light undergoes regular reflection on smooth surfaces and diffused reflection on rough surfaces. Splitting of white light into its component colors (VIBGYOR) through a glass prism is dispersion (violet bends most, red least). Multiple reflections in mirrors generate kaleidoscopic patterns. The human eye uses cornea, iris, pupil, convex lens, and retina (rods for dim light, cones for bright light and color) with persistence of vision lasting 1/16th second.",
+  
+  "pages": [
+    {
+      "pageNumber": 1,
+      "pageType": "notes",
+      "heading": "1. Reflection of Light & Regular vs Diffused",
+      "notes": [
+        "• Law of Reflection: Angle of incidence equals angle of reflection (∠i = ∠r).",
+        "• Regular Reflection: Occurs from polished smooth surfaces (mirrors) producing sharp images.",
+        "• Diffused Reflection: Occurs from uneven rough surfaces, scattering parallel rays in multiple directions.",
+        "• Multiple Reflection: Mirrors at angle θ form n = (360°/θ) - 1 images (used in Kaleidoscopes)."
+      ],
+      "spokenLines": [
+        { "text": "Welcome to class! Today we explore NCERT Chapter 11: Light, Dispersion and the Human Eye.", "hold": 3.8 },
+        { "text": "When parallel light strikes a flat smooth mirror, it reflects regularly with angle i equal to angle r.", "hold": 4.2 },
+        { "text": "When two mirrors are placed at an angle, multiple reflections create symmetric kaleidoscopic geometry.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "pageType": "video",
+      "heading": "2. Dispersion of White Light into VIBGYOR",
+      "videoKind": "prism",
+      "videoTitle": "Dispersion of White Light through a Prism",
+      "spokenLines": [
+        { "text": "Watch this beam of pure white sunlight enter a triangular glass prism.", "hold": 3.6 },
+        { "text": "Because different wavelengths travel at different speeds inside glass, the single beam fans out into seven colors: VIBGYOR.", "hold": 4.5 },
+        { "text": "Violet light has the shortest wavelength and bends the most, while red light bends the least.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 3,
+      "pageType": "artifact",
+      "heading": "3. Interactive Prism Incident Angle Simulator",
+      "artifactKind": "prism-spectrum",
+      "artifactTitle": "Interactive Prism & Spectrum Angle Simulator",
+      "spokenLines": [
+        { "text": "Interact with the prism ray on the board.", "hold": 3.0 },
+        { "text": "Adjust the angle of incidence and watch how the angular deviation of the rainbow spectrum shifts in real time.", "hold": 4.5 },
+        { "text": "This exact phenomenon inside atmospheric raindrops creates a natural rainbow in the sky.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 4,
+      "pageType": "3d",
+      "heading": "4. 3D Optical Glass Prism",
+      "threeDKind": "solid",
+      "threeDTitle": "3D Interactive Triangular Glass Prism",
+      "spokenLines": [
+        { "text": "Orbit around the 3D optical prism on the board.", "hold": 3.2 },
+        { "text": "Observe the two triangular refracting bases and three rectangular lateral faces.", "hold": 4.0 },
+        { "text": "The angle between its two lateral faces is the Angle of Prism, causing the double refraction.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 5,
+      "pageType": "notes",
+      "heading": "5. Human Eye Anatomy & Photoreceptors",
+      "notes": [
+        "• Cornea & Iris: Cornea admits light; Iris muscles control the aperture size of the pupil.",
+        "• Ciliary Muscles & Lens: Adjusts the focal length of the crystalline lens to focus near/far objects.",
+        "• Retina Screen: Contains Cones (sensitive to bright light & colors) and Rods (sensitive to dim light).",
+        "• Persistence of Vision: Impression of an image lingers on the retina for ~1/16th of a second."
+      ],
+      "spokenLines": [
+        { "text": "Here is your exam summary for the human eye.", "hold": 3.2 },
+        { "text": "Cones perceive daytime color while Rods manage low-light vision.", "hold": 3.8 },
+        { "text": "And persistence of vision holds every visual frame for one sixteenth of a second on your retina.", "hold": 4.2 }
+      ]
+    }
+  ],
+
+  "memorize": {
+    "conceptTitle": "Dispersion of Light, VIBGYOR & Refractive Bending Rules",
+    "teacherRecitationPrompt": "Student, recite the exact definition of dispersion, the acronym VIBGYOR, and compare the bending of violet versus red light!",
+    "expectedRecitation": "Dispersion is the splitting of white light into its seven constituent colours known as VIBGYOR, where violet light bends the most and red light bends the least.",
+    "mustIncludeKeywords": [
+      "dispersion",
+      "splitting",
+      "white light",
+      "seven colours",
+      "vibgyor",
+      "violet bends most",
+      "red bends least",
+      "prism"
+    ],
+    "coachingHint": "Define dispersion, list the seven colors as VIBGYOR, and state clearly that violet bends most and red bends least."
+  },
+
+  "practice": {
+    "title": "NCERT End of Chapter Interactive Practice",
+    "questions": [
+      {
+        "id": "q1",
+        "type": "fill-in-the-blanks",
+        "question": "The splitting of white light into its constituent seven colours upon passing through a prism is called _____.",
+        "correctAnswer": "dispersion",
+        "acceptableAnswers": ["dispersion", "dispersion of light"],
+        "explanation": "Dispersion occurs because different wavelengths of light experience different refractive indices and speeds inside glass."
+      },
+      {
+        "id": "q2",
+        "type": "fill-in-the-blanks",
+        "question": "The impression of an image persists on the human retina for approximately 1 / _____ of a second.",
+        "correctAnswer": "16",
+        "acceptableAnswers": ["16", "sixteen", "1/16", "16th"],
+        "explanation": "Persistence of vision is ~1/16th second, which allows still frames shown faster than 16 fps to be perceived as continuous motion."
+      },
+      {
+        "id": "q3",
+        "type": "mcq",
+        "question": "Which photoreceptors on the retina are responsible for color vision in bright daylight?",
+        "options": [
+          "Rods",
+          "Cones",
+          "Ciliary muscles",
+          "Cornea"
+        ],
+        "correctAnswer": "Cones",
+        "explanation": "Cones are cone-shaped retinal cells sensitive to bright illumination and color perception (red, green, blue cones)."
+      },
+      {
+        "id": "q4",
+        "type": "mcq",
+        "question": "Two plane mirrors placed perpendicular to each other (at 90°) will form how many images of an object?",
+        "options": [
+          "2",
+          "3",
+          "4",
+          "Infinite"
+        ],
+        "correctAnswer": "3",
+        "explanation": "Number of images n = (360° / 90°) - 1 = 4 - 1 = 3 images."
+      },
+      {
+        "id": "q5",
+        "type": "true-false",
+        "question": "In the visible light spectrum produced by a prism, red light has a shorter wavelength and bends more than violet light.",
+        "correctAnswer": "False",
+        "explanation": "Red light has the longest wavelength and bends the least; violet light has the shortest wavelength and bends the most."
+      }
+    ]
+  }
+}

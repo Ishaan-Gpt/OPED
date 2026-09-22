@@ -15,20 +15,17 @@ const base = ({ size = 20, ...rest }: IconProps) => ({
   ...rest,
 });
 
-export function BrandMark({ size = 36, ...rest }: IconProps) {
+export function BrandMark({ size = 36, variant = "auto", className = "" }: { size?: number; variant?: "black" | "white" | "auto"; className?: string }) {
+  const src = variant === "white" ? "/logo-white.png" : "/logo-black.png";
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" {...rest}>
-      <rect x="3" y="8" width="42" height="30" rx="5" fill="#6b4228" />
-      <rect x="6.5" y="11.5" width="35" height="23" rx="3" fill="#22312d" />
-      <path
-        d="M13 27c3.2-6.6 6-6.6 9.2 0 3.2 6.6 6 6.6 9.2 0"
-        stroke="#f3f1e7"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-      />
-      <circle cx="35.5" cy="17" r="2.4" fill="#2f9d8b" />
-      <path d="M17 41h14" stroke="#9e1b32" strokeWidth="2.6" strokeLinecap="round" />
-    </svg>
+    <img
+      src={src}
+      alt="OPED Logo"
+      width={size}
+      height={size}
+      style={{ width: size, height: size }}
+      className={`object-contain rounded-full ${className}`}
+    />
   );
 }
 

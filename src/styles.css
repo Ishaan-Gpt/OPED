@@ -5,17 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * Monochrome Design System Definition.
+ * Pure Black & White with Grayscale Tints, Shades and Glassmorphic Elements.
  */
 
 @theme inline {
@@ -45,91 +36,29 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.09 0 0);
+  --card: oklch(0.98 0 0);
+  --card-foreground: oklch(0.09 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
-}
-
-.dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --popover-foreground: oklch(0.09 0 0);
+  --primary: oklch(0.09 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0 0);
+  --secondary-foreground: oklch(0.09 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.09 0 0);
+  --destructive: oklch(0.20 0 0);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0 0 0 / 12%);
+  --input: oklch(0 0 0 / 15%);
+  --ring: oklch(0.20 0 0);
 }
 
 @layer base {
@@ -138,28 +67,30 @@
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: #ffffff;
+    color: #09090b;
+    font-family: var(--font-body);
   }
 }
 
-/* ── Chalkroom design system ───────────────────────────────────────── */
+/* ── White Major Monochrome Glass Design System ───────────────────────── */
 :root {
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Outfit", system-ui, sans-serif;
   --font-chalk: "Caveat", "Comic Sans MS", cursive;
 
-  --royal: #9e1b32;
-  --royal-soft: #d4697c;
-  --teal: #0f6b5f;
-  --teal-soft: #2f9d8b;
-  --earth: #6b4228;
-  --earth-light: #9a6b41;
-  --earth-dark: #3f2a19;
-  --board: #22312d;
-  --board-deep: #18231f;
-  --chalk: #f3f1e7;
-  --ink: #1b1917;
+  /* White Major & Chalk Board Contrast Palette */
+  --royal: #09090b;
+  --royal-soft: #3f3f46;
+  --teal: #09090b;
+  --teal-soft: #27272a;
+  --earth: #ffffff;
+  --earth-light: #f4f4f5;
+  --earth-dark: #e4e4e7;
+  --board: #09090b;
+  --board-deep: #000000;
+  --chalk: #ffffff;
+  --ink: #09090b;
 }
 
 @theme inline {
@@ -175,50 +106,56 @@
   --font-sans: var(--font-body);
 }
 
-body {
-  font-family: var(--font-body);
+/* Glassy Transparent Button Class with White Tint */
+.glass-btn, button {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 @utility tactile-card {
   box-shadow:
-    0 1px 2px rgba(27, 25, 23, 0.06),
-    0 18px 40px -22px rgba(27, 25, 23, 0.3);
-  border: 1px solid rgba(27, 25, 23, 0.07);
+    0 4px 20px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
 }
 
-/* Warm classroom wall */
+/* Clean White / Slate Major Backdrop */
 @utility wall-backdrop {
   background:
-    radial-gradient(120% 90% at 50% -10%, rgba(255, 244, 226, 0.45), transparent 60%),
-    linear-gradient(180deg, #c8ab88 0%, #b1916f 45%, #97785a 100%);
+    radial-gradient(120% 90% at 50% -10%, rgba(255, 255, 255, 1), transparent 70%),
+    linear-gradient(180deg, #ffffff 0%, #f4f4f5 50%, #e4e4e7 100%);
   position: relative;
 }
 
-/* Warm earth-brown wooden frame */
+/* Glassy White/Dark Board Frame */
 @utility board-frame {
   padding: 14px;
   border-radius: 26px;
-  background: linear-gradient(160deg, var(--earth-light), var(--earth) 45%, var(--earth-dark));
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    0 30px 70px -30px rgba(31, 20, 10, 0.7),
-    inset 0 2px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -3px 8px rgba(0, 0, 0, 0.35);
+    0 30px 70px -30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 @utility board-surface {
   border-radius: 16px;
   background:
-    radial-gradient(90% 70% at 25% 15%, rgba(255, 255, 255, 0.07), transparent 65%),
-    linear-gradient(175deg, var(--board), var(--board-deep));
-  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55);
+    radial-gradient(90% 70% at 25% 15%, rgba(255, 255, 255, 0.05), transparent 65%),
+    linear-gradient(175deg, #09090b, #000000);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   overflow: hidden;
 }
 
 @utility chalk-title {
   font-family: var(--font-chalk);
-  color: var(--chalk);
+  color: #ffffff;
   letter-spacing: 0.01em;
-  text-shadow: 0 0 10px rgba(243, 241, 231, 0.25);
-  border-bottom: 2px dashed rgba(243, 241, 231, 0.22);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.25);
   padding-bottom: 0.35rem;
 }

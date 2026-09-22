@@ -1,0 +1,155 @@
+{
+  "id": "c10-sci-10",
+  "grade": 10,
+  "subject": "Science",
+  "chapterNumber": 10,
+  "chapterTitle": "Light — Reflection and Refraction",
+  "syllabus": "NCERT Class 10 Physics",
+  "summary": "Light travels in straight lines. Reflection occurs at polished surfaces following laws of reflection. Curved spherical mirrors (concave and convex) form real or virtual images governed by the mirror formula 1/v + 1/u = 1/f and magnification m = -v/u. Refraction is the bending of light across media governed by Snell's law (sin i / sin r = n). Lenses form images following 1/v - 1/u = 1/f with power P = 1/f (m) in Dioptres.",
+  
+  "pages": [
+    {
+      "pageNumber": 1,
+      "pageType": "notes",
+      "heading": "1. Nature of Light & Laws of Reflection",
+      "notes": [
+        "• Light is electromagnetic radiation that enables vision and travels in straight lines.",
+        "• Law 1: Angle of incidence equals angle of reflection (∠i = ∠r).",
+        "• Law 2: Incident ray, normal at point of incidence, and reflected ray all lie in the same plane.",
+        "• Spherical Mirrors: Concave (reflecting inwards, converging) vs Convex (reflecting outwards, diverging)."
+      ],
+      "spokenLines": [
+        { "text": "Welcome to class! Today we master one of the most scoring chapters in Class 10 Physics: Light — Reflection and Refraction.", "hold": 4.2 },
+        { "text": "Light always travels in straight lines, and when it strikes any polished surface, it obeys two strict laws.", "hold": 4.0 },
+        { "text": "The angle of incidence is always equal to the angle of reflection, and all rays lie in the exact same plane.", "hold": 4.0 },
+        { "text": "For spherical mirrors, concave mirrors curve inward to converge light, while convex mirrors curve outward to diverge it.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "pageType": "video",
+      "heading": "2. Ray Geometry & Image Formation in Motion",
+      "videoKind": "concaveMirror",
+      "videoTitle": "Concave Mirror — Ray Convergence Animation",
+      "spokenLines": [
+        { "text": "Watch closely as we trace the rays onto a concave mirror.", "hold": 3.4 },
+        { "text": "Parallel incoming rays bounce off the curved mirror surface and converge directly through the principal focus.", "hold": 4.0 },
+        { "text": "Notice where the rays intersect: a real, inverted image forms right in front of the mirror.", "hold": 3.8 }
+      ]
+    },
+    {
+      "pageNumber": 3,
+      "pageType": "artifact",
+      "heading": "3. Interactive Ray Diagram Simulation",
+      "artifactKind": "ray-slider",
+      "artifactTitle": "Interactive Ray Diagram — Concave Mirror",
+      "spokenLines": [
+        { "text": "Now interact with the live ray diagram on the board.", "hold": 3.4 },
+        { "text": "Drag the object from infinity towards the mirror. Notice how the image moves further away and grows larger.", "hold": 4.2 },
+        { "text": "When you place the object between the focus and the pole, the image suddenly turns virtual and erect behind the mirror!", "hold": 4.5 }
+      ]
+    },
+    {
+      "pageNumber": 4,
+      "pageType": "3d",
+      "heading": "4. 3D Convex Lens & Refraction Geometry",
+      "threeDKind": "lens",
+      "threeDTitle": "3D Convex Lens & Refracted Ray Beams",
+      "spokenLines": [
+        { "text": "Look at the 3D lens model on the board. You can drag and rotate it in 3D space.", "hold": 3.8 },
+        { "text": "As parallel light beams enter the curved glass boundary, each ray refracts towards the optical axis.", "hold": 4.2 },
+        { "text": "All refracted rays meet at the focal point, demonstrating why a convex lens is a converging lens.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 5,
+      "pageType": "notes",
+      "heading": "5. Essential Exam Formulas & Sign Conventions",
+      "notes": [
+        "• Mirror Formula: 1/v + 1/u = 1/f  |  Magnification: m = -v/u = h'/h",
+        "• Snell's Law of Refraction: sin i / sin r = constant = n₂₁ (Refractive Index)",
+        "• Absolute Refractive Index: n = c / v  (where c = 3 × 10⁸ m/s)",
+        "• Lens Formula: 1/v - 1/u = 1/f  |  Lens Power: P = 1/f(in meters) [Unit: Dioptre, D]"
+      ],
+      "spokenLines": [
+        { "text": "Here is your high-yield formula cheat-sheet for board exams.", "hold": 3.6 },
+        { "text": "Remember: Mirror formula has a plus sign: 1 over v plus 1 over u equals 1 over f.", "hold": 3.8 },
+        { "text": "Lens formula has a minus sign: 1 over v minus 1 over u equals 1 over f.", "hold": 3.8 },
+        { "text": "And Snell's law proves the ratio of sine i to sine r is always constant.", "hold": 3.8 }
+      ]
+    }
+  ],
+
+  "memorize": {
+    "conceptTitle": "Mirror Formula, Lens Formula & Snell's Law",
+    "teacherRecitationPrompt": "Now recite the core formulas and Snell's law of Chapter 10 into your microphone!",
+    "expectedRecitation": "For a spherical mirror, 1 upon v plus 1 upon u equals 1 upon f, and magnification m equals minus v upon u. For refraction, Snell's law states that sine i upon sine r equals constant refractive index.",
+    "mustIncludeKeywords": [
+      "1/v + 1/u = 1/f",
+      "1/v",
+      "1/u",
+      "1/f",
+      "magnification",
+      "-v/u",
+      "snell",
+      "sin i / sin r",
+      "refractive index"
+    ],
+    "coachingHint": "State the mirror formula (1/v + 1/u = 1/f), magnification formula (m = -v/u), and Snell's law equation (sin i / sin r = constant)."
+  },
+
+  "practice": {
+    "title": "NCERT End of Chapter Interactive Practice",
+    "questions": [
+      {
+        "id": "q1",
+        "type": "fill-in-the-blanks",
+        "question": "The relationship between focal length (f) and radius of curvature (R) for a spherical mirror of small aperture is R = _____.",
+        "correctAnswer": "2f",
+        "acceptableAnswers": ["2f", "2*f", "2 f"],
+        "explanation": "Radius of curvature is twice the focal length of a spherical mirror (R = 2f)."
+      },
+      {
+        "id": "q2",
+        "type": "fill-in-the-blanks",
+        "question": "The SI unit of power of a lens with focal length in meters is called _____.",
+        "correctAnswer": "dioptre",
+        "acceptableAnswers": ["dioptre", "diopter", "D"],
+        "explanation": "Power P = 1/f(m) and its SI unit is dioptre (D). 1 D = 1 m⁻¹."
+      },
+      {
+        "id": "q3",
+        "type": "mcq",
+        "question": "Which of the following mirrors is used by dentists to see an enlarged image of teeth?",
+        "options": [
+          "Convex mirror",
+          "Concave mirror",
+          "Plane mirror",
+          "Cylindrical mirror"
+        ],
+        "correctAnswer": "Concave mirror",
+        "explanation": "When an object is placed between the pole (P) and focus (F) of a concave mirror, it forms an erect, magnified, virtual image."
+      },
+      {
+        "id": "q4",
+        "type": "mcq",
+        "question": "A ray of light traveling from air enters obliquely into water. The light ray will:",
+        "options": [
+          "Bend towards the normal",
+          "Bend away from the normal",
+          "Go straight without bending",
+          "Reflect back completely"
+        ],
+        "correctAnswer": "Bend towards the normal",
+        "explanation": "Water is optically denser than air. Light slows down in water, hence bends towards the normal."
+      },
+      {
+        "id": "q5",
+        "type": "true-false",
+        "question": "Magnification produced by a convex mirror is always less than 1 (m < 1) and positive.",
+        "correctAnswer": "True",
+        "explanation": "A convex mirror always forms a virtual, erect and diminished image behind the mirror."
+      }
+    ]
+  }
+}

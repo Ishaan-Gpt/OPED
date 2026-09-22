@@ -7,8 +7,12 @@ import { BOARD_LAYOUT_ID } from "@/components/SearchMorph";
 import CaptionsBar from "@/components/CaptionsBar";
 import ArtifactViewer from "@/components/ArtifactViewer";
 import RecitationHUD from "@/components/RecitationHUD";
-import { BrandMark, CheckSealIcon, CubeIcon, TeacherIcon } from "@/components/icons";
-import { Sparkles } from "lucide-react";
+import PracticeHUD from "@/components/PracticeHUD";
+import EmbeddedThreeDCanvas from "@/components/EmbeddedThreeDCanvas";
+import EmbeddedVideoPlayer from "@/components/EmbeddedVideoPlayer";
+import RightChatDrawer from "@/components/RightChatDrawer";
+import { BrandMark, CheckSealIcon, TeacherIcon, EnterIcon } from "@/components/icons";
+import { Sparkles, Brain, Target, BookOpen, CheckCircle2, ChevronRight, User, MessageSquare, Mic, MicOff } from "lucide-react";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
 import type {
   CharacterState,
@@ -19,31 +23,96 @@ import type {
   PositionPreset,
 } from "@/character/types";
 import { DemoControls } from "@/demo/DemoControls";
-import { decideTeacherMove } from "@/lib/teacher/client";
-import type { VisualKind } from "../../remotion/types";
 import { generateLessonVideo } from "@/lib/remotion/client";
 import { streamTeacherResponse } from "@/lib/bedrock";
 import MasteryOutcome from "@/components/MasteryOutcome";
-
-const ThreeDModal = lazy(() => import("@/components/ThreeDModal"));
-const VideoMoment = lazy(() => import("@/components/VideoMoment"));
-
-type Stage = "understanding" | "artifact" | "recall" | "mastery";
+import { retrieveOutcomeChapter, type LessonPage } from "@/data/ncert";
+import type { StudentMasteryState } from "@/lib/teacher/agentOrchestrator";
+import { calculateMastery, decideAgentNextStep } from "@/lib/teacher/agentOrchestrator";
+import { generateDynamicLessonPages } from "@/lib/teacher/dynamicSlideGenerator";
+import { speechPlayer } from "@/lib/audio/speechPlayer";
+import Experience from "@/components/Experience";
 
 interface Props {
   module: NcertModule;
   onExit: () => void;
 }
 
-/** The multi-purpose blackboard: narration, interactive artifacts, 3D and recall. */
 export function BlackboardCanvas({ module, onExit }: Props) {
-  const [stage, setStage] = useState<Stage>("understanding");
-  const [lineIndex, setLineIndex] = useState(0);
+  // Retrieve authentic multi-page NCERT chapter module
+  const outcomeModule = useMemo(() => {
+    return retrieveOutcomeChapter(module.title) || retrieveOutcomeChapter(`c${module.grade}-${module.chapter}`);
+  }, [module.title, module.grade, module.chapter]);
+
+  // Student Onboarding State
+  const [studentName, setStudentName] = useState<string>("");
+  const [isNameModalOpen, setIsNameModalOpen] = useState(true);
+  const [nameInput, setNameInput] = useState("");
+
+  // Classroom Multi-Page & Multi-Stage State
+  const initialPages: LessonPage[] = useMemo(() => {
+    if (outcomeModule?.pages?.length) return outcomeModule.pages;
+    return [
+      {
+        pageNumber: 1,
+        pageType: "notes",
+        heading: module.boardHeading,
+        notes: module.notes,
+        spokenLines: module.narration,
+      },
+    ];
+  }, [outcomeModule, module]);
+
+  const [pages, setPages] = useState<LessonPage[]>(initialPages);
+  const [activePageIndex, setActivePageIndex] = useState(0);
+  const [classroomStage, setClassroomStage] = useState<"onboarding" | "lesson_pages" | "memorize" | "practice" | "mastery">("onboarding");
+
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [visibleNotesCount, setVisibleNotesCount] = useState(1);
   const [speaking, setSpeaking] = useState(true);
-  const [show3DPrompt, setShow3DPrompt] = useState(false);
-  const [open3D, setOpen3D] = useState(false);
-  const [readiness, setReadiness] = useState(0);
+  const [currentCaption, setCurrentCaption] = useState("");
   const [teacherRepeat, setTeacherRepeat] = useState(0);
+  const [captionSpeaker, setCaptionSpeaker] = useState("Dr. Rao");
+  const [isStudentSpeaking, setIsStudentSpeaking] = useState(false);
+
+  // Embedded Video State
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+
+  // Floating Chat Drawer State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Microphone Speech Recognition State
+  const [isMicActive, setIsMicActive] = useState(false);
+  const [speechTranscript, setSpeechTranscript] = useState("");
+  const recognitionRef = useRef<any>(null);
+
+  // Student Telemetry State
+  const [masteryState, setMasteryState] = useState<StudentMasteryState>({
+    chapterId: module.id,
+    chapterTitle: module.title,
+    grade: module.grade,
+    subject: module.subject,
+    explainCompleted: false,
+    viewed3D: false,
+    interactedArtifact: false,
+    viewedExplainerVideo: false,
+    recitationScore: 0,
+    recitationAttempts: 0,
+    matchedKeywords: [],
+    missingKeywords: [],
+    isRecitationPassed: false,
+    totalQuestions: outcomeModule?.practice?.questions?.length ?? 3,
+    answeredQuestions: 0,
+    correctAnswers: 0,
+    practiceScore: 0,
+    questionResults: [],
+    struggleCount: 0,
+    adaptiveInterventionsCount: 0,
+    overallMasteryScore: 0,
+    examReadinessRating: "Developing",
+  });
+
+  // 3D Avatar state
   const [isTeacherActive, setIsTeacherActive] = useState(true);
   const [teacherGreeting, setTeacherGreeting] = useState<string | null>(null);
   const [showStudioControls, setShowStudioControls] = useState(false);
@@ -53,117 +122,378 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
   const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
   const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
-  const [videoMoment, setVideoMoment] = useState<{ title: string; url: string | null } | null>(
-    null,
-  );
-  // Which visualKinds have already been shown as a video in this lesson — a ref (not state)
-  // since it only needs to be read/appended inside consultTeacher, never trigger a re-render.
-  const usedVisualKindsRef = useRef<VisualKind[]>([]);
-  const [question, setQuestion] = useState("");
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [isThinking, setIsThinking] = useState(false);
+  const [is3DClassroomActive, setIs3DClassroomActive] = useState<boolean>(true);
+  const boardCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const lines = module.narration;
-  const caption = useMemo(() => {
-    if (stage === "recall")
-      return teacherRepeat > 0
-        ? `(${teacherRepeat} of ${RULES.teacherRepeats}) ${module.examConcept}`
-        : "Listen twice, then recite it back to me.";
-    return lines[Math.min(lineIndex, lines.length - 1)]?.text ?? "";
-  }, [stage, lineIndex, lines, teacherRepeat, module.examConcept]);
+  const currentPage = pages[activePageIndex] ?? pages[0]!;
 
-  const advanceLine = useCallback(() => {
-    if (lineIndex + 1 < lines.length) setLineIndex(lineIndex + 1);
-    else {
-      setSpeaking(false);
-      setStage("artifact");
-    }
-  }, [lineIndex, lines]);
+  // --------------------------------------------------------------------------
+  // ONBOARDING: Handle Name Submission
+  // --------------------------------------------------------------------------
+  const handleNameSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const finalName = nameInput.trim() || "Student";
+    setStudentName(finalName);
+    setIsNameModalOpen(false);
+    setClassroomStage("lesson_pages");
+    setActivePageIndex(0);
+    setCurrentLineIndex(0);
+    setVisibleNotesCount(1);
+    setSpeaking(true);
+    setCaptionSpeaker("Dr. Rao");
+    setIsStudentSpeaking(false);
+    setCurrentCaption(`Hello ${finalName}! I'm Dr. Rao. Let's master NCERT Class ${module.grade} ${module.subject}: ${module.title}.`);
+  };
 
-  // After each narration beat, the AI teacher decides whether the concept
-  // needs a short generated video instead of just continuing to the next line.
-  const consultTeacher = useCallback(async () => {
-    const current = lines[lineIndex];
-    try {
-      const decision = await decideTeacherMove({
-        boardHeading: module.boardHeading,
-        notes: module.notes,
-        examConcept: module.examConcept,
-        currentLine: current?.text ?? "",
-        stage: "understanding",
-        usedVisualKinds: usedVisualKindsRef.current,
-      });
-      if (decision.action === "generate_video") {
-        setSpeaking(false);
-        setVideoMoment({ title: decision.videoBrief.title, url: null });
-        if (decision.videoBrief.visualKind) {
-          usedVisualKindsRef.current = [
-            ...usedVisualKindsRef.current,
-            decision.videoBrief.visualKind,
-          ];
-        }
-        const clip = await generateLessonVideo(decision.videoBrief);
-        setVideoMoment({ title: decision.videoBrief.title, url: clip.url });
-        return;
-      }
-    } catch {
-      // Bedrock unreachable or misconfigured — lesson just continues normally.
-    }
-    advanceLine();
-  }, [lineIndex, lines, module, advanceLine]);
+  // --------------------------------------------------------------------------
+  // PAGE-BY-PAGE LESSON DRIVER (Pure Voice-Driven Progression)
+  // --------------------------------------------------------------------------
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const closeVideoMoment = useCallback(() => {
-    setVideoMoment(null);
-    advanceLine();
-  }, [advanceLine]);
-
-  // Narration playback with synchronized captions
   useEffect(() => {
-    if (stage !== "understanding") return;
-    const current = lines[lineIndex];
-    if (!current) {
-      setSpeaking(false);
+    if (classroomStage !== "lesson_pages" || isMicActive || !currentPage) return;
+
+    if (pauseTimerRef.current) {
+      clearTimeout(pauseTimerRef.current);
+      pauseTimerRef.current = null;
+    }
+
+    // 1. If this page is a video page, preload the video
+    if (currentPage.pageType === "video" && currentPage.videoKind) {
+      setMasteryState((prev) => ({ ...prev, viewedExplainerVideo: true }));
+      void generateLessonVideo({
+        title: currentPage.videoTitle || "Concept Video",
+        bullets: module.notes.slice(0, 4) as [string, string, string, string],
+        accent: "#2f9d8b",
+        targetSeconds: 10,
+        visualKind: currentPage.videoKind as any,
+      }).then((clip) => {
+        setActiveVideoUrl(clip.url);
+      });
+    }
+
+    // 2. Drive the spoken lines of the current page
+    const spokenLines = currentPage.spokenLines;
+    const currentLine = spokenLines[currentLineIndex];
+
+    if (!currentLine) {
+      // Finished all lines on this page
+      if (activePageIndex + 1 < pages.length) {
+        pauseTimerRef.current = setTimeout(() => {
+          setActivePageIndex((prev) => prev + 1);
+          setCurrentLineIndex(0);
+          setVisibleNotesCount(1);
+        }, 1500);
+      } else {
+        pauseTimerRef.current = setTimeout(() => {
+          setClassroomStage("memorize");
+          startMemorizeStage();
+        }, 1500);
+      }
       return;
     }
-    setSpeaking(true);
-    const t = setTimeout(() => {
-      consultTeacher();
-    }, current.hold * 1000);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stage, lineIndex, lines]);
 
-  const reciteTwice = useCallback(() => {
-    setStage("recall");
+    setSpeaking(true);
+    setCaptionSpeaker("Dr. Rao");
+    setIsStudentSpeaking(false);
+
+    const spokenText =
+      studentName && currentLineIndex === 0 && activePageIndex === 0
+        ? currentLine.text.replace("Welcome to class!", `Welcome to class, ${studentName}!`)
+        : currentLine.text;
+    setCurrentCaption(spokenText);
+
+    // If on a notes page, reveal notes progressively as lines are spoken
+    if (currentPage.pageType === "notes" && currentPage.notes?.length) {
+      const notesLen = currentPage.notes.length;
+      const count = Math.min(
+        notesLen,
+        Math.floor(((currentLineIndex + 1) / spokenLines.length) * notesLen) + 1
+      );
+      setVisibleNotesCount((prev) => Math.max(prev, count));
+    }
+
+    // Play voice and ONLY advance when speech naturally concludes
+    void speechPlayer.playSpokenLine({
+      text: spokenText,
+      chapterId: module.id,
+      pageNumber: currentPage.pageNumber,
+      lineIndex: currentLineIndex,
+      onEnd: () => {
+        setSpeaking(false);
+        // After teacher finishes speaking the sentence, pause briefly to let student digest
+        pauseTimerRef.current = setTimeout(() => {
+          if (currentLineIndex + 1 < spokenLines.length) {
+            setCurrentLineIndex((prev) => prev + 1);
+          } else {
+            // End of this slide's voiceover: notes & video slides auto-advance smoothly after speech finishes
+            if (currentPage.pageType === "notes" || currentPage.pageType === "video") {
+              if (activePageIndex + 1 < pages.length) {
+                setActivePageIndex((prev) => prev + 1);
+                setCurrentLineIndex(0);
+                setVisibleNotesCount(1);
+              } else {
+                setClassroomStage("memorize");
+                startMemorizeStage();
+              }
+            } else if (currentPage.pageType === "artifact" || currentPage.pageType === "3d") {
+              // Interactive slides give the student a comfortable moment to explore the 2D/3D model
+              pauseTimerRef.current = setTimeout(() => {
+                if (activePageIndex + 1 < pages.length) {
+                  setActivePageIndex((prev) => prev + 1);
+                  setCurrentLineIndex(0);
+                  setVisibleNotesCount(1);
+                } else {
+                  setClassroomStage("memorize");
+                  startMemorizeStage();
+                }
+              }, 4500);
+            }
+          }
+        }, 1200);
+      },
+    });
+
+    return () => {
+      if (pauseTimerRef.current) {
+        clearTimeout(pauseTimerRef.current);
+        pauseTimerRef.current = null;
+      }
+    };
+  }, [classroomStage, isMicActive, activePageIndex, currentLineIndex, currentPage, pages, module, studentName]);
+
+  const handleNextSlide = useCallback(() => {
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    speechPlayer.stopAll();
+    if (activePageIndex + 1 < pages.length) {
+      setActivePageIndex((prev) => prev + 1);
+      setCurrentLineIndex(0);
+      setVisibleNotesCount(1);
+    } else {
+      setClassroomStage("memorize");
+      startMemorizeStage();
+    }
+  }, [activePageIndex, pages.length]);
+
+  const handlePrevSlide = useCallback(() => {
+    if (activePageIndex > 0) {
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+      speechPlayer.stopAll();
+      setActivePageIndex((prev) => prev - 1);
+      setCurrentLineIndex(0);
+      setVisibleNotesCount(1);
+    }
+  }, [activePageIndex]);
+
+  const handleReplayCurrentSlide = useCallback(() => {
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    speechPlayer.stopAll();
+    setCurrentLineIndex(0);
+    setVisibleNotesCount(1);
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // DYNAMIC SLIDE GENERATION (Triggered by Voice or Chat)
+  // --------------------------------------------------------------------------
+  const handleDynamicStudentRequest = async (userPrompt: string) => {
+    setSpeaking(true);
+    setCaptionSpeaker("Dr. Rao");
+    setIsStudentSpeaking(false);
+    setCurrentCaption(`Let me prepare dedicated blackboard slides on "${userPrompt}", ${studentName || "student"}...`);
+
+    const result = await generateDynamicLessonPages({
+      userPrompt,
+      chapterTitle: module.title,
+      grade: module.grade,
+      subject: module.subject,
+      studentName,
+      currentNotes: currentPage.notes || [],
+    });
+
+    if (result.slides && result.slides.length > 0) {
+      // Inset dynamic slides right after current slide
+      setPages((prev) => {
+        const next = [...prev];
+        next.splice(activePageIndex + 1, 0, ...result.slides);
+        return next;
+      });
+
+      // Jump to the newly created dynamic slide
+      setActivePageIndex((prev) => prev + 1);
+      setCurrentLineIndex(0);
+      setVisibleNotesCount(1);
+      setClassroomStage("lesson_pages");
+      setCurrentCaption(result.teacherSpokenIntro);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // LIVE MICROPHONE HANDLER (Pauses Flow & Captures Voice)
+  // --------------------------------------------------------------------------
+  const toggleMic = () => {
+    if (isMicActive) {
+      // Turn OFF mic and process what the student said
+      setIsMicActive(false);
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+
+      if (speechTranscript.trim()) {
+        const query = speechTranscript.trim();
+        setSpeechTranscript("");
+        void handleDynamicStudentRequest(query);
+      }
+    } else {
+      // Turn ON mic -> Pause teacher flow and listen
+      setIsMicActive(true);
+      setSpeaking(false);
+      setCaptionSpeaker(`[${studentName || "Student"}]`);
+      setIsStudentSpeaking(true);
+      setCurrentCaption("Listening... Speak your question or say 'Explain more from start'...");
+
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "en-IN";
+
+        recognition.onresult = (event: any) => {
+          const current = Array.from(event.results)
+            .map((result: any) => result[0].transcript)
+            .join("");
+          setSpeechTranscript(current);
+          setCurrentCaption(`"${current}"`);
+        };
+
+        recognition.onerror = () => {
+          setIsMicActive(false);
+        };
+
+        recognition.start();
+        recognitionRef.current = recognition;
+      }
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // MEMORIZE / ACTIVE RECALL STAGE
+  // --------------------------------------------------------------------------
+  const startMemorizeStage = useCallback(() => {
+    setClassroomStage("memorize");
     setTeacherRepeat(1);
     setSpeaking(true);
-    const t1 = setTimeout(() => setTeacherRepeat(2), 3800);
+    setCaptionSpeaker("Dr. Rao");
+    setIsStudentSpeaking(false);
+    setCurrentCaption(`(1 of 2) ${studentName ? `${studentName}, listen` : "Listen"} carefully: ${module.examConcept}`);
+
+    const t1 = setTimeout(() => {
+      setTeacherRepeat(2);
+      setCurrentCaption(`(2 of 2) Now recite this back: ${module.examConcept}`);
+    }, 4200);
+
     const t2 = setTimeout(() => {
       setTeacherRepeat(0);
       setSpeaking(false);
-    }, 7600);
+      setCurrentCaption(`${studentName ? `${studentName}, recite` : "Recite"} the core concept into your microphone!`);
+    }, 8400);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
+  }, [module.examConcept, studentName]);
+
+  const handleRecitationReadiness = useCallback(
+    (readinessScore: number) => {
+      setMasteryState((prev) => {
+        const attempts = prev.recitationAttempts + 1;
+        const isPassed = readinessScore >= 70;
+        const struggle = !isPassed ? prev.struggleCount + 1 : prev.struggleCount;
+        const nextState: StudentMasteryState = {
+          ...prev,
+          recitationScore: Math.max(prev.recitationScore, readinessScore),
+          recitationAttempts: attempts,
+          isRecitationPassed: isPassed || prev.isRecitationPassed,
+          struggleCount: struggle,
+        };
+        const computed = calculateMastery(nextState);
+        nextState.overallMasteryScore = computed.overallScore;
+        nextState.examReadinessRating = computed.rating;
+        return nextState;
+      });
+
+      if (readinessScore >= 70) {
+        setSpeaking(true);
+        setCaptionSpeaker("Dr. Rao");
+        setIsStudentSpeaking(false);
+        setCurrentCaption(`Brilliant recall, ${studentName || "student"}! Now let's solve your NCERT practice questions on the board.`);
+        setTimeout(() => {
+          setSpeaking(false);
+          setClassroomStage("practice");
+        }, 2500);
+      } else {
+        setSpeaking(true);
+        setCaptionSpeaker("Dr. Rao");
+        setIsStudentSpeaking(false);
+        setCurrentCaption("Good effort! You missed a few key exam keywords. Review the hint and try reciting once more.");
+      }
+    },
+    [studentName]
+  );
+
+  // --------------------------------------------------------------------------
+  // PRACTICE STAGE
+  // --------------------------------------------------------------------------
+  const handlePracticeComplete = useCallback(
+    (
+      score: number,
+      results: { questionId: string; isCorrect: boolean; userAnswer: string; attempts: number }[]
+    ) => {
+      setMasteryState((prev) => {
+        const correctCount = results.filter((r) => r.isCorrect).length;
+        const nextState: StudentMasteryState = {
+          ...prev,
+          totalQuestions: results.length,
+          answeredQuestions: results.length,
+          correctAnswers: correctCount,
+          practiceScore: score,
+          questionResults: results,
+        };
+        const computed = calculateMastery(nextState);
+        nextState.overallMasteryScore = computed.overallScore;
+        nextState.examReadinessRating = computed.rating;
+        return nextState;
+      });
+
+      setSpeaking(true);
+      setCaptionSpeaker("Dr. Rao");
+      setIsStudentSpeaking(false);
+      setCurrentCaption(`Congratulations ${studentName || ""}! You've achieved verified NCERT Exam Readiness.`);
+      setClassroomStage("mastery");
+    },
+    [studentName]
+  );
+
+  const handlePracticeQuestionAnswered = useCallback((isCorrect: boolean) => {
+    setMasteryState((prev) => {
+      const struggle = !isCorrect ? prev.struggleCount + 1 : prev.struggleCount;
+      const nextState: StudentMasteryState = {
+        ...prev,
+        answeredQuestions: prev.answeredQuestions + 1,
+        correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
+        struggleCount: struggle,
+      };
+      const computed = calculateMastery(nextState);
+      nextState.overallMasteryScore = computed.overallScore;
+      nextState.examReadinessRating = computed.rating;
+      return nextState;
+    });
   }, []);
 
-  useEffect(() => {
-    if (stage !== "artifact") return;
-    const t = setTimeout(() => setShow3DPrompt(true), 900);
-    return () => clearTimeout(t);
-  }, [stage]);
-
-  useEffect(() => {
-    if (readiness < 100 || stage === "mastery") return undefined;
-    const t = setTimeout(() => {
-      setStage("mastery");
-      setTeacherGreeting("Incredible work! You are fully prepared for your exam on this topic.");
-    }, 2500); // Wait 2.5s to let the student see the 100% badge before transitioning
-    return () => clearTimeout(t);
-  }, [readiness, stage]);
-
-  // Synchronize teacher posture, expression, and gestures with classroom activity
+  // --------------------------------------------------------------------------
+  // 3D AVATAR SYNCHRONIZATION
+  // --------------------------------------------------------------------------
   const teacherProps = useMemo<{
     state: CharacterState;
     expression: ExpressionType;
@@ -181,7 +511,17 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       };
     }
 
-    if (open3D) {
+    if (isMicActive) {
+      return {
+        state: "listeningEar",
+        expression: "focused",
+        gesture: "listeningEar",
+        gaze: "student",
+        pointTarget: { target: "student" },
+      };
+    }
+
+    if (currentPage?.pageType === "video" || currentPage?.pageType === "3d") {
       return {
         state: "amazed",
         expression: "mindBlown",
@@ -191,39 +531,22 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       };
     }
 
-    if (stage === "recall") {
+    if (classroomStage === "practice") {
+      return {
+        state: "idle",
+        expression: "focused",
+        gesture: "explainBothHands",
+        gaze: "student",
+        pointTarget: { target: "board" },
+      };
+    }
+
+    if (classroomStage === "memorize") {
       if (teacherRepeat > 0) {
         return {
           state: "speaking",
           expression: "focused",
           gesture: "explainBothHands",
-          gaze: "student",
-          pointTarget: { target: "student" },
-        };
-      }
-      if (readiness >= 100) {
-        return {
-          state: "celebrate",
-          expression: "celebrating",
-          gesture: "doubleThumbsUp",
-          gaze: "student",
-          pointTarget: { target: "student" },
-        };
-      }
-      if (readiness >= 75) {
-        return {
-          state: "proud",
-          expression: "proud",
-          gesture: "thumbsUp",
-          gaze: "student",
-          pointTarget: { target: "student" },
-        };
-      }
-      if (readiness > 0) {
-        return {
-          state: "encourage",
-          expression: "encouraging",
-          gesture: "encourage",
           gaze: "student",
           pointTarget: { target: "student" },
         };
@@ -237,22 +560,11 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       };
     }
 
-    if (stage === "artifact") {
-      return {
-        state: "presenting",
-        expression: "amazed",
-        gesture: "present",
-        gaze: "student",
-        pointTarget: { target: "board" },
-      };
-    }
-
-    // Understanding stage
     if (speaking) {
       return {
         state: "speaking",
         expression: "explaining",
-        gesture: lineIndex % 2 === 0 ? "explainBothHands" : "pointAtTarget",
+        gesture: currentLineIndex % 2 === 0 ? "explainBothHands" : "pointAtTarget",
         gaze: "student",
         pointTarget: { target: "board" },
       };
@@ -265,269 +577,433 @@ export function BlackboardCanvas({ module, onExit }: Props) {
       gaze: "student",
       pointTarget: { target: "board" },
     };
-  }, [teacherGreeting, open3D, stage, teacherRepeat, readiness, speaking, lineIndex]);
-
-  const handleAskTeacher = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!question.trim() || isThinking) return;
-    const q = question;
-    setQuestion("");
-    setIsThinking(true);
-    setAiResponse("");
-    try {
-      const context = `Topic: ${module.title}. Notes: ${module.notes.join(", ")}`;
-      for await (const text of streamTeacherResponse(q, context)) {
-        setIsThinking(false);
-        setAiResponse((prev) => (prev || "") + text);
-      }
-    } catch (err) {
-      console.error(err);
-      setAiResponse("Oops, I lost my connection. Please try again!");
-      setIsThinking(false);
-    }
-  };
+  }, [teacherGreeting, isMicActive, currentPage, classroomStage, teacherRepeat, speaking, currentLineIndex]);
 
   const handleTeacherClick = useCallback(() => {
-    setTeacherGreeting(
-      "I'm Dr. Rao! Focus on each note on the board, then recite it back to secure 100% exam readiness.",
-    );
+    const stageName = classroomStage === "lesson_pages" ? "explain" : classroomStage === "practice" ? "practice" : "memorize";
+    const decision = decideAgentNextStep(stageName, masteryState, outcomeModule);
+    setTeacherGreeting(decision.teacherSpeech);
     const t = setTimeout(() => {
       setTeacherGreeting(null);
     }, 4500);
     return () => clearTimeout(t);
-  }, []);
+  }, [classroomStage, masteryState, outcomeModule]);
+
+  const mainBoardCanvasElement = (
+    <motion.div
+      layoutId={BOARD_LAYOUT_ID}
+      transition={motionTokens.spring}
+      className={`board-frame relative w-full rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 ${
+        is3DClassroomActive ? "bg-[#0c1512]/95 border-2 border-[#8b5a2b] shadow-2xl" : ""
+      }`}
+    >
+      <div className="board-surface relative min-h-[400px] sm:min-h-[460px] p-6 sm:p-8 flex flex-col justify-between">
+        <AnimatePresence mode="wait">
+          {/* STAGE 1: LESSON PAGES (Notes -> Video -> Simulator -> 3D -> Summary) */}
+          {classroomStage === "lesson_pages" && currentPage && (
+            <motion.div
+              key={`page-${currentPage.pageNumber}-${currentPage.pageType}-${activePageIndex}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+              className="flex-1 flex flex-col justify-start w-full h-full"
+            >
+              {/* Page Type A: Chalk Notes */}
+              {currentPage.pageType === "notes" && (
+                <div className="flex-1 flex flex-col justify-start">
+                  <h2 className="chalk-title text-2xl sm:text-3xl text-chalk border-b border-chalk/15 pb-2.5">
+                    {currentPage.heading}
+                  </h2>
+                  <ul className="mt-5 space-y-4 flex-1">
+                    {currentPage.notes?.slice(0, visibleNotesCount).map((n, i) => (
+                      <motion.li
+                        key={n}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: i === visibleNotesCount - 1 ? 0.2 : 0 }}
+                        className="flex items-start gap-3.5 font-[family-name:var(--font-chalk)] text-[1.15rem] sm:text-[1.25rem] leading-relaxed text-chalk/90"
+                      >
+                        <span className="mt-1.5 size-2 rounded-full bg-white/70 shrink-0" />
+                        <span>{n}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Page Type B: Clean Borderless Full-Board Video with Seamless Looping */}
+              {currentPage.pageType === "video" && activeVideoUrl && (
+                <div className="flex-1 flex items-center justify-center w-full">
+                  <EmbeddedVideoPlayer
+                    title={currentPage.videoTitle || "Concept Video"}
+                    url={activeVideoUrl}
+                    loop={true}
+                  />
+                </div>
+              )}
+
+              {/* Page Type C: 2D Interactive Simulator */}
+              {currentPage.pageType === "artifact" && (
+                <div className="flex-1 flex flex-col justify-between w-full">
+                  <h3 className="chalk-title text-xl text-chalk mb-3">
+                    {currentPage.heading}
+                  </h3>
+                  <ArtifactViewer
+                    kind={currentPage.artifactKind || module.artifact}
+                    title={currentPage.artifactTitle || module.artifactTitle}
+                  />
+                </div>
+              )}
+
+              {/* Page Type D: Clean Borderless 3D Orbital Scene */}
+              {currentPage.pageType === "3d" && (
+                <div className="flex-1 flex flex-col justify-between w-full">
+                  <EmbeddedThreeDCanvas
+                    kind={currentPage.threeDKind || module.threeD}
+                    title={currentPage.threeDTitle || module.threeDTitle}
+                  />
+                </div>
+              )}
+
+              {/* Bottom Slide Action & Audio Controls */}
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/70">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handlePrevSlide}
+                    disabled={activePageIndex === 0}
+                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed border border-white/20 backdrop-blur-md text-white flex items-center gap-1 transition-all cursor-pointer"
+                  >
+                    <span>◀ Previous</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleReplayCurrentSlide}
+                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                    title="Replay explanation from Dr. Rao"
+                  >
+                    <Sparkles size={13} />
+                    <span>Replay Voice</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleNextSlide}
+                    className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white font-medium flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                  >
+                    <span>{activePageIndex + 1 < pages.length ? "Next Concept ➔" : "Start Recitation ➔"}</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STAGE 2: MEMORIZE (ACTIVE RECALL) */}
+          {classroomStage === "memorize" && (
+            <motion.div
+              key="canvas-memorize"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col justify-center max-w-xl mx-auto w-full"
+            >
+              <div className="text-center mb-4">
+                <span className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-white/10 text-white border border-white/20 backdrop-blur-md">
+                  Step 2: Active Recall Recitation
+                </span>
+                <h3 className="font-[family-name:var(--font-display)] text-xl text-chalk mt-2">
+                  Recite the Core Exam Concept
+                </h3>
+              </div>
+
+              <RecitationHUD
+                module={module}
+                onReplay={startMemorizeStage}
+                onReadiness={handleRecitationReadiness}
+              />
+            </motion.div>
+          )}
+
+          {/* STAGE 3: PRACTICE (INTERACTIVE NCERT EXERCISES) */}
+          {classroomStage === "practice" && outcomeModule && (
+            <motion.div
+              key="canvas-practice"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex items-center justify-center w-full"
+            >
+              <PracticeHUD
+                practice={outcomeModule.practice}
+                onComplete={handlePracticeComplete}
+                onQuestionAnswered={handlePracticeQuestionAnswered}
+              />
+            </motion.div>
+          )}
+
+          {/* STAGE 4: CERTIFIED EXAM MASTERY */}
+          {classroomStage === "mastery" && (
+            <motion.div
+              key="canvas-mastery"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex items-center justify-center w-full"
+            >
+              <MasteryOutcome
+                module={module}
+                masteryState={masteryState}
+                onNewTopic={onExit}
+                onRetryChapter={() => {
+                  setClassroomStage("lesson_pages");
+                  setActivePageIndex(0);
+                  setCurrentLineIndex(0);
+                  setVisibleNotesCount(1);
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
 
   return (
-    <div className="relative min-h-[100svh] wall-backdrop px-4 py-5 sm:px-8 landscape:py-4">
-      <header className="mx-auto flex max-w-[1180px] flex-wrap items-center justify-between gap-3 pb-4">
+    <div className={`relative min-h-[100svh] px-4 py-4 sm:px-8 flex flex-col justify-between transition-all duration-500 overflow-hidden ${
+      is3DClassroomActive ? "bg-black" : "wall-backdrop"
+    }`}>
+      {/* FULLSCREEN 3D CLASSROOM VR VIEWPORT (Renders in background when 3D mode is toggled) */}
+      {is3DClassroomActive && (
+        <div className="fixed inset-0 w-screen h-screen z-0 pointer-events-auto">
+          <Experience isSpeaking={speaking || !!teacherGreeting}>
+            {mainBoardCanvasElement}
+          </Experience>
+        </div>
+      )}
+
+      {/* Top Header & Exam Readiness */}
+      <header className="relative z-10 mx-auto w-full max-w-[1060px] flex items-center justify-between gap-3 pb-2.5">
         <div className="flex items-center gap-3">
-          <BrandMark size={32} />
+          <BrandMark size={34} variant="white" />
           <div>
             <p className="text-[0.62rem] uppercase tracking-[0.22em] text-white/60">
-              NCERT · Class {module.grade} · {module.subject} · Chapter {module.chapter}
+              NCERT · Class {module.grade} {module.subject} · Chapter {module.chapter}
             </p>
-            <h1 className="font-[family-name:var(--font-display)] text-xl text-white sm:text-2xl">
+            <h1 className="font-[family-name:var(--font-display)] text-lg sm:text-xl text-white">
               {module.title}
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => setIsTeacherActive((v) => !v)}
-            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition-colors ${
-              isTeacherActive
-                ? "bg-teal text-white shadow-sm hover:bg-teal-soft"
-                : "border border-white/25 text-white/70 hover:border-white/50"
-            }`}
-            title="Toggle AI Teacher in Classroom"
-          >
-            <TeacherIcon size={15} />
-            <span>{isTeacherActive ? "Teacher: Active" : "Teacher: Minimized"}</span>
-          </button>
-          <div className="flex items-center gap-2 rounded-full bg-black/25 px-3.5 py-2 text-xs text-white/80 backdrop-blur">
-            <span className={readiness >= 100 ? "text-teal-soft" : "text-white/50"}>
-              <CheckSealIcon size={16} />
+
+        {/* Multi-Page Lesson Navigator & Readiness */}
+        <div className="flex items-center gap-3">
+          {classroomStage === "lesson_pages" && (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs text-white backdrop-blur-md">
+              <BookOpen className="w-3.5 h-3.5 text-white/80" />
+              <span>Slide {activePageIndex + 1} of {pages.length}</span>
+              <div className="flex gap-1 ml-1.5">
+                {pages.map((_, i) => (
+                  <span
+                    key={i}
+                    className={`size-1.5 rounded-full transition-all ${
+                      i === activePageIndex ? "bg-white w-3" : i < activePageIndex ? "bg-white/70" : "bg-white/20"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs text-white backdrop-blur-md border border-white/20">
+            <span className="text-white">
+              <CheckSealIcon size={15} />
             </span>
-            Exam readiness
-            <span className={readiness >= 100 ? "text-teal-soft" : "text-royal-soft"}>
-              {readiness}%
+            <span>Mastery</span>
+            <span className="font-mono font-bold text-white">
+              {masteryState.overallMasteryScore}%
             </span>
           </div>
+
           <button
+            type="button"
+            onClick={() => setIs3DClassroomActive((v) => !v)}
+            className={`rounded-full border px-3.5 py-1.5 text-xs hover:scale-105 cursor-pointer flex items-center gap-1.5 font-medium transition-all shadow-lg backdrop-blur-md ${
+              is3DClassroomActive
+                ? "border-white/40 bg-white/25 text-white"
+                : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+            }`}
+          >
+            <span>{is3DClassroomActive ? "🎮 3D AI VR View" : "📝 2D Chalkmate Board"}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={onExit}
-            className="rounded-full border border-white/25 px-3.5 py-2 text-xs text-white/80 hover:border-white/60"
+            className="rounded-full border border-white/20 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs text-white backdrop-blur-md cursor-pointer transition-all"
           >
             New topic
           </button>
         </div>
       </header>
 
-      <motion.div
-        layoutId={BOARD_LAYOUT_ID}
-        transition={motionTokens.spring}
-        className="board-frame relative mx-auto w-full max-w-[1180px]"
-      >
-        <motion.div
-          animate={{ filter: show3DPrompt && !open3D ? "blur(2px)" : "blur(0px)" }}
-          transition={{ duration: 0.5 }}
-          className="board-surface relative grid gap-4 p-5 sm:p-7 lg:grid-cols-[1.15fr_1fr]"
-        >
-          <section className="min-w-0">
-            <h2 className="chalk-title text-[clamp(1.3rem,2.6vw,1.9rem)]">{module.boardHeading}</h2>
-            <ul className="mt-4 space-y-2.5">
-              {module.notes.map((n, i) => (
-                <motion.li
-                  key={n}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25 + i * 0.35, duration: 0.5 }}
-                  className="flex gap-2.5 font-[family-name:var(--font-chalk)] text-[1.05rem] leading-snug text-chalk/90"
-                >
-                  <span className="mt-1 text-teal-soft">◦</span>
-                  {n}
-                </motion.li>
-              ))}
-            </ul>
+      {/* Main Omnipotent Morphing Blackboard Canvas Frame (Rendered in 2D mode, or floating captions overlay in 3D mode) */}
+      {!is3DClassroomActive ? (
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center my-auto w-full max-w-[1060px] mx-auto">
+          {mainBoardCanvasElement}
 
-            <div className="mt-5">
-              <CaptionsBar caption={caption} speaking={speaking} />
-            </div>
-
-            {stage === "recall" && teacherRepeat === 0 && (
-              <div className="mt-4">
-                <RecitationHUD module={module} onReplay={reciteTwice} onReadiness={setReadiness} />
-              </div>
-            )}
-
-            {stage !== "recall" && (
-              <button
-                onClick={reciteTwice}
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-chalk px-4 py-2.5 text-sm font-medium text-[#22312d] transition-transform hover:scale-[1.02] active:scale-95"
-              >
-                <TeacherIcon size={17} /> I'm ready — start the recall test
-              </button>
-            )}
-          </section>
-
-          <aside className="min-w-0 space-y-4">
-            <ArtifactViewer kind={module.artifact} title={module.artifactTitle} />
-            <button
-              onClick={() => setOpen3D(true)}
-              className="flex w-full items-center justify-between gap-3 rounded-2xl border border-chalk/16 bg-black/20 px-4 py-3.5 text-left transition-colors hover:border-teal-soft/60"
-            >
-              <span>
-                <span className="block text-[0.62rem] uppercase tracking-[0.2em] text-chalk/45">
-                  3D Experience
-                </span>
-                <span className="font-[family-name:var(--font-display)] text-base text-chalk">
-                  {module.threeDTitle}
-                </span>
-              </span>
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-teal text-white">
-                <CubeIcon size={19} />
-              </span>
-            </button>
-          </aside>
-        </motion.div>
-        <AnimatePresence>
-          {show3DPrompt && !open3D && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              onClick={() => setOpen3D(true)}
-              onPointerEnter={() => setShow3DPrompt(true)}
-              className="absolute inset-x-0 bottom-5 mx-auto flex w-max items-center gap-2.5 rounded-full bg-chalk/95 px-5 py-3 text-sm font-medium text-[#22312d] shadow-2xl"
-            >
-              <CubeIcon size={18} /> Enter 3D Experience
-              <span
-                className="ml-1 text-xs text-[#22312d]/50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShow3DPrompt(false);
-                }}
-              >
-                dismiss
-              </span>
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      <AnimatePresence>
-        {open3D && (
-          <Suspense fallback={null}>
-            <ThreeDModal
-              kind={module.threeD}
-              title={module.threeDTitle}
-              onClose={() => setOpen3D(false)}
-            />
-          </Suspense>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {videoMoment && (
-          <Suspense fallback={null}>
-            <VideoMoment
-              title={videoMoment.title}
-              url={videoMoment.url}
-              onClose={closeVideoMoment}
-            />
-          </Suspense>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {stage === "mastery" && <MasteryOutcome module={module} onNewTopic={onExit} />}
-      </AnimatePresence>
-
-      {/* AI Teacher Character Integration */}
-      <AnimatePresence>
-        {isTeacherActive ? (
-          <div className="fixed bottom-4 right-4 z-30 flex flex-col items-end gap-2">
-            <button
-              onClick={() => setShowStudioControls((v) => !v)}
-              className="flex items-center gap-1.5 rounded-full border border-teal-soft/40 bg-[#18231f]/90 px-3 py-1 text-[11px] font-medium text-teal-soft shadow-lg backdrop-blur-md transition-all hover:border-teal-soft hover:bg-[#18231f]"
-            >
-              <span>✨ 3D Character Studio</span>
-            </button>
-            <AnimatedTeacher
-              key="ai-teacher-active"
-              state={
-                customState ||
-                (isThinking ? "thinking" : aiResponse ? "speaking" : teacherProps.state)
-              }
-              expression={customExpression || (aiResponse ? "focused" : teacherProps.expression)}
-              gesture={customGesture || (aiResponse ? "explainBothHands" : teacherProps.gesture)}
-              position={customPosition}
-              scale={0.88}
-              gazeTarget={customGaze || teacherProps.gaze}
-              pointTarget={customPoint || teacherProps.pointTarget}
-              speakingText={aiResponse ?? teacherGreeting ?? (speaking ? caption : undefined)}
-              isAudioSpeaking={speaking || !!teacherGreeting || !!aiResponse}
-              onClick={aiResponse ? () => setAiResponse(null) : handleTeacherClick}
-              className="cursor-pointer select-none"
-              thoughtContent={
-                <form
-                  onSubmit={handleAskTeacher}
-                  className="mt-2 flex items-center gap-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    type="text"
-                    placeholder="Ask Dr. Rao a question..."
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    className="w-full min-w-[200px] rounded-full bg-white/10 px-3 py-1.5 text-xs text-white placeholder-white/50 outline-none focus:bg-white/20"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!question.trim() || isThinking}
-                    className="rounded-full bg-teal p-1.5 text-white disabled:opacity-50"
-                  >
-                    <Sparkles size={14} />
-                  </button>
-                </form>
-              }
+          {/* Dedicated Real-Time Word-by-Word Streaming Captions Bar Directly Below Canvas */}
+          <div className="w-full mt-3.5">
+            <CaptionsBar
+              caption={currentCaption}
+              speaking={speaking}
+              label={captionSpeaker}
+              isStudent={isStudentSpeaking}
             />
           </div>
-        ) : (
-          <motion.button
-            key="summon-teacher-btn"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            onClick={() => setIsTeacherActive(true)}
-            className="fixed bottom-4 right-4 z-30 flex items-center gap-2 rounded-full bg-[#18231f]/95 border border-teal-soft/40 px-3.5 py-2 text-xs text-chalk shadow-2xl backdrop-blur-md hover:border-teal-soft"
+        </div>
+      ) : (
+        <div className="relative z-10 w-full max-w-[1060px] mx-auto mb-2">
+          <CaptionsBar
+            caption={currentCaption}
+            speaking={speaking}
+            label={captionSpeaker}
+            isStudent={isStudentSpeaking}
+          />
+        </div>
+      )}
+
+      {/* STUDENT NAME ONBOARDING POPUP MODAL */}
+      <AnimatePresence>
+        {isNameModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
           >
-            <span className="relative flex size-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-soft opacity-75"></span>
-              <span className="relative inline-flex rounded-full size-2.5 bg-teal"></span>
-            </span>
-            <TeacherIcon size={15} className="text-teal-soft" />
-            <span>Summon AI Teacher</span>
-          </motion.button>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md rounded-3xl bg-zinc-900 border border-white/20 p-6 sm:p-8 shadow-2xl text-center flex flex-col gap-5 text-white backdrop-blur-xl"
+            >
+              <div className="size-16 rounded-full bg-white/10 border border-white/20 text-white mx-auto flex items-center justify-center backdrop-blur-md">
+                <TeacherIcon size={32} />
+              </div>
+
+              <div>
+                <h2 className="font-[family-name:var(--font-display)] text-2xl text-white">
+                  Welcome to OPED!
+                </h2>
+                <p className="text-sm text-white/70 mt-1.5 leading-relaxed">
+                  I'm Dr. Rao, your interactive AI teacher. Before we start our blackboard lesson, what should I call you?
+                </p>
+              </div>
+
+              <form onSubmit={handleNameSubmit} className="flex flex-col gap-3">
+                <div className="relative">
+                  <User className="w-4 h-4 text-white/70 absolute left-4 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Enter your name..."
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-black/60 border border-white/20 focus:border-white/50 focus:ring-1 focus:ring-white/50 text-white text-sm outline-none transition-all placeholder:text-white/40"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-all backdrop-blur-md active:scale-95 cursor-pointer shadow-lg"
+                >
+                  <span>Start Classroom Lesson</span>
+                  <EnterIcon size={16} />
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* FLOATING BOTTOM-RIGHT ACTION DOCK (Chat Drawer & Live Mic Pause) */}
+      <div className="fixed bottom-5 right-5 z-40 flex items-center gap-3">
+        {/* Live Mic Button */}
+        <button
+          type="button"
+          onClick={toggleMic}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md border transition-all cursor-pointer ${
+            isMicActive
+              ? "bg-white/30 border-white/60 text-white animate-pulse"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+          }`}
+          title={isMicActive ? "Click to submit voice question" : "Click to speak with Dr. Rao"}
+        >
+          {isMicActive ? (
+            <>
+              <MicOff className="w-4 h-4" />
+              <span>Tap to Send Voice</span>
+            </>
+          ) : (
+            <>
+              <Mic className="w-4 h-4" />
+              <span>Speak to Dr. Rao</span>
+            </>
+          )}
+        </button>
+
+        {/* Chat Drawer Trigger Button */}
+        <button
+          type="button"
+          onClick={() => setIsChatOpen((v) => !v)}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl backdrop-blur-md border transition-all cursor-pointer ${
+            isChatOpen
+              ? "bg-white/30 border-white/60 text-white"
+              : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+          }`}
+          title="Open Classroom Chat"
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>Chat Drawer</span>
+        </button>
+      </div>
+
+      {/* RIGHT CHAT DRAWER */}
+      <RightChatDrawer
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        studentName={studentName}
+        chapterTitle={module.title}
+        currentNotes={currentPage.notes || module.notes}
+        onGenerateSlidesFromPrompt={(prompt) => {
+          setIsChatOpen(false);
+          void handleDynamicStudentRequest(prompt);
+        }}
+      />
+
+      {/* AI Teacher Avatar in Bottom Corner (Hidden during 3D Classroom Mode) */}
+      <AnimatePresence>
+        {isTeacherActive && !is3DClassroomActive && (
+          <div className="fixed bottom-16 right-5 z-30 pointer-events-none">
+            <AnimatedTeacher
+              key="ai-teacher-active"
+              state={customState || teacherProps.state}
+              expression={customExpression || teacherProps.expression}
+              gesture={customGesture || teacherProps.gesture}
+              position={customPosition}
+              scale={0.82}
+              gazeTarget={customGaze || teacherProps.gaze}
+              pointTarget={customPoint || teacherProps.pointTarget}
+              speakingText={teacherGreeting || (speaking ? currentCaption : undefined)}
+              isAudioSpeaking={speaking || !!teacherGreeting}
+              avatarStyle="pulled"
+              onClick={handleTeacherClick}
+              className="pointer-events-auto cursor-pointer select-none"
+            />
+          </div>
         )}
       </AnimatePresence>
 

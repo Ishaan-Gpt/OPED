@@ -1,0 +1,152 @@
+{
+  "id": "c7-sci-1",
+  "grade": 7,
+  "subject": "Science",
+  "chapterNumber": 1,
+  "chapterTitle": "Nutrition in Plants (Photosynthesis)",
+  "syllabus": "NCERT Class 7 Biology",
+  "summary": "Plants are autotrophs that manufacture their own food through photosynthesis using carbon dioxide, water, sunlight, and chlorophyll. Oxygen is released and glucose is stored as starch. Heterotrophic nutrition in plants includes parasitic (Cuscuta), insectivorous (Pitcher plant), saprotrophic (Fungi), and symbiotic relationships (Lichens, Rhizobium).",
+  
+  "pages": [
+    {
+      "pageNumber": 1,
+      "pageType": "notes",
+      "heading": "1. Autotrophic Nutrition & Leaf Food Factories",
+      "notes": [
+        "• Nutrition: Process of taking in food and utilizing it for growth, repair and energy.",
+        "• Autotrophs (Auto=self, Trophos=nourishment): Organisms that prepare their own food.",
+        "• Heterotrophs: Organisms dependent on producers directly or indirectly.",
+        "• Green leaves serve as the primary solar food factories of the plant."
+      ],
+      "spokenLines": [
+        { "text": "Welcome to class! Today we explore NCERT Chapter 1: how green plants power life on Earth.", "hold": 3.8 },
+        { "text": "Unlike animals, green plants are autotrophs — they synthesize their own organic food from simple minerals.", "hold": 4.2 },
+        { "text": "Every green leaf is a microscopic solar factory capturing photon energy.", "hold": 3.8 }
+      ]
+    },
+    {
+      "pageNumber": 2,
+      "pageType": "video",
+      "heading": "2. Photosynthesis Reaction Mechanism in Motion",
+      "videoKind": "photosynthesis",
+      "videoTitle": "Photosynthesis — Solar Energy Conversion",
+      "spokenLines": [
+        { "text": "Watch this animation of the live leaf in sunlight.", "hold": 3.4 },
+        { "text": "Carbon dioxide enters through stomata pores while roots pull water up through continuous xylem vessels.", "hold": 4.5 },
+        { "text": "Chlorophyll harnesses solar energy to forge glucose and release fresh oxygen into the air.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 3,
+      "pageType": "artifact",
+      "heading": "3. Interactive Leaf Stomata & Chloroplast Architecture",
+      "artifactKind": "cell-labels",
+      "artifactTitle": "Interactive Leaf Anatomy & Guard Cell Stomata",
+      "spokenLines": [
+        { "text": "Interact with the leaf cross-section on the board.", "hold": 3.2 },
+        { "text": "Notice the stomatal pores flanked by bean-shaped guard cells that swell to open and shrink to close.", "hold": 4.5 },
+        { "text": "Locate the chloroplasts packed with chlorophyll pigment where light-harvesting occurs.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 4,
+      "pageType": "3d",
+      "heading": "4. 3D Chloroplast & Mesophyll Cell",
+      "threeDKind": "leaf-cell",
+      "threeDTitle": "3D Interactive Chloroplast & Mesophyll Cell",
+      "spokenLines": [
+        { "text": "Orbit around the 3D plant cell model on the board.", "hold": 3.4 },
+        { "text": "See how the green chloroplast organelles are distributed across the cytoplasm.", "hold": 4.0 },
+        { "text": "This 3D spatial layout maximizes sunlight absorption from every angle in daylight.", "hold": 4.2 }
+      ]
+    },
+    {
+      "pageNumber": 5,
+      "pageType": "notes",
+      "heading": "5. Photosynthesis Equation & Heterotrophic Modes",
+      "notes": [
+        "• Chemical Equation: 6CO₂ + 6H₂O  --[Sunlight / Chlorophyll]-->  C₆H₁₂O₆ (Glucose) + 6O₂",
+        "• Starch Test: Boiled leaf treated with Iodine solution turns blue-black (confirms starch).",
+        "• Parasite: Cuscuta (Amarbel) absorbs food via haustoria; Insectivorous: Pitcher plant digests bugs for Nitrogen.",
+        "• Symbiosis: Lichens (Algae + Fungus) and Rhizobium (Nitrogen-fixing bacteria in legume nodules)."
+      ],
+      "spokenLines": [
+        { "text": "Here is your exam summary for Chapter 1.", "hold": 3.2 },
+        { "text": "Memorize the chemical reaction: six carbon dioxide plus six water gives glucose plus six oxygen.", "hold": 4.2 },
+        { "text": "And remember special cases like Cuscuta parasites and Rhizobium nitrogen-fixing root nodules.", "hold": 4.2 }
+      ]
+    }
+  ],
+
+  "memorize": {
+    "conceptTitle": "Photosynthesis Chemical Reaction & Four Essential Inputs",
+    "teacherRecitationPrompt": "Student, recite the exact chemical equation of photosynthesis and list all four raw materials!",
+    "expectedRecitation": "Carbon dioxide plus water, in the presence of sunlight and chlorophyll, produces glucose and oxygen gas (6CO2 plus 6H2O gives C6H12O6 plus 6O2).",
+    "mustIncludeKeywords": [
+      "carbon dioxide",
+      "water",
+      "sunlight",
+      "chlorophyll",
+      "glucose",
+      "oxygen",
+      "6co2",
+      "6h2o"
+    ],
+    "coachingHint": "Name all 4 inputs: carbon dioxide, water, sunlight, chlorophyll; and both products: glucose and oxygen."
+  },
+
+  "practice": {
+    "title": "NCERT End of Chapter Interactive Practice",
+    "questions": [
+      {
+        "id": "q1",
+        "type": "fill-in-the-blanks",
+        "question": "The tiny pores present on the surface of leaves surrounded by guard cells are called _____.",
+        "correctAnswer": "stomata",
+        "acceptableAnswers": ["stomata", "stoma"],
+        "explanation": "Stomata are microscopic apertures on the epidermis of leaves that regulate gas exchange (CO₂ intake, O₂ release) and transpiration."
+      },
+      {
+        "id": "q2",
+        "type": "fill-in-the-blanks",
+        "question": "The presence of starch in leaves can be tested using dilute _____ solution, turning blue-black.",
+        "correctAnswer": "iodine",
+        "acceptableAnswers": ["iodine", "iodine solution"],
+        "explanation": "Iodine reacts with starch helical amylose chains to produce an intense blue-black complex."
+      },
+      {
+        "id": "q3",
+        "type": "mcq",
+        "question": "Amarbel (Cuscuta) is an example of a:",
+        "options": [
+          "Autotroph",
+          "Parasite",
+          "Saprotroph",
+          "Host"
+        ],
+        "correctAnswer": "Parasite",
+        "explanation": "Cuscuta lacks chlorophyll and absorbs pre-made food from host trees using specialized haustorial roots."
+      },
+      {
+        "id": "q4",
+        "type": "mcq",
+        "question": "Which bacterium lives in the root nodules of leguminous plants to fix atmospheric nitrogen?",
+        "options": [
+          "Lactobacillus",
+          "Rhizobium",
+          "Yeast",
+          "Spirogyra"
+        ],
+        "correctAnswer": "Rhizobium",
+        "explanation": "Rhizobium forms a symbiotic association with legume root nodules, converting gaseous nitrogen into water-soluble nitrates."
+      },
+      {
+        "id": "q5",
+        "type": "true-false",
+        "question": "Insectivorous plants like the Pitcher plant perform photosynthesis to produce carbohydrates.",
+        "correctAnswer": "True",
+        "explanation": "Pitcher plants are green and carry out photosynthesis for energy, but trap insects specifically to obtain nitrogen in nitrogen-poor soils."
+      }
+    ]
+  }
+}

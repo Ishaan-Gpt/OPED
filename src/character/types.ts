@@ -172,6 +172,7 @@ export interface CharacterProps {
 }
 
 export interface CharacterConfig {
+  gender?: 'male' | 'female';
   skinColor: string;
   skinDarkColor: string;
   hairColor: string;

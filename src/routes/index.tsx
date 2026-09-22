@@ -11,13 +11,13 @@ export const Route = createFileRoute("/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Chalkroom — NCERT Classes 4–10, 100% Exam Readiness" },
+      { title: "OPED — NCERT Classes 4–10, 100% Exam Readiness" },
       {
         name: "description",
         content:
           "An interactive NCERT classroom: chalk blackboard lessons, 3D experiences and a 2-way active recall recitation loop for Classes 4 to 10.",
       },
-      { property: "og:title", content: "Chalkroom — Interactive NCERT Classroom" },
+      { property: "og:title", content: "OPED — Interactive NCERT Classroom" },
       {
         property: "og:description",
         content:
@@ -57,10 +57,10 @@ function Home() {
           <div className="flex items-center gap-2.5">
             <BrandMark size={34} />
             <span className="text-left leading-tight">
-              <span className="block font-[family-name:var(--font-display)] text-lg text-ink">
-                Chalkroom
+              <span className="block font-[family-name:var(--font-display)] text-lg text-ink font-semibold">
+                OPED
               </span>
-              <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-ink/45">
+              <span className="block text-[0.6rem] uppercase tracking-[0.2em] text-ink/45 font-medium">
                 NCERT 4–10 · Outcome based
               </span>
             </span>

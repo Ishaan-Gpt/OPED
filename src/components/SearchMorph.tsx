@@ -38,7 +38,7 @@ export function SearchMorph({ onLaunch }: Props) {
   const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
   const [customPosition, setCustomPosition] = useState<PositionPreset>('bottom-right');
   const [greetingText, setGreetingText] = useState<string | null>(
-    "Welcome to Chalkroom! Search any topic from NCERT Class 4–10 or click a suggestion to start!"
+    "Welcome to OPED! Search any topic from NCERT Class 4–10 or click a suggestion to start!"
   );
 
   const runQuery = async (query: string) => {
@@ -118,7 +118,7 @@ export function SearchMorph({ onLaunch }: Props) {
             <button
               type="submit"
               disabled={isGenerating}
-              className="inline-flex items-center gap-2 rounded-full bg-teal px-4 py-2.5 text-sm font-medium text-white transition-transform hover:scale-[1.03] active:scale-95 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full bg-zinc-900 hover:bg-black border border-zinc-700/50 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:scale-[1.03] active:scale-95 disabled:opacity-60 shadow-md cursor-pointer"
             >
               {isGenerating ? (
                 <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -138,7 +138,7 @@ export function SearchMorph({ onLaunch }: Props) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="mt-4 text-center text-sm text-ink/50"
+              className="mt-4 text-center text-sm text-ink/70 font-medium"
             >
               This chapter isn't pre-loaded yet — the AI teacher is writing it now, just a moment…
             </motion.p>
@@ -151,12 +151,12 @@ export function SearchMorph({ onLaunch }: Props) {
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              className="mt-4 flex max-w-2xl items-start gap-2.5 rounded-2xl border border-royal/25 bg-royal/6 px-4 py-3 text-sm text-royal"
+              className="mt-4 flex max-w-2xl items-start gap-2.5 rounded-2xl border border-zinc-300 bg-white/90 px-4 py-3 text-sm text-zinc-900 shadow-sm backdrop-blur-md"
             >
               <AlertIcon size={18} />
               <span>
                 {error}
-                <span className="mt-0.5 block text-royal/70">{RULES.guidanceExample}</span>
+                <span className="mt-0.5 block text-zinc-600">{RULES.guidanceExample}</span>
               </span>
             </motion.div>
           )}
@@ -178,14 +178,14 @@ export function SearchMorph({ onLaunch }: Props) {
                   setError(null);
                   void runQuery(s);
                 }}
-                className="rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-xs text-ink/65 transition-colors hover:border-teal/40 hover:text-teal"
+                className="rounded-full border border-zinc-200/90 bg-white/80 hover:bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-900 transition-all shadow-sm backdrop-blur-md cursor-pointer hover:border-zinc-400 hover:shadow"
               >
                 {s}
               </button>
             ))}
           </div>
 
-          <p className="mt-8 text-center text-xs tracking-wide text-ink/40">
+          <p className="mt-8 text-center text-xs tracking-wide text-zinc-500 font-medium">
             Classes 4–10 · Science · Mathematics · Social Studies · Outcome-based recall
           </p>
         </motion.div>
@@ -197,7 +197,7 @@ export function SearchMorph({ onLaunch }: Props) {
           <div className="fixed bottom-4 right-4 z-30 flex flex-col items-end gap-2">
             <button
               onClick={() => setShowStudioControls((v) => !v)}
-              className="flex items-center gap-1.5 rounded-full border border-teal-soft/40 bg-[#18231f]/90 px-3 py-1 text-[11px] font-medium text-teal-soft shadow-lg backdrop-blur-md transition-all hover:border-teal-soft hover:bg-[#18231f]"
+              className="flex items-center gap-1.5 rounded-full border border-zinc-200/80 bg-white/80 hover:bg-white px-3 py-1 text-[11px] font-medium text-zinc-900 shadow-md backdrop-blur-md transition-all cursor-pointer"
             >
               <span>✨ 3D Character Studio</span>
             </button>
@@ -227,13 +227,13 @@ export function SearchMorph({ onLaunch }: Props) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             onClick={() => setIsTeacherActive(true)}
-            className="fixed bottom-4 right-4 z-30 flex items-center gap-2 rounded-full bg-[#18231f]/95 border border-teal-soft/40 px-3.5 py-2 text-xs text-chalk shadow-2xl backdrop-blur-md hover:border-teal-soft"
+            className="fixed bottom-4 right-4 z-30 flex items-center gap-2 rounded-full bg-white/80 hover:bg-white border border-zinc-200/80 px-3.5 py-2 text-xs font-semibold text-zinc-900 shadow-2xl backdrop-blur-md cursor-pointer transition-all"
           >
             <span className="relative flex size-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-soft opacity-75"></span>
-              <span className="relative inline-flex rounded-full size-2.5 bg-teal"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full size-2.5 bg-zinc-900"></span>
             </span>
-            <TeacherIcon size={15} className="text-teal-soft" />
+            <TeacherIcon size={15} className="text-zinc-900" />
             <span>Summon AI Teacher</span>
           </motion.button>
         )}

@@ -1,28 +1,39 @@
 /**
- * Global design system tokens.
+ * Global design system tokens — Monochrome Dark & White Tint Palette.
  * Single source of truth for palette, typography, motion and elevation.
- * Colors mirror the CSS variables declared in src/styles.css.
  */
 
 export const palette = {
   white: "#ffffff",
-  paper: "#fbfaf7",
-  ink: "#1b1917",
-  /** Royal Red — alerts, errors, key memorization cues */
-  royalRed: "#9e1b32",
-  royalRedSoft: "#c8465c",
-  /** Teal Green — success, verified recall, progress */
-  tealGreen: "#0f6b5f",
-  tealGreenSoft: "#2f9d8b",
-  /** Warm Earth Brown — wooden frame, tactile trim */
-  earthBrown: "#6b4228",
-  earthBrownLight: "#9a6b41",
-  earthBrownDark: "#3f2a19",
-  /** Blackboard surface */
-  board: "#22312d",
-  boardDeep: "#18231f",
-  chalk: "#f3f1e7",
-  chalkDim: "rgba(243, 241, 231, 0.62)",
+  paper: "#ffffff",
+  ink: "#09090b",
+  
+  // Pure Monochrome Scale (White Major)
+  gray50: "#ffffff",
+  gray100: "#f4f4f5",
+  gray200: "#e4e4e7",
+  gray300: "#d4d4d8",
+  gray400: "#a1a1aa",
+  gray500: "#71717a",
+  gray600: "#52525b",
+  gray700: "#3f3f46",
+  gray800: "#27272a",
+  gray900: "#18181b",
+  gray950: "#09090b",
+  black: "#000000",
+
+  // Semantic mappings (Strictly White Major Monochrome)
+  royalRed: "#09090b",
+  royalRedSoft: "#52525b",
+  tealGreen: "#09090b",
+  tealGreenSoft: "#3f3f46",
+  earthBrown: "#ffffff",
+  earthBrownLight: "#f4f4f5",
+  earthBrownDark: "#e4e4e7",
+  board: "#09090b",
+  boardDeep: "#000000",
+  chalk: "#ffffff",
+  chalkDim: "rgba(255, 255, 255, 0.75)",
 } as const;
 
 export const typography = {
@@ -40,10 +51,9 @@ export const radii = {
 } as const;
 
 export const elevation = {
-  soft: "0 1px 2px rgba(27,25,23,0.06), 0 8px 24px -12px rgba(27,25,23,0.18)",
-  lifted: "0 2px 4px rgba(27,25,23,0.08), 0 28px 60px -24px rgba(27,25,23,0.35)",
-  frame:
-    "0 30px 70px -30px rgba(31,20,10,0.65), inset 0 2px 0 rgba(255,255,255,0.22), inset 0 -3px 8px rgba(0,0,0,0.35)",
+  soft: "0 1px 2px rgba(0,0,0,0.2), 0 8px 24px -12px rgba(0,0,0,0.4)",
+  lifted: "0 2px 4px rgba(0,0,0,0.3), 0 28px 60px -24px rgba(0,0,0,0.6)",
+  frame: "0 30px 70px -30px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -3px 8px rgba(0,0,0,0.8)",
 } as const;
 
 export const motionTokens = {
@@ -54,7 +64,6 @@ export const motionTokens = {
 } as const;
 
 export const layout = {
-  /** Optimized for desktop + mobile landscape */
   maxStageWidth: 1180,
   headerHeight: 68,
 } as const;

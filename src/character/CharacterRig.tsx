@@ -16,11 +16,12 @@ interface CharacterRigProps {
 }
 
 const defaultConfig: CharacterConfig = {
+  gender: "male",
   skinColor: "#FDE2D1",
   skinDarkColor: "#F5C2A5",
-  hairColor: "#2C1D11",
-  shirtColor: "#475569",
-  vestColor: "#1E293B",
+  hairColor: "#1E1B18",
+  shirtColor: "#334155",
+  vestColor: "#0F172A",
   accentColor: "#38BDF8",
   glasses: true,
 };
