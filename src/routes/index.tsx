@@ -23,6 +23,7 @@ import { resolveQuery, RULES, suggestions, type NcertModule } from "@/config/rul
 import { generateLessonModule } from "@/lib/teacher/generateModuleClient";
 import BlackboardCanvas from "@/components/BlackboardCanvas";
 import AwardLoader from "@/components/AwardLoader";
+import StackSpread from "@/components/ui/stack-spread";
 import useLenis from "@/hooks/useLenis";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
 import type {
@@ -474,28 +475,8 @@ function Index() {
           </div>
         </motion.section>
 
-        {/* ZERO COST SECTION */}
-        <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="free-section"
-        >
-          <div className="free-card-field" aria-hidden="true">
-            <div className="float-card fc-1"><div className="float-bar">OPED / BLACKBOARD <span>01</span></div><div className="float-visual">☀ <span>→</span> ♧</div><small>LIGHT + WATER + CO₂ → FOOD</small></div>
-            <div className="float-card fc-2"><div className="float-bar">ACTIVE RECALL <span>02</span></div><div className="mini-wave">▂▅▇▄▂▆█▅▃▇▄▂▅▇▃</div><small>YOUR VOICE. YOUR WORDS.</small></div>
-            <div className="float-card fc-3"><div className="float-bar">CONCEPT CHECK <span>03</span></div><div className="float-check">✓</div><small>THE IDEA CAME THROUGH.</small></div>
-            <div className="float-card fc-4"><div className="float-bar">CHAPTER READINESS <span>04</span></div><div className="float-number">82%</div><small>PROGRESS THAT MEANS SOMETHING.</small></div>
-            <div className="float-card fc-5"><div className="float-bar">NCERT / CLASS 10 <span>05</span></div><div className="float-lines"><i/><i/><i/></div><small>CHAPTER 01 / LIFE PROCESSES</small></div>
-            <div className="float-card fc-6"><div className="float-bar">ADAPTIVE TEACHING <span>06</span></div><div className="float-branch">↗ &nbsp; ↘ &nbsp; ↗</div><small>ANOTHER WAY TO UNDERSTAND.</small></div>
-          </div>
-          <div className="free-center">
-            <p>and for students it costs...</p>
-            <h2>zero<span>.</span></h2>
-            <div className="free-doodle">we charge schools <svg viewBox="0 0 80 42" fill="none"><path d="M4 4c5 33 48 5 66 27m-11-1 11 1-5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
-          </div>
-        </motion.section>
+        {/* ZERO COST SECTION WITH SCROLL-TRIGGERED STACK SPREAD MOTION */}
+        <StackSpread />
 
         {/* FINAL CTA SECTION */}
         <section id="start" className="final-cta">
