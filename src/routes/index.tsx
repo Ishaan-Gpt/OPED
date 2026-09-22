@@ -212,7 +212,7 @@ function Index() {
       setIsGenerating(true);
       setTimeout(() => {
         setIsGenerating(false);
-        setActiveModule(resolved.module);
+        setActiveModule(resolved.module ?? null);
       }, 700);
       return;
     }
