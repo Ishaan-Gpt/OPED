@@ -37,9 +37,11 @@ export const palette = {
 } as const;
 
 export const typography = {
-  display: '"Fraunces", Georgia, serif',
-  body: '"Outfit", system-ui, sans-serif',
+  display: '"Instrument Serif", "Fraunces", Georgia, serif',
+  script: '"Pinyon Script", cursive',
+  body: '"DM Sans", "Outfit", system-ui, sans-serif',
   chalk: '"Caveat", "Comic Sans MS", cursive',
+  mono: '"Space Mono", monospace',
 } as const;
 
 export const radii = {

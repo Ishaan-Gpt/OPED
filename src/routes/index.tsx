@@ -1,21 +1,54 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronDown, Menu, Mic, Pause, Play, Search, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  ChevronDown,
+  Menu,
+  Mic,
+  Pause,
+  Play,
+  Search,
+  X,
+  Sparkles,
+  HelpCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import classroomImage from "@/assets/oped-classroom.jpg";
-import { BrandMark } from "@/components/icons";
-import { resolveQuery, RULES, type NcertModule } from "@/config/rules";
+import { AlertIcon, BrandMark, TeacherIcon } from "@/components/icons";
+import { resolveQuery, RULES, suggestions, type NcertModule } from "@/config/rules";
 import { generateLessonModule } from "@/lib/teacher/generateModuleClient";
 import BlackboardCanvas from "@/components/BlackboardCanvas";
 import useLenis from "@/hooks/useLenis";
+import { AnimatedTeacher } from "@/character/AnimatedTeacher";
+import type {
+  CharacterState,
+  ExpressionType,
+  GestureType,
+  GazeTarget,
+  PointTarget,
+  PositionPreset,
+} from "@/character/types";
+import { DemoControls } from "@/demo/DemoControls";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "OPED — Learn it. Prove it." },
-      { name: "description", content: "The first AI teacher that checks if you actually learned it. Free NCERT chapter learning for Classes 4–10." },
+      {
+        name: "description",
+        content:
+          "The first AI teacher that checks if you actually learned it. Free NCERT chapter learning for Classes 4–10.",
+      },
       { property: "og:title", content: "OPED — Learn it. Prove it." },
-      { property: "og:description", content: "The first AI teacher that checks if you actually learned it. Free NCERT chapter learning for Classes 4–10." },
+      {
+        property: "og:description",
+        content:
+          "The first AI teacher that checks if you actually learned it. Free NCERT chapter learning for Classes 4–10.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -151,31 +184,51 @@ function Index() {
   useLenis();
   const pageRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<NcertModule | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [demoPlaying, setDemoPlaying] = useState(false);
 
+  // 3D Pixar AI Teacher Controls
+  const [isTeacherActive, setIsTeacherActive] = useState(true);
+  const [showStudioControls, setShowStudioControls] = useState(false);
+  const [customState, setCustomState] = useState<CharacterState | null>(null);
+  const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
+  const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
+  const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
+  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
+  const [customPosition, setCustomPosition] = useState<PositionPreset>('bottom-right');
+  const [greetingText, setGreetingText] = useState<string | null>(
+    "Welcome to OPED! Search any NCERT chapter above or click a suggestion to start class!"
+  );
+
   const launchChapter = async (searchQuery: string) => {
     const clean = searchQuery.trim();
     if (!clean) return;
+    setError(null);
     const resolved = resolveQuery(clean);
     if (resolved.ok && resolved.module) {
+      setCustomState('celebrate');
       setActiveModule(resolved.module);
       return;
     }
     if (resolved.generatable) {
       setIsGenerating(true);
+      setGreetingText(`Dr. Rao is writing the lesson for ${clean}...`);
       const generated = await generateLessonModule({ ...resolved.generatable, topic: clean });
       setIsGenerating(false);
       if (generated) {
+        setCustomState('celebrate');
         setActiveModule(generated);
         return;
       }
+      setError("Couldn't prepare that chapter right now — try again in a moment.");
+      setCustomState('thinking');
+      return;
     }
-    // Fallback: load default Photosynthesis module
-    const defaultRes = resolveQuery("photosynthesis");
-    if (defaultRes.module) setActiveModule(defaultRes.module);
+    setError(resolved.message ?? RULES.guidance);
+    setCustomState('thinking');
   };
 
   const startLesson = (event: FormEvent) => {
@@ -188,6 +241,11 @@ function Index() {
     setDemoPlaying(true);
     void launchChapter("photosynthesis");
   };
+
+  const currentTeacherState: CharacterState = customState || (query ? 'pointing' : error ? 'thinking' : 'wave');
+  const currentTeacherExpression: ExpressionType = customExpression || (query ? 'explaining' : error ? 'confused' : 'happy');
+  const currentTeacherGesture: GestureType = customGesture || (query ? 'pointLeft' : error ? 'thinking' : 'wave');
+  const currentPointTarget: PointTarget = customPoint || { target: 'input' };
 
   if (activeModule) {
     return (
@@ -205,7 +263,7 @@ function Index() {
     <div className="site-shell" ref={pageRef}>
       <header className="site-header">
         <a href="#top" className="brand" aria-label="OPED home">
-          <BrandMark size={28} />
+          <BrandMark size={32} variant="black" />
           <span>OPED<span>.</span></span>
         </a>
         <span className="header-note">THE FIRST AI TEACHER THAT CHECKS.</span>
@@ -215,11 +273,13 @@ function Index() {
       </header>
 
       <main>
+        {/* UNIFIED HERO SECTION WITH CENTERED SEARCH & INTEGRATED AI TEACHER */}
         <section id="top" className="hero-section">
           <div className="hero-copy">
-            <span className="hero-eyebrow">AN EDUCATION WITH AN ANSWER</span>
-            <h1>Learn it.<br /><span className="script-word">Prove it.</span></h1>
-            <p>The first AI teacher that checks if you actually learned it.</p>
+            <span className="hero-eyebrow font-mono">AN EDUCATION WITH AN ANSWER</span>
+            <h1 className="font-serif">Learn it.<br /><span className="script-word">Prove it.</span></h1>
+            <p className="font-serif">The first AI teacher that checks if you actually learned it.</p>
+            
             <div className="hero-search-wrap">
               <Doodle direction="left">start anywhere</Doodle>
               <form onSubmit={startLesson} className="hero-search" role="search">
@@ -227,8 +287,11 @@ function Index() {
                 <input
                   aria-label="Search an NCERT chapter"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={isGenerating ? "AI Teacher writing lesson..." : "Search an NCERT chapter (e.g. Photosynthesis, Light)..."}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    if (error) setError(null);
+                  }}
+                  placeholder={isGenerating ? "AI Teacher writing lesson..." : RULES.placeholder}
                   disabled={isGenerating}
                 />
                 <Button type="submit" size="icon" aria-label="Open classroom" disabled={isGenerating}>
@@ -236,10 +299,48 @@ function Index() {
                 </Button>
               </form>
             </div>
+
+            {/* Error Guidance Notification */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="mt-4 flex max-w-xl mx-auto items-start gap-2.5 rounded-2xl border border-zinc-300 bg-white/95 px-4 py-3 text-sm text-zinc-900 shadow-sm backdrop-blur-md"
+                >
+                  <AlertIcon size={18} />
+                  <span>
+                    {error}
+                    <span className="mt-0.5 block text-zinc-600">{RULES.guidanceExample}</span>
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Quick Suggestion Chips */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 max-w-xl mx-auto">
+              {suggestions.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    setQuery(s);
+                    setError(null);
+                    void launchChapter(s);
+                  }}
+                  className="rounded-full border border-zinc-200/90 bg-white/80 hover:bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-900 transition-all shadow-sm backdrop-blur-md cursor-pointer hover:border-zinc-400"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
             <a href="#chapters" className="hero-scroll">SCROLL TO EXPLORE <ChevronDown size={15}/></a>
           </div>
         </section>
 
+        {/* NCERT SUBJECTS & CHAPTER SELECTION */}
         <section id="chapters" className="chapters-section content-width">
           <div className="section-heading reveal">
             <Doodle direction="left">100% NCERT</Doodle>
@@ -260,9 +361,10 @@ function Index() {
               </div>
             ))}
           </div>
-          <p className="section-caption">BUILT FOR THE NCERT SYLLABUS. CLICK ANY SUBJECT TO START CLASS.</p>
+          <p className="section-caption">BUILT FOR THE NCERT SYLLABUS. CLICK ANY SUBJECT TO START CLASSROOM LESSON.</p>
         </section>
 
+        {/* CLASSROOM PHOTO SHOWCASE */}
         <section className="classroom-section content-width">
           <div className="section-heading reveal">
             <Doodle>no passive watch-time</Doodle>
@@ -277,6 +379,7 @@ function Index() {
           </div>
         </section>
 
+        {/* THE OPED LOOP STORY SECTION */}
         <section id="the-loop" className="story-section content-width">
           <div className="story-intro">
             <span>THE OPED LOOP / 01—04</span>
@@ -309,6 +412,7 @@ function Index() {
           </div>
         </section>
 
+        {/* EXAM READINESS SECTION */}
         <section className="readiness-section content-width">
           <div className="readiness-copy reveal">
             <Doodle>badges are dead</Doodle>
@@ -330,6 +434,7 @@ function Index() {
           </div>
         </section>
 
+        {/* ZERO COST SECTION */}
         <section className="free-section">
           <div className="free-card-field" aria-hidden="true">
             <div className="float-card fc-1"><div className="float-bar">OPED / BLACKBOARD <span>01</span></div><div className="float-visual">☀ <span>→</span> ♧</div><small>LIGHT + WATER + CO₂ → FOOD</small></div>
@@ -346,6 +451,7 @@ function Index() {
           </div>
         </section>
 
+        {/* FINAL CTA SECTION */}
         <section id="start" className="final-cta">
           <div className="paper-curl" aria-hidden="true"/>
           <div className="cta-content">
@@ -358,7 +464,7 @@ function Index() {
                   aria-label="Search a chapter to start"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search a chapter"
+                  placeholder="Search a chapter (e.g. Photosynthesis)..."
                 />
                 <Button type="submit" aria-label="Start learning">
                   Start learning <ArrowUpRight size={17}/>
@@ -368,18 +474,90 @@ function Index() {
             <span className="cta-small">FREE FOR STUDENTS. CLASSES 4—10. NCERT ONLY.</span>
           </div>
           <footer className="cta-footer">
-            <a href="#top" className="brand">OPED<span>.</span></a>
+            <a href="#top" className="brand">
+              <BrandMark size={28} variant="white" />
+              <span>OPED<span>.</span></span>
+            </a>
             <span>LEARN IT. PROVE IT.</span>
             <a href="#top">BACK TO TOP ↑</a>
           </footer>
         </section>
       </main>
 
+      {/* FLOATING 3D PIXAR AI TEACHER CHARACTER */}
+      <AnimatePresence>
+        {isTeacherActive ? (
+          <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2">
+            <button
+              onClick={() => setShowStudioControls((v) => !v)}
+              className="flex items-center gap-1.5 rounded-full border border-zinc-200/80 bg-white/90 hover:bg-white px-3 py-1 text-[11px] font-medium text-zinc-900 shadow-md backdrop-blur-md transition-all cursor-pointer"
+            >
+              <span>✨ 3D Character Studio</span>
+            </button>
+            <AnimatedTeacher
+              key="ai-teacher-unified"
+              state={currentTeacherState}
+              expression={currentTeacherExpression}
+              gesture={currentTeacherGesture}
+              position={customPosition}
+              scale={0.92}
+              gazeTarget={customGaze || 'student'}
+              pointTarget={currentPointTarget}
+              speakingText={greetingText || undefined}
+              isAudioSpeaking={!!greetingText}
+              onClick={() => {
+                setGreetingText("I'm Dr. Rao! Search any NCERT chapter above to begin!");
+                setCustomState('eureka');
+                setTimeout(() => setCustomState(null), 3000);
+              }}
+              className="cursor-pointer select-none"
+            />
+          </div>
+        ) : (
+          <motion.button
+            key="summon-teacher-btn-unified"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            onClick={() => setIsTeacherActive(true)}
+            className="fixed bottom-20 right-4 z-30 flex items-center gap-2 rounded-full bg-white/90 hover:bg-white border border-zinc-200/80 px-3.5 py-2 text-xs font-semibold text-zinc-900 shadow-2xl backdrop-blur-md cursor-pointer transition-all"
+          >
+            <span className="relative flex size-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full size-2.5 bg-zinc-900"></span>
+            </span>
+            <TeacherIcon size={15} className="text-zinc-900" />
+            <span>Summon AI Teacher</span>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* 3D CHARACTER STUDIO DRAWER */}
+      <DemoControls
+        isOpen={showStudioControls}
+        onClose={() => setShowStudioControls(false)}
+        currentState={currentTeacherState}
+        currentExpression={currentTeacherExpression}
+        currentGesture={currentTeacherGesture}
+        currentPosition={customPosition}
+        onPlayState={(st) => {
+          setCustomState(st);
+          setCustomExpression(null);
+          setCustomGesture(null);
+        }}
+        onSetExpression={(exp) => setCustomExpression(exp)}
+        onSetGesture={(gst) => setCustomGesture(gst)}
+        onMoveTo={(pos) => setCustomPosition(pos)}
+        onLookAt={(gz) => setCustomGaze(gz)}
+        onPointAt={(pt) => setCustomPoint(pt)}
+      />
+
+      {/* FLOATING QUICK DOCK & MENU OVERLAY */}
       <div className="floating-dock" aria-label="Quick actions">
         <Button type="button" className="dock-play" onClick={playDemo} aria-label={demoPlaying ? "Pause demo" : "Play demo"}>
           {demoPlaying ? <Pause size={20} fill="currentColor"/> : <Play size={20} fill="currentColor"/>}
         </Button>
-        <Button type="button" className="dock-main" onClick={() => document.getElementById("start")?.scrollIntoView({ behavior: "smooth" })}>
+        <Button type="button" className="dock-main" onClick={() => document.getElementById("top")?.scrollIntoView({ behavior: "smooth" })}>
           Start learning / Search chapter
         </Button>
         <Button type="button" className="dock-menu" onClick={() => setMenuOpen(true)} aria-label="Open menu">
@@ -390,7 +568,10 @@ function Index() {
       {menuOpen && (
         <div className="menu-overlay" role="dialog" aria-modal="true" aria-label="Site menu">
           <div className="menu-top">
-            <span className="brand">OPED<span>.</span></span>
+            <a href="#top" className="brand" onClick={() => setMenuOpen(false)}>
+              <BrandMark size={28} />
+              <span>OPED<span>.</span></span>
+            </a>
             <Button variant="ghost" size="icon" onClick={() => setMenuOpen(false)} aria-label="Close menu">
               <X/>
             </Button>

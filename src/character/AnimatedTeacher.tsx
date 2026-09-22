@@ -139,6 +139,7 @@ export const AnimatedTeacher = forwardRef<
           let resolvedState = newState as CharacterState;
           if (newState === "explain") resolvedState = "explaining";
           if (newState === "listen") resolvedState = "listeningEar";
+          if ((newState as string) === "present") resolvedState = "presenting";
 
           if (timeoutRef.current) clearTimeout(timeoutRef.current);
           setCurrentState(resolvedState);
