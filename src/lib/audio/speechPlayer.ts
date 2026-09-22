@@ -258,6 +258,32 @@ class SpeechPlayerManager {
   }
 
   /**
+   * Instantly pauses any active speaking audio.
+   */
+  public pause() {
+    if (this.currentAudio) {
+      try { this.currentAudio.pause(); } catch {}
+    }
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      try { window.speechSynthesis.pause(); } catch {}
+    }
+    this.isSpeakingState = false;
+  }
+
+  /**
+   * Resumes paused audio.
+   */
+  public resume() {
+    if (this.currentAudio) {
+      try { void this.currentAudio.play(); } catch {}
+    }
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      try { window.speechSynthesis.resume(); } catch {}
+    }
+    this.isSpeakingState = true;
+  }
+
+  /**
    * Instantly pauses and cancels any active speaking audio.
    */
   public stopAll() {

@@ -12,7 +12,7 @@ import EmbeddedThreeDCanvas from "@/components/EmbeddedThreeDCanvas";
 import EmbeddedVideoPlayer from "@/components/EmbeddedVideoPlayer";
 import RightChatDrawer from "@/components/RightChatDrawer";
 import { BrandMark, CheckSealIcon, TeacherIcon, EnterIcon } from "@/components/icons";
-import { Sparkles, Brain, Target, BookOpen, CheckCircle2, ChevronRight, User, MessageSquare, Mic, MicOff } from "lucide-react";
+import { Sparkles, Brain, Target, BookOpen, CheckCircle2, ChevronRight, User, MessageSquare, Mic, MicOff, Pause, Play, X } from "lucide-react";
 import { AnimatedTeacher } from "@/character/AnimatedTeacher";
 import type {
   CharacterState,
