@@ -308,7 +308,7 @@ export function CharacterShowcasePage() {
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: diagramRef.current! });
-                    teacher.play("present");
+                    teacher.play("presenting");
                   }}
                   className="flex-1 rounded-lg border border-purple-500/30 bg-purple-500/10 py-1.5 text-[11px] font-medium text-purple-300 transition-colors hover:bg-purple-500/20"
                 >
@@ -350,7 +350,7 @@ export function CharacterShowcasePage() {
                 <button
                   onClick={() => {
                     teacher.lookAt({ targetElement: conceptRef.current! });
-                    teacher.play("present");
+                    teacher.play("presenting");
                   }}
                   className="flex-1 rounded-lg border border-purple-500/30 bg-purple-500/10 py-1.5 text-[11px] font-medium text-purple-300 transition-colors hover:bg-purple-500/20"
                 >
