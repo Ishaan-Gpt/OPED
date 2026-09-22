@@ -209,8 +209,11 @@ function Index() {
     setError(null);
     const resolved = resolveQuery(clean);
     if (resolved.ok && resolved.module) {
-      setCustomState('celebrate');
-      setActiveModule(resolved.module);
+      setIsGenerating(true);
+      setTimeout(() => {
+        setIsGenerating(false);
+        setActiveModule(resolved.module);
+      }, 700);
       return;
     }
     if (resolved.generatable) {
@@ -219,16 +222,13 @@ function Index() {
       const generated = await generateLessonModule({ ...resolved.generatable, topic: clean });
       setIsGenerating(false);
       if (generated) {
-        setCustomState('celebrate');
         setActiveModule(generated);
         return;
       }
       setError("Couldn't prepare that chapter right now — try again in a moment.");
-      setCustomState('thinking');
       return;
     }
     setError(resolved.message ?? RULES.guidance);
-    setCustomState('thinking');
   };
 
   const startLesson = (event: FormEvent) => {
@@ -571,6 +571,51 @@ function Index() {
           <p>LEARN IT. PROVE IT. / NCERT CLASSES 4—10</p>
         </div>
       )}
+
+      {/* AI LESSON GENERATION LOADING OVERLAY MODAL */}
+      <AnimatePresence>
+        {isGenerating && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-4 text-white"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md rounded-3xl bg-zinc-900/95 border border-[var(--cyan)]/40 p-8 text-center flex flex-col items-center gap-5 shadow-2xl backdrop-blur-2xl relative overflow-hidden"
+            >
+              <div className="absolute -top-24 -left-24 size-48 rounded-full bg-[var(--cyan)]/15 blur-3xl" />
+              <div className="relative size-16 flex items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--cyan)] opacity-40" />
+                <div className="relative size-14 rounded-full bg-black/80 border border-[var(--cyan)] text-[var(--cyan)] flex items-center justify-center shadow-lg">
+                  <Sparkles size={28} className="animate-pulse" />
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-serif text-2xl text-white">Preparing Chapter Lesson</h3>
+                <p className="text-xs text-[var(--cyan)] font-mono mt-1">Generating custom 3D NCERT module...</p>
+              </div>
+
+              <div className="w-full bg-zinc-800/80 h-2.5 rounded-full overflow-hidden border border-white/10 p-0.5">
+                <motion.div
+                  initial={{ width: "0%" }}
+                  animate={{ width: "98%" }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  className="h-full bg-[var(--cyan)] rounded-full shadow-[0_0_14px_#04bdbd]"
+                />
+              </div>
+
+              <span className="text-xs text-zinc-400 font-mono animate-pulse">
+                Building 3D Blackboard canvas & audio narration...
+              </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
