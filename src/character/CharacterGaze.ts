@@ -35,12 +35,27 @@ export function calculateGaze(
     return dirMap[target] || dirMap.center;
   }
 
-  // Coordinate-based gaze target
+  // Coordinate or Element based gaze target
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight / 2;
+
+  if (typeof target === 'object' && 'targetElement' in target) {
+    const el = typeof target.targetElement === 'string' ? document.getElementById(target.targetElement) : target.targetElement;
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      targetX = rect.left + rect.width / 2;
+      targetY = rect.top + rect.height / 2;
+    }
+  } else if (typeof target === 'object' && 'x' in target && 'y' in target) {
+    targetX = target.x;
+    targetY = target.y;
+  }
+
   const charX = characterRect ? ('x' in characterRect ? characterRect.x : (characterRect as DOMRect).left + (characterRect as DOMRect).width / 2) : window.innerWidth / 2;
   const charY = characterRect ? ('y' in characterRect ? characterRect.y : (characterRect as DOMRect).top + 100) : window.innerHeight / 2;
 
-  const dx = target.x - charX;
-  const dy = target.y - charY;
+  const dx = targetX - charX;
+  const dy = targetY - charY;
   const distance = Math.hypot(dx, dy) || 1;
 
   // Max offsets

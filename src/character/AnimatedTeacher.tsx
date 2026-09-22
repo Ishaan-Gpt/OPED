@@ -133,7 +133,8 @@ export const AnimatedTeacher = forwardRef<
             | "listen"
             | "correct"
             | "celebrate"
-            | "noPeek",
+            | "noPeek"
+            | "present",
           durationMs?: number,
         ) => {
           let resolvedState = newState as CharacterState;
