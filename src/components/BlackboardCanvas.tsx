@@ -74,6 +74,21 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [teacherRepeat, setTeacherRepeat] = useState(0);
   const [captionSpeaker, setCaptionSpeaker] = useState("Dr. Rao");
   const [isStudentSpeaking, setIsStudentSpeaking] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const togglePauseClass = useCallback(() => {
+    setIsPaused((prev) => {
+      const next = !prev;
+      if (next) {
+        speechPlayer.pause();
+        setSpeaking(false);
+      } else {
+        speechPlayer.resume();
+        setSpeaking(true);
+      }
+      return next;
+    });
+  }, []);
 
   // Embedded Video State
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
@@ -151,7 +166,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (classroomStage !== "lesson_pages" || isMicActive || !currentPage) return;
+    if (classroomStage !== "lesson_pages" || isMicActive || isPaused || !currentPage) return;
 
     if (pauseTimerRef.current) {
       clearTimeout(pauseTimerRef.current);
@@ -827,24 +842,28 @@ export function BlackboardCanvas({ module, onExit }: Props) {
             </span>
           </div>
 
+          {/* Simple Pause / Resume Class Button */}
           <button
             type="button"
-            onClick={() => setIs3DClassroomActive((v) => !v)}
-            className={`rounded-full border px-3.5 py-1.5 text-xs hover:scale-105 cursor-pointer flex items-center gap-1.5 font-medium transition-all shadow-lg backdrop-blur-md ${
-              is3DClassroomActive
-                ? "border-white/40 bg-white/25 text-white"
+            onClick={togglePauseClass}
+            className={`rounded-full border px-4 py-1.5 text-xs font-semibold cursor-pointer flex items-center gap-2 transition-all shadow-lg backdrop-blur-md ${
+              isPaused
+                ? "border-amber-400/60 bg-amber-500/20 text-amber-200 hover:bg-amber-500/30"
                 : "border-white/20 bg-white/10 text-white hover:bg-white/20"
             }`}
           >
-            <span>{is3DClassroomActive ? "🎮 3D AI VR View" : "📝 2D Chalkmate Board"}</span>
+            {isPaused ? <Play size={13} fill="currentColor" /> : <Pause size={13} fill="currentColor" />}
+            <span>{isPaused ? "Resume Class" : "Pause Class"}</span>
           </button>
 
+          {/* Simple Exit Class Button */}
           <button
             type="button"
             onClick={onExit}
-            className="rounded-full border border-white/20 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs text-white backdrop-blur-md cursor-pointer transition-all"
+            className="rounded-full border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 px-4 py-1.5 text-xs font-semibold text-rose-200 backdrop-blur-md cursor-pointer transition-all flex items-center gap-1.5"
           >
-            New topic
+            <X size={14} />
+            <span>Exit Class</span>
           </button>
         </div>
       </header>

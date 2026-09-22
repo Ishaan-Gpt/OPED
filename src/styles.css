@@ -194,7 +194,16 @@
 .hero-eyebrow { display: block; margin-bottom: 32px; }
 .hero-copy h1, .section-heading h2, .story-sticky h2, .readiness-copy h2, .cta-content h2 { font-family: var(--f-serif); font-weight: 400; letter-spacing: 0; line-height: .94; }
 .hero-copy h1 { font-size: clamp(84px, 12vw, 185px); margin: 0; }
-.script-word { font-family: var(--f-script); font-weight: 400; line-height: .8; display: inline-block; padding: .03em .16em .16em; margin: -.03em -.16em -.16em; white-space: nowrap; }
+.script-word, .story-step-copy h3 em, .voice-main h3 em, .branch-main h3 em, .free-center h2 span, em {
+  font-family: var(--f-script);
+  font-weight: 400;
+  line-height: .8;
+  display: inline-block;
+  padding: .03em .16em .16em;
+  margin: -.03em -.16em -.16em;
+  white-space: nowrap;
+  color: var(--cyan) !important;
+}
 .hero-copy > p { font-family: var(--f-serif); font-size: clamp(22px, 2.4vw, 36px); margin: 36px 0 42px; }
 .hero-search-wrap { width: min(550px, 100%); margin: 0 auto; position: relative; }
 .hero-search, .cta-search { height: 62px; border: 1px solid var(--foreground); border-radius: 100px; display: flex; align-items: center; padding: 6px 7px 6px 23px; gap: 14px; background: var(--background); transition: all 0.25s ease; }

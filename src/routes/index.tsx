@@ -266,19 +266,29 @@ function Index() {
           <BrandMark size={32} variant="black" />
           <span>OPED<span>.</span></span>
         </a>
-        <span className="header-note">THE FIRST AI TEACHER THAT CHECKS.</span>
-        <a href="#chapters" className="header-action">
+        <button
+          onClick={() => {
+            document.getElementById("top")?.scrollIntoView({ behavior: "smooth" });
+            const el = document.querySelector('form[role="search"] input') as HTMLInputElement;
+            el?.focus();
+          }}
+          className="header-action cursor-pointer bg-transparent border-0 flex items-center gap-1 text-xs font-semibold text-zinc-900 hover:text-[var(--cyan)] transition-colors"
+        >
           EXPLORE CHAPTERS <ArrowUpRight size={15}/>
-        </a>
+        </button>
       </header>
 
       <main>
-        {/* UNIFIED HERO SECTION WITH CENTERED SEARCH & INTEGRATED AI TEACHER */}
+        {/* UNIFIED HERO SECTION WITH CENTERED SEARCH */}
         <section id="top" className="hero-section">
-          <div className="hero-copy">
-            <span className="hero-eyebrow font-mono">AN EDUCATION WITH AN ANSWER</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="hero-copy"
+          >
             <h1 className="font-serif">Learn it.<br /><span className="script-word">Prove it.</span></h1>
-            <p className="font-serif">The first AI teacher that checks if you actually learned it.</p>
+            <p className="font-serif">Interactive NCERT chapter learning for Classes 4–10.</p>
             
             <div className="hero-search-wrap">
               <Doodle direction="left">start anywhere</Doodle>
@@ -291,7 +301,7 @@ function Index() {
                     setQuery(e.target.value);
                     if (error) setError(null);
                   }}
-                  placeholder={isGenerating ? "AI Teacher writing lesson..." : RULES.placeholder}
+                  placeholder={isGenerating ? "Preparing lesson module..." : RULES.placeholder}
                   disabled={isGenerating}
                 />
                 <Button type="submit" size="icon" aria-label="Open classroom" disabled={isGenerating}>
@@ -320,28 +330,38 @@ function Index() {
 
             {/* Quick Suggestion Chips */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2 max-w-xl mx-auto">
-              {suggestions.map((s) => (
-                <button
+              {suggestions.map((s, idx) => (
+                <motion.button
                   key={s}
                   type="button"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 + idx * 0.05 }}
                   onClick={() => {
                     setQuery(s);
                     setError(null);
                     void launchChapter(s);
                   }}
-                  className="rounded-full border border-zinc-200/90 bg-white/80 hover:bg-white px-3.5 py-1.5 text-xs font-medium text-zinc-900 transition-all shadow-sm backdrop-blur-md cursor-pointer hover:border-zinc-400"
+                  className="rounded-full border border-zinc-200/90 bg-white/80 hover:bg-white hover:border-[var(--cyan)] hover:text-[var(--cyan)] px-3.5 py-1.5 text-xs font-medium text-zinc-900 transition-all shadow-sm backdrop-blur-md cursor-pointer"
                 >
                   {s}
-                </button>
+                </motion.button>
               ))}
             </div>
 
             <a href="#chapters" className="hero-scroll">SCROLL TO EXPLORE <ChevronDown size={15}/></a>
-          </div>
+          </motion.div>
         </section>
 
         {/* NCERT SUBJECTS & CHAPTER SELECTION */}
-        <section id="chapters" className="chapters-section content-width">
+        <motion.section
+          id="chapters"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="chapters-section content-width"
+        >
           <div className="section-heading reveal">
             <Doodle direction="left">100% NCERT</Doodle>
             <h2>One chapter at a time.<br /><span className="script-word">Actually understood.</span></h2>
@@ -350,22 +370,28 @@ function Index() {
           <div className="subject-list">
             {subjects.map((item, i) => (
               <div
-                className="subject-row"
+                className="subject-row group"
                 key={item.name}
                 onClick={() => void launchChapter(item.query)}
               >
                 <span className="subject-index">0{i + 1}</span>
                 <h3>{item.name}</h3>
                 <p>{item.topics}</p>
-                <ArrowUpRight size={18} strokeWidth={1.3}/>
+                <ArrowUpRight size={18} strokeWidth={1.3} className="transition-transform group-hover:translate-x-1 group-hover:text-[var(--cyan)]" />
               </div>
             ))}
           </div>
           <p className="section-caption">BUILT FOR THE NCERT SYLLABUS. CLICK ANY SUBJECT TO START CLASSROOM LESSON.</p>
-        </section>
+        </motion.section>
 
         {/* CLASSROOM PHOTO SHOWCASE */}
-        <section className="classroom-section content-width">
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="classroom-section content-width"
+        >
           <div className="section-heading reveal">
             <Doodle>no passive watch-time</Doodle>
             <h2>Turn any screen into<br />a living <span className="script-word">Classroom.</span></h2>
@@ -377,10 +403,17 @@ function Index() {
               <span>TEXT / VISUALS / IDEAS</span>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* THE OPED LOOP STORY SECTION */}
-        <section id="the-loop" className="story-section content-width">
+        <motion.section
+          id="the-loop"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="story-section content-width"
+        >
           <div className="story-intro">
             <span>THE OPED LOOP / 01—04</span>
             <p>Information out.<br />Understanding back.</p>
@@ -389,7 +422,7 @@ function Index() {
             <div className="story-left">
               <div className="story-sticky">
                 <Doodle direction="left">closes the loop</Doodle>
-                <h2>A teacher<br />that <span className="script-word">listens.</span></h2>
+                <h2>A lesson<br />that <span className="script-word">listens.</span></h2>
                 <p>Not a video that ends. Not a chatbot that waits. A lesson that responds to you.</p>
                 <div className="story-step-counter">DELIVER <span>→</span> SENSE <span>→</span> BRANCH <span>→</span> REWARD</div>
               </div>
@@ -410,10 +443,16 @@ function Index() {
               })}
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* EXAM READINESS SECTION */}
-        <section className="readiness-section content-width">
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="readiness-section content-width"
+        >
           <div className="readiness-copy reveal">
             <Doodle>badges are dead</Doodle>
             <h2>Not finished.<br /><span className="script-word">Ready.</span></h2>
@@ -432,10 +471,16 @@ function Index() {
             <div className="readiness-item"><span className="readiness-ring"/><span>Respiration</span><strong>ANOTHER PASS</strong></div>
             <div className="readiness-footer">NO STREAKS. NO WATCH-TIME. JUST READINESS.</div>
           </div>
-        </section>
+        </motion.section>
 
         {/* ZERO COST SECTION */}
-        <section className="free-section">
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="free-section"
+        >
           <div className="free-card-field" aria-hidden="true">
             <div className="float-card fc-1"><div className="float-bar">OPED / BLACKBOARD <span>01</span></div><div className="float-visual">☀ <span>→</span> ♧</div><small>LIGHT + WATER + CO₂ → FOOD</small></div>
             <div className="float-card fc-2"><div className="float-bar">ACTIVE RECALL <span>02</span></div><div className="mini-wave">▂▅▇▄▂▆█▅▃▇▄▂▅▇▃</div><small>YOUR VOICE. YOUR WORDS.</small></div>
@@ -449,7 +494,7 @@ function Index() {
             <h2>zero<span>.</span></h2>
             <div className="free-doodle">we charge schools <svg viewBox="0 0 80 42" fill="none"><path d="M4 4c5 33 48 5 66 27m-11-1 11 1-5 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></div>
           </div>
-        </section>
+        </motion.section>
 
         {/* FINAL CTA SECTION */}
         <section id="start" className="final-cta">
@@ -484,80 +529,20 @@ function Index() {
         </section>
       </main>
 
-      {/* FLOATING 3D PIXAR AI TEACHER CHARACTER */}
-      <AnimatePresence>
-        {isTeacherActive ? (
-          <div className="fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2">
-            <button
-              onClick={() => setShowStudioControls((v) => !v)}
-              className="flex items-center gap-1.5 rounded-full border border-zinc-200/80 bg-white/90 hover:bg-white px-3 py-1 text-[11px] font-medium text-zinc-900 shadow-md backdrop-blur-md transition-all cursor-pointer"
-            >
-              <span>✨ 3D Character Studio</span>
-            </button>
-            <AnimatedTeacher
-              key="ai-teacher-unified"
-              state={currentTeacherState}
-              expression={currentTeacherExpression}
-              gesture={currentTeacherGesture}
-              position={customPosition}
-              scale={0.92}
-              gazeTarget={customGaze || 'student'}
-              pointTarget={currentPointTarget}
-              speakingText={greetingText || undefined}
-              isAudioSpeaking={!!greetingText}
-              onClick={() => {
-                setGreetingText("I'm Dr. Rao! Search any NCERT chapter above to begin!");
-                setCustomState('eureka');
-                setTimeout(() => setCustomState(null), 3000);
-              }}
-              className="cursor-pointer select-none"
-            />
-          </div>
-        ) : (
-          <motion.button
-            key="summon-teacher-btn-unified"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            onClick={() => setIsTeacherActive(true)}
-            className="fixed bottom-20 right-4 z-30 flex items-center gap-2 rounded-full bg-white/90 hover:bg-white border border-zinc-200/80 px-3.5 py-2 text-xs font-semibold text-zinc-900 shadow-2xl backdrop-blur-md cursor-pointer transition-all"
-          >
-            <span className="relative flex size-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full size-2.5 bg-zinc-900"></span>
-            </span>
-            <TeacherIcon size={15} className="text-zinc-900" />
-            <span>Summon AI Teacher</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      {/* 3D CHARACTER STUDIO DRAWER */}
-      <DemoControls
-        isOpen={showStudioControls}
-        onClose={() => setShowStudioControls(false)}
-        currentState={currentTeacherState}
-        currentExpression={currentTeacherExpression}
-        currentGesture={currentTeacherGesture}
-        currentPosition={customPosition}
-        onPlayState={(st) => {
-          setCustomState(st);
-          setCustomExpression(null);
-          setCustomGesture(null);
-        }}
-        onSetExpression={(exp) => setCustomExpression(exp)}
-        onSetGesture={(gst) => setCustomGesture(gst)}
-        onMoveTo={(pos) => setCustomPosition(pos)}
-        onLookAt={(gz) => setCustomGaze(gz)}
-        onPointAt={(pt) => setCustomPoint(pt)}
-      />
-
       {/* FLOATING QUICK DOCK & MENU OVERLAY */}
       <div className="floating-dock" aria-label="Quick actions">
         <Button type="button" className="dock-play" onClick={playDemo} aria-label={demoPlaying ? "Pause demo" : "Play demo"}>
           {demoPlaying ? <Pause size={20} fill="currentColor"/> : <Play size={20} fill="currentColor"/>}
         </Button>
-        <Button type="button" className="dock-main" onClick={() => document.getElementById("top")?.scrollIntoView({ behavior: "smooth" })}>
+        <Button
+          type="button"
+          className="dock-main"
+          onClick={() => {
+            document.getElementById("top")?.scrollIntoView({ behavior: "smooth" });
+            const el = document.querySelector('form[role="search"] input') as HTMLInputElement;
+            el?.focus();
+          }}
+        >
           Start learning / Search chapter
         </Button>
         <Button type="button" className="dock-menu" onClick={() => setMenuOpen(true)} aria-label="Open menu">
