@@ -46,23 +46,15 @@ export function CaptionsBar({ caption, speaking, label = "Dr. Rao", isStudent = 
 
   return (
     <div
-      className={`flex items-center gap-3.5 rounded-2xl border px-5 py-3.5 backdrop-blur-md shadow-lg transition-colors ${
-        isStudent
-          ? "border-sky-500/40 bg-slate-900/80 shadow-sky-500/10"
-          : "border-teal-soft/25 bg-black/40"
-      }`}
+      className="flex items-center gap-3.5 rounded-2xl border border-white/20 bg-black/80 px-5 py-3.5 backdrop-blur-md shadow-2xl transition-colors"
     >
       <span
-        className={`relative grid size-9 shrink-0 place-items-center rounded-full border ${
-          isStudent
-            ? "bg-sky-500/20 text-sky-400 border-sky-500/40"
-            : "bg-teal/20 text-teal-soft border-teal-soft/40"
-        }`}
+        className="relative grid size-9 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 text-white"
       >
         {isStudent ? <Mic size={18} className="animate-pulse" /> : <TeacherIcon size={18} />}
         {speaking && (
           <motion.span
-            className={`absolute inset-0 rounded-full border ${isStudent ? "border-sky-400" : "border-teal-soft"}`}
+            className="absolute inset-0 rounded-full border border-white/50"
             animate={{ scale: [1, 1.35, 1], opacity: [0.9, 0, 0.9] }}
             transition={{ duration: 1.6, repeat: Infinity }}
           />
@@ -70,16 +62,16 @@ export function CaptionsBar({ caption, speaking, label = "Dr. Rao", isStudent = 
       </span>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.2em] font-medium text-chalk/50">
-          {isStudent ? <Mic size={12} className="text-sky-400" /> : <SoundIcon size={12} className="text-teal-soft" />}
-          <span className={isStudent ? "text-sky-400 font-bold" : "text-teal-soft font-semibold"}>
+        <div className="flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.2em] font-medium text-white/70">
+          {isStudent ? <Mic size={12} className="text-white" /> : <SoundIcon size={12} className="text-white" />}
+          <span className="text-white font-bold">
             {label}
           </span>
-          <span className="w-1 h-1 rounded-full bg-chalk/30" />
+          <span className="w-1 h-1 rounded-full bg-white/40" />
           <span>{isStudent ? "Student speaking" : speaking ? "Speaking live" : "Active"}</span>
         </div>
 
-        <p className="mt-1 font-[family-name:var(--font-chalk)] text-[1.15rem] sm:text-[1.25rem] leading-relaxed text-chalk tracking-wide min-h-[1.75rem]">
+        <p className="mt-1 font-[family-name:var(--font-chalk)] text-[1.15rem] sm:text-[1.25rem] leading-relaxed text-white tracking-wide min-h-[1.75rem]">
           {words.slice(0, displayedWordsCount).map((word, idx) => (
             <motion.span
               key={`${idx}-${word}`}
@@ -93,9 +85,7 @@ export function CaptionsBar({ caption, speaking, label = "Dr. Rao", isStudent = 
           ))}
           {speaking && displayedWordsCount < words.length && (
             <span
-              className={`inline-block w-1.5 h-4 ml-0.5 align-middle animate-pulse ${
-                isStudent ? "bg-sky-400" : "bg-teal-soft"
-              }`}
+              className="inline-block w-1.5 h-4 ml-0.5 align-middle animate-pulse bg-white"
             />
           )}
         </p>
