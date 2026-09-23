@@ -1,13 +1,19 @@
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import type { SceneTheme } from "./theme";
+import { mixHex } from "./theme";
 
 const CHALK = "#f3f1e7";
 
-/** Themed, multi-depth environment behind the main illustration — the actual "set" the camera moves through. */
-export function Environment({ theme }: { theme: SceneTheme }) {
+/** Themed, multi-depth environment behind the main illustration — the actual "set" the camera moves through.
+ * `accent` is this specific video's own color (varies per topic, see decide.ts) — blended into the
+ * environment's fixed palette so background never looks identical across videos that share a category. */
+export function Environment({ theme, accent }: { theme: SceneTheme; accent: string }) {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const t = frame / durationInFrames;
+
+  const glow = mixHex(theme.glow, accent, 0.5);
+  const base = mixHex(theme.base, accent, 0.1);
 
   // Slow continuous dolly — the whole set drifts, not just a punch per beat.
   const farDrift = interpolate(t, [0, 1], [0, -18]);
@@ -15,32 +21,28 @@ export function Environment({ theme }: { theme: SceneTheme }) {
   const midDrift = interpolate(t, [0, 1], [0, -36]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.base, overflow: "hidden" }}>
+    <AbsoluteFill style={{ backgroundColor: base, overflow: "hidden" }}>
       {/* Far layer: base gradient + zoom, slowest parallax */}
       <AbsoluteFill
         style={{
-          background: `radial-gradient(120% 90% at 30% 20%, ${theme.glow}2e 0%, ${theme.base} 65%)`,
+          background: `radial-gradient(120% 90% at 30% 20%, ${glow}2e 0%, ${base} 65%)`,
           transform: `scale(${farZoom}) translateX(${farDrift}px)`,
         }}
       />
 
-      {theme.environment === "lab" && (
-        <LabLayer frame={frame} midDrift={midDrift} glow={theme.glow} />
-      )}
+      {theme.environment === "lab" && <LabLayer frame={frame} midDrift={midDrift} glow={glow} />}
       {theme.environment === "night" && (
-        <NightLayer frame={frame} midDrift={midDrift} glow={theme.glow} />
+        <NightLayer frame={frame} midDrift={midDrift} glow={glow} />
       )}
       {theme.environment === "space" && (
-        <SpaceLayer frame={frame} midDrift={midDrift} glow={theme.glow} />
+        <SpaceLayer frame={frame} midDrift={midDrift} glow={glow} />
       )}
-      {theme.environment === "sky" && (
-        <SkyLayer frame={frame} midDrift={midDrift} glow={theme.glow} />
-      )}
+      {theme.environment === "sky" && <SkyLayer frame={frame} midDrift={midDrift} glow={glow} />}
       {theme.environment === "blueprint" && (
-        <BlueprintLayer frame={frame} midDrift={midDrift} glow={theme.glow} />
+        <BlueprintLayer frame={frame} midDrift={midDrift} glow={glow} />
       )}
       {theme.environment === "nebula" && (
-        <NebulaLayer frame={frame} midDrift={midDrift} glow={theme.glow} />
+        <NebulaLayer frame={frame} midDrift={midDrift} glow={glow} />
       )}
 
       {/* Vignette, closest layer, gives the frame edge falloff a real camera lens has */}

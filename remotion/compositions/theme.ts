@@ -10,6 +10,28 @@ export interface SceneTheme {
   glow: string;
 }
 
+function hexToRgb(hex: string): [number, number, number] {
+  const clean = hex.replace("#", "");
+  return [
+    parseInt(clean.slice(0, 2), 16),
+    parseInt(clean.slice(2, 4), 16),
+    parseInt(clean.slice(4, 6), 16),
+  ];
+}
+
+function rgbToHex([r, g, b]: [number, number, number]): string {
+  return `#${[r, g, b].map((c) => Math.round(Math.min(255, Math.max(0, c))).toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** Blends two hex colors, t=0 -> a, t=1 -> b. Used to tint a fixed environment's palette
+ * toward this specific video's own accent, so background never looks identical across videos
+ * that happen to share a visualKind/environment. */
+export function mixHex(a: string, b: string, t: number): string {
+  const [ar, ag, ab] = hexToRgb(a);
+  const [br, bg, bb] = hexToRgb(b);
+  return rgbToHex([ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t]);
+}
+
 export const SCENE_THEMES: Record<VisualKind, SceneTheme> = {
   reaction: { environment: "lab", base: "#151d1b", glow: "#e07a5f" },
   ray: { environment: "night", base: "#0f1a22", glow: "#2f9d8b" },

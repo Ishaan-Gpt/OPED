@@ -30,6 +30,8 @@ export interface SceneProps {
   beatCount: number;
   /** frame relative to the start of the current beat */
   beatLocalFrame: number;
+  /** clip title — only used by GenericScene to pick a visual variant per topic */
+  title: string;
 }
 
 const SCENES: Record<VisualKind, (props: SceneProps) => JSX.Element> = {
@@ -183,7 +185,7 @@ export function ExplainerClip({
             transformStyle: "preserve-3d",
           }}
         >
-          <Environment theme={theme} />
+          <Environment theme={theme} accent={accent} />
         </AbsoluteFill>
 
         {/* Hook: title */}
@@ -232,6 +234,7 @@ export function ExplainerClip({
               beatIndex={beatIndex}
               beatCount={beats.length}
               beatLocalFrame={beatLocalFrame}
+              title={title}
             />
           </div>
 

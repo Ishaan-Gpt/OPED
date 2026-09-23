@@ -180,9 +180,21 @@ when truly nothing else fits, from exactly these options:
 - "generic": abstract orbiting shapes — last resort only
 Never invent a visualKind outside this list.
 
+You must also pick "accent" — a hex color that fits THIS specific topic's mood, not a fixed default.
+The video's whole background is tinted from this color, so vary it deliberately per topic, e.g.:
+- warm orange/red (#e07a5f, #e0574f) for reactions, fire, heat, acids
+- teal/cyan (#2f9d8b, #3fb8c4) for light, optics, mirrors, general physics
+- indigo/blue (#7c9cff, #5b7fd6) for atoms, space, electricity fundamentals
+- green (#6fbf73, #4caf7d) for biology, plants, ecosystems
+- violet/purple (#8b5cf6, #a06bd6) for dispersion, spectra, abstract/chemical structure
+- gold/amber (#f2c94c, #e0a458) for circuits, energy, maps/geography
+Never default to the same accent across different topics in a lesson — pick the closest mood match
+each time, and shift the exact shade so back-to-back videos don't look identical even within the
+same mood family.
+
 Respond with ONLY compact JSON, no prose, matching one of:
 {"action":"continue"}
-{"action":"generate_video","videoBrief":{"title":"...","bullets":["...","...","..."],"accent":"#2f9d8b","targetSeconds":10,"visualKind":"reaction"}}
+{"action":"generate_video","videoBrief":{"title":"...","bullets":["...","...","..."],"accent":"#e0574f","targetSeconds":10,"visualKind":"reaction"}}
 Keep bullets short (under 12 words each), exactly 4 bullets matching the 4 canonical beats above,
 targetSeconds between 4 and 15.
 Valid visualKind values: ${VISUAL_KINDS.join(", ")}.`;
@@ -239,6 +251,10 @@ async function callGroq(context: TeacherContext): Promise<TeacherDecision> {
       // Deterministic guard: prose instructions alone don't reliably stop repeats, so enforce it.
       if (usedKinds.includes(kind)) return FALLBACK;
       parsed.videoBrief.visualKind = kind;
+      // Guard against a malformed/missing hex from the model breaking the render.
+      if (!/^#[0-9a-fA-F]{6}$/.test(parsed.videoBrief.accent ?? "")) {
+        parsed.videoBrief.accent = "#2f9d8b";
+      }
       return parsed;
     }
     if (parsed.action === "continue") return parsed;
