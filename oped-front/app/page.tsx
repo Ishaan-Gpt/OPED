@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ZeroDrawGate } from "@/components/canvas/ZeroDrawGate";
+import { ProfessionalLoader } from "@/components/canvas/ProfessionalLoader";
 import { Navbar } from "@/components/sections/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { PainPoint } from "@/components/sections/PainPoint";
@@ -32,12 +32,14 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white relative">
-      {/* Interactive Gestural Loader Gate */}
-      {!isUnlocked && <ZeroDrawGate onUnlock={() => setIsUnlocked(true)} />}
+    <main className="min-h-screen bg-[#030303] text-white relative font-sans selection:bg-emerald-500/30 selection:text-white">
+      {/* High-Tech Professional System Preloader */}
+      {!isUnlocked && <ProfessionalLoader onUnlock={() => setIsUnlocked(true)} />}
 
-      {/* Main Page Stage (Reveals upon Unlock) */}
-      <div className={`transition-opacity duration-1000 ${isUnlocked ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+      {/* Main Stage */}
+      <div
+        className={`transition-opacity duration-1000 ${isUnlocked ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
         <Navbar onJoinBetaClick={scrollToFooter} />
         <Hero onJoinBetaClick={scrollToFooter} />
         <PainPoint />

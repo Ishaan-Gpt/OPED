@@ -10,7 +10,10 @@ export const BentoProjects: React.FC = () => {
   const card2Ref = useRef<HTMLDivElement>(null);
   const card3Ref = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, ref: React.RefObject<HTMLDivElement | null>) => {
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement>,
+    ref: React.RefObject<HTMLDivElement | null>,
+  ) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -21,7 +24,8 @@ export const BentoProjects: React.FC = () => {
 
   // Card 1: Simulated typewriter stream for Gmail AI completion
   const [typedText, setTypedText] = useState("");
-  const fullText = "I have attached the Q3 sales report. Based on our preliminary LLM analysis, user retention increased by 34% after introducing auto-complete drafts.";
+  const fullText =
+    "I have attached the Q3 sales report. Based on our preliminary LLM analysis, user retention increased by 34% after introducing auto-complete drafts.";
 
   useEffect(() => {
     let index = 0;
@@ -46,7 +50,8 @@ export const BentoProjects: React.FC = () => {
         </h2>
 
         <p className="text-zinc-400 text-base sm:text-lg">
-          Work on production briefs provided by leading tech partners, backed by automated evaluation.
+          Work on production briefs provided by leading tech partners, backed by automated
+          evaluation.
         </p>
       </div>
 
@@ -66,7 +71,9 @@ export const BentoProjects: React.FC = () => {
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-emerald-400" />
-                <span className="uppercase tracking-wider font-semibold text-white">SOFTWARE ENGINEER</span>
+                <span className="uppercase tracking-wider font-semibold text-white">
+                  SOFTWARE ENGINEER
+                </span>
               </div>
               <span className="text-[10px] text-zinc-600">PROJECT 01</span>
             </div>
@@ -130,13 +137,16 @@ export const BentoProjects: React.FC = () => {
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-2">
                 <LineChart className="w-4 h-4 text-blue-400" />
-                <span className="uppercase tracking-wider font-semibold text-white">BUSINESS ANALYST</span>
+                <span className="uppercase tracking-wider font-semibold text-white">
+                  BUSINESS ANALYST
+                </span>
               </div>
               <span className="text-[10px] text-zinc-600">PROJECT 02</span>
             </div>
 
             <h3 className="text-xl font-bold text-white leading-snug">
-              Identify why ChatGPT users aren&apos;t upgrading and propose a solution to improve conversion.
+              Identify why ChatGPT users aren&apos;t upgrading and propose a solution to improve
+              conversion.
             </h3>
 
             {/* Interactive Preview: Metrics Dashboard */}
@@ -203,7 +213,9 @@ export const BentoProjects: React.FC = () => {
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-2">
                 <Database className="w-4 h-4 text-purple-400" />
-                <span className="uppercase tracking-wider font-semibold text-white">DATA SCIENTIST</span>
+                <span className="uppercase tracking-wider font-semibold text-white">
+                  DATA SCIENTIST
+                </span>
               </div>
               <span className="text-[10px] text-zinc-600">PROJECT 03</span>
             </div>
@@ -223,7 +235,7 @@ export const BentoProjects: React.FC = () => {
                 {/* Gridlines */}
                 <line x1="0" y1="20" x2="200" y2="20" stroke="#18181b" strokeDasharray="3 3" />
                 <line x1="0" y1="50" x2="200" y2="50" stroke="#18181b" strokeDasharray="3 3" />
-                
+
                 {/* Loss Curve */}
                 <motion.path
                   d="M 10 70 Q 40 60, 70 30 T 130 20 T 190 12"
@@ -234,7 +246,7 @@ export const BentoProjects: React.FC = () => {
                   animate={{ pathLength: 1 }}
                   transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
                 />
-                
+
                 {/* Target line */}
                 <path
                   d="M 10 75 Q 50 68, 90 40 T 150 25 T 190 18"

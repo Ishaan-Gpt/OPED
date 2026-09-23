@@ -80,10 +80,20 @@ export const Footer: React.FC = () => {
             <a href="#terms" className="hover:text-white transition-colors">
               Terms
             </a>
-            <a href="https://x.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white transition-colors"
+            >
               X (Twitter)
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white transition-colors"
+            >
               LinkedIn
             </a>
           </div>
@@ -118,7 +128,9 @@ export const Footer: React.FC = () => {
                     <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">
                       LIMITED SPOTS REMAINING
                     </span>
-                    <h3 className="text-2xl font-bold text-white tracking-tight">Request Beta Access</h3>
+                    <h3 className="text-2xl font-bold text-white tracking-tight">
+                      Request Beta Access
+                    </h3>
                     <p className="text-xs text-zinc-400 font-normal">
                       Enter your email to lock in guaranteed interview eligibility for Beta Phase 2.
                     </p>
@@ -146,7 +158,8 @@ export const Footer: React.FC = () => {
                   <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto animate-bounce" />
                   <h3 className="text-xl font-bold text-white">Application Received!</h3>
                   <p className="text-xs text-zinc-400">
-                    We have reserved your Beta Phase 2 spot. Check your inbox shortly for setup instructions.
+                    We have reserved your Beta Phase 2 spot. Check your inbox shortly for setup
+                    instructions.
                   </p>
                 </div>
               )}

@@ -37,8 +37,13 @@ export const PainPoint: React.FC = () => {
         {/* Staggered Narrative Cards */}
         <div className="space-y-16 sm:space-y-24 pl-2 sm:pl-8 border-l border-zinc-800/80">
           {/* Stage 1 */}
-          <motion.div style={{ opacity: stage1Opacity }} className="space-y-3 transition-opacity duration-300">
-            <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">PHASE 01</span>
+          <motion.div
+            style={{ opacity: stage1Opacity }}
+            className="space-y-3 transition-opacity duration-300"
+          >
+            <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+              PHASE 01
+            </span>
             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-zinc-400">
               4 years.
             </h2>
@@ -48,8 +53,13 @@ export const PainPoint: React.FC = () => {
           </motion.div>
 
           {/* Stage 2 */}
-          <motion.div style={{ opacity: stage2Opacity }} className="space-y-3 transition-opacity duration-300">
-            <span className="text-xs font-mono text-red-500/80 uppercase tracking-widest">PHASE 02</span>
+          <motion.div
+            style={{ opacity: stage2Opacity }}
+            className="space-y-3 transition-opacity duration-300"
+          >
+            <span className="text-xs font-mono text-red-500/80 uppercase tracking-widest">
+              PHASE 02
+            </span>
             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-red-500/90 drop-shadow-[0_0_25px_rgba(239,68,68,0.2)]">
               In debt.
             </h2>
@@ -59,8 +69,13 @@ export const PainPoint: React.FC = () => {
           </motion.div>
 
           {/* Stage 3 */}
-          <motion.div style={{ opacity: stage3Opacity }} className="space-y-3 transition-opacity duration-300">
-            <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">PHASE 03</span>
+          <motion.div
+            style={{ opacity: stage3Opacity }}
+            className="space-y-3 transition-opacity duration-300"
+          >
+            <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+              PHASE 03
+            </span>
             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-zinc-600 line-through decoration-red-500/80 decoration-4">
               And still no job.
             </h2>
@@ -89,12 +104,16 @@ export const PainPoint: React.FC = () => {
             </div>
 
             <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tighter text-white leading-tight">
-              Resumes are dead.<br />
-              <span className="text-emerald-400">And it costs you nothing...</span> we charge recruiters.
+              Resumes are dead.
+              <br />
+              <span className="text-emerald-400">And it costs you nothing...</span> we charge
+              recruiters.
             </h3>
 
             <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-normal">
-              Traditional credentials no longer prove potential in an AI-driven workforce. Zero replaces passive lectures with intense, real-world micro-simulations, proving your skills to hiring managers directly.
+              Traditional credentials no longer prove potential in an AI-driven workforce. Zero
+              replaces passive lectures with intense, real-world micro-simulations, proving your
+              skills to hiring managers directly.
             </p>
 
             <div className="pt-4 flex flex-wrap gap-8 text-xs font-mono text-zinc-400">

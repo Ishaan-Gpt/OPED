@@ -2,12 +2,29 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, MessageSquare, Award, Calendar, Sparkles, Building2, User, Send } from "lucide-react";
+import {
+  CheckCircle2,
+  MessageSquare,
+  Award,
+  Calendar,
+  Sparkles,
+  Building2,
+  User,
+  Send,
+} from "lucide-react";
 
 export const MatchingEngine: React.FC = () => {
   const [messages, setMessages] = useState([
-    { sender: "Recruiter (Vercel)", text: "Hi Alex! Your Zero verified AI rewrite project scored in the top 1% of applicants. We'd love to schedule your guaranteed final round interview.", time: "10:14 AM" },
-    { sender: "Candidate (You)", text: "Thanks Sarah! I've linked my live demo and benchmark metrics. What time works best?", time: "10:16 AM" }
+    {
+      sender: "Recruiter (Vercel)",
+      text: "Hi Alex! Your Zero verified AI rewrite project scored in the top 1% of applicants. We'd love to schedule your guaranteed final round interview.",
+      time: "10:14 AM",
+    },
+    {
+      sender: "Candidate (You)",
+      text: "Thanks Sarah! I've linked my live demo and benchmark metrics. What time works best?",
+      time: "10:16 AM",
+    },
   ]);
   const [inputVal, setInputVal] = useState("");
 
@@ -16,7 +33,7 @@ export const MatchingEngine: React.FC = () => {
     if (!inputVal.trim()) return;
     setMessages((prev) => [
       ...prev,
-      { sender: "Candidate (You)", text: inputVal, time: "Just now" }
+      { sender: "Candidate (You)", text: inputVal, time: "Just now" },
     ]);
     setInputVal("");
   };
@@ -50,7 +67,8 @@ export const MatchingEngine: React.FC = () => {
           </div>
           <h3 className="text-lg font-bold text-white">1. Verified Portfolio</h3>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            Build a live, interactive portfolio of completed production briefs reviewed by senior engineers.
+            Build a live, interactive portfolio of completed production briefs reviewed by senior
+            engineers.
           </p>
         </div>
 
@@ -60,7 +78,8 @@ export const MatchingEngine: React.FC = () => {
           </div>
           <h3 className="text-lg font-bold text-white">2. Direct Partner Matching</h3>
           <p className="text-xs text-zinc-400 leading-relaxed">
-            Hiring managers browse verified candidate scorecards, skipping initial phone screens completely.
+            Hiring managers browse verified candidate scorecards, skipping initial phone screens
+            completely.
           </p>
         </div>
 
@@ -136,13 +155,20 @@ export const MatchingEngine: React.FC = () => {
 
             {/* Verified Tech Badges */}
             <div className="space-y-2">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">VERIFIED STACK</span>
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+                VERIFIED STACK
+              </span>
               <div className="flex flex-wrap gap-2">
-                {["Next.js", "PyTorch", "TypeScript", "FastAPI", "VectorDB", "Tailwind"].map((tech) => (
-                  <span key={tech} className="px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-300">
-                    {tech}
-                  </span>
-                ))}
+                {["Next.js", "PyTorch", "TypeScript", "FastAPI", "VectorDB", "Tailwind"].map(
+                  (tech) => (
+                    <span
+                      key={tech}
+                      className="px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-300"
+                    >
+                      {tech}
+                    </span>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -167,7 +193,11 @@ export const MatchingEngine: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
-                    {msg.sender.includes("You") ? <User className="w-3 h-3" /> : <Building2 className="w-3 h-3 text-emerald-400" />}
+                    {msg.sender.includes("You") ? (
+                      <User className="w-3 h-3" />
+                    ) : (
+                      <Building2 className="w-3 h-3 text-emerald-400" />
+                    )}
                     <span>{msg.sender}</span>
                     <span>• {msg.time}</span>
                   </div>

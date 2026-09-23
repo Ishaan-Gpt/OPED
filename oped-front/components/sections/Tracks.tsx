@@ -18,15 +18,22 @@ const tracks: TrackCategory[] = [
     id: "swe",
     name: "Software Engineering",
     icon: Code2,
-    description: "Architect high-throughput AI backends, full-stack Next.js apps, and agentic microservices.",
-    roles: ["Applied AI Engineer", "Backend Engineer", "Full Stack Developer", "Frontend Developer"],
+    description:
+      "Architect high-throughput AI backends, full-stack Next.js apps, and agentic microservices.",
+    roles: [
+      "Applied AI Engineer",
+      "Backend Engineer",
+      "Full Stack Developer",
+      "Frontend Developer",
+    ],
     accent: "from-emerald-500/20 to-teal-500/5",
   },
   {
     id: "ai",
     name: "AI & Data Science",
     icon: Brain,
-    description: "Fine-tune LLMs, deploy PyTorch inference pipelines, and construct scalable vector databases.",
+    description:
+      "Fine-tune LLMs, deploy PyTorch inference pipelines, and construct scalable vector databases.",
     roles: ["AI Engineer", "Machine Learning Engineer", "Data Scientist", "BI Analyst"],
     accent: "from-blue-500/20 to-indigo-500/5",
   },
@@ -34,7 +41,8 @@ const tracks: TrackCategory[] = [
     id: "biz",
     name: "Business & Ops",
     icon: BarChart3,
-    description: "Analyze market expansion, automate enterprise workflows, and partner with executive leadership.",
+    description:
+      "Analyze market expansion, automate enterprise workflows, and partner with executive leadership.",
     roles: ["Management Consultant", "Financial Analyst", "Operations Associate", "Chief of Staff"],
     accent: "from-amber-500/20 to-orange-500/5",
   },
@@ -42,7 +50,8 @@ const tracks: TrackCategory[] = [
     id: "prod",
     name: "Product & Design",
     icon: Palette,
-    description: "Design pixel-perfect interfaces, craft AI product specs, and drive end-to-end user growth.",
+    description:
+      "Design pixel-perfect interfaces, craft AI product specs, and drive end-to-end user growth.",
     roles: ["Product Manager", "UX/Design Engineer", "Systems Designer", "Product Marketer"],
     accent: "from-purple-500/20 to-pink-500/5",
   },
@@ -50,7 +59,8 @@ const tracks: TrackCategory[] = [
     id: "sec",
     name: "Security & Sales",
     icon: ShieldCheck,
-    description: "Protect AI models against adversarial prompts and pitch enterprise AI solutions to Fortune 500s.",
+    description:
+      "Protect AI models against adversarial prompts and pitch enterprise AI solutions to Fortune 500s.",
     roles: ["AI Security Analyst", "SOC Analyst", "Account Executive", "Solutions Consultant"],
     accent: "from-red-500/20 to-rose-500/5",
   },
