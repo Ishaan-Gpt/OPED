@@ -26,16 +26,7 @@ import AwardLoader from "@/components/AwardLoader";
 import InitialPreloader from "@/components/InitialPreloader";
 import StackSpread from "@/components/ui/stack-spread";
 import useLenis from "@/hooks/useLenis";
-import { AnimatedTeacher } from "@/character/AnimatedTeacher";
-import type {
-  CharacterState,
-  ExpressionType,
-  GestureType,
-  GazeTarget,
-  PointTarget,
-  PositionPreset,
-} from "@/character/types";
-import { DemoControls } from "@/demo/DemoControls";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -59,23 +50,23 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const staggerContainer = {
+const staggerContainer: any = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
 };
-const fadeUp = {
+const fadeUp: any = {
   hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
-  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: "easeOut" } }
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
 };
-const fadeLeft = {
+const fadeLeft: any = {
   hidden: { opacity: 0, x: -30, filter: "blur(10px)" },
-  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: "easeOut" } }
+  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
 };
-const fadeRight = {
+const fadeRight: any = {
   hidden: { opacity: 0, x: 30, filter: "blur(10px)" },
-  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: "easeOut" } }
+  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
 };
-const popIn = {
+const popIn: any = {
   hidden: { opacity: 0, scale: 0.9, filter: "blur(10px)" },
   visible: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.17, 0.55, 0.55, 1] } }
 };
@@ -213,19 +204,6 @@ function Index() {
   const [activeStoryStep, setActiveStoryStep] = useState(0);
   const [demoPlaying, setDemoPlaying] = useState(false);
 
-  // 3D Pixar AI Teacher Controls
-  const [isTeacherActive, setIsTeacherActive] = useState(true);
-  const [showStudioControls, setShowStudioControls] = useState(false);
-  const [customState, setCustomState] = useState<CharacterState | null>(null);
-  const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
-  const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
-  const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
-  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
-  const [customPosition, setCustomPosition] = useState<PositionPreset>('bottom-right');
-  const [greetingText, setGreetingText] = useState<string | null>(
-    "Welcome to OPED! Search any NCERT chapter above or click a suggestion to start class!"
-  );
-
   const [pendingModule, setPendingModule] = useState<NcertModule | null>(null);
   const [activeTopic, setActiveTopic] = useState<string>("Photosynthesis");
 
@@ -264,11 +242,6 @@ function Index() {
     setDemoPlaying(true);
     void launchChapter("photosynthesis");
   };
-
-  const currentTeacherState: CharacterState = customState || (query ? 'pointing' : error ? 'thinking' : 'wave');
-  const currentTeacherExpression: ExpressionType = customExpression || (query ? 'explaining' : error ? 'confused' : 'happy');
-  const currentTeacherGesture: GestureType = customGesture || (query ? 'pointLeft' : error ? 'thinking' : 'wave');
-  const currentPointTarget: PointTarget = customPoint || { target: 'input' };
 
   const [showPreloader, setShowPreloader] = useState(true);
 
@@ -459,12 +432,20 @@ function Index() {
                       transition={{ duration: 0.5, ease: "easeInOut" }}
                       className="absolute inset-0 pt-6"
                     >
-                      <h2>{steps[activeStoryStep].title.split("\n")[0]}<br />
-                        <span className="script-word">
-                          {steps[activeStoryStep].title.split("\n")[1]}
-                        </span>
-                      </h2>
-                      <p className="mt-4">{steps[activeStoryStep].note}</p>
+                      {(() => {
+                        const cur = steps[activeStoryStep] ?? steps[0];
+                        const lines = cur ? cur.title.split("\n") : ["", ""];
+                        return (
+                          <>
+                            <h2>{lines[0]}<br />
+                              <span className="script-word">
+                                {lines[1]}
+                              </span>
+                            </h2>
+                            <p className="mt-4">{cur?.note}</p>
+                          </>
+                        );
+                      })()}
                     </motion.div>
                   </AnimatePresence>
                 </div>

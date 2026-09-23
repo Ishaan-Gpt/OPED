@@ -13,16 +13,7 @@ import EmbeddedVideoPlayer from "@/components/EmbeddedVideoPlayer";
 import RightChatDrawer from "@/components/RightChatDrawer";
 import { BrandMark, CheckSealIcon, TeacherIcon, EnterIcon } from "@/components/icons";
 import { Sparkles, Brain, Target, BookOpen, CheckCircle2, ChevronRight, User, MessageSquare, Mic, MicOff, Pause, Play, X } from "lucide-react";
-import { AnimatedTeacher } from "@/character/AnimatedTeacher";
-import type {
-  CharacterState,
-  ExpressionType,
-  GestureType,
-  GazeTarget,
-  PointTarget,
-  PositionPreset,
-} from "@/character/types";
-import { DemoControls } from "@/demo/DemoControls";
+
 import { generateLessonVideo } from "@/lib/remotion/client";
 import { streamTeacherResponse } from "@/lib/bedrock";
 import MasteryOutcome from "@/components/MasteryOutcome";
@@ -127,16 +118,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     examReadinessRating: "Developing",
   });
 
-  // 3D Avatar state
-  const [isTeacherActive, setIsTeacherActive] = useState(true);
   const [teacherGreeting, setTeacherGreeting] = useState<string | null>(null);
-  const [showStudioControls, setShowStudioControls] = useState(false);
-  const [customState, setCustomState] = useState<CharacterState | null>(null);
-  const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
-  const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
-  const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
-  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
-  const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
   const [is3DClassroomActive, setIs3DClassroomActive] = useState<boolean>(true);
   const boardCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -506,103 +488,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     });
   }, []);
 
-  // --------------------------------------------------------------------------
-  // 3D AVATAR SYNCHRONIZATION
-  // --------------------------------------------------------------------------
-  const teacherProps = useMemo<{
-    state: CharacterState;
-    expression: ExpressionType;
-    gesture: GestureType;
-    gaze: GazeTarget;
-    pointTarget: PointTarget;
-  }>(() => {
-    if (teacherGreeting) {
-      return {
-        state: "celebrate",
-        expression: "happy",
-        gesture: "doubleThumbsUp",
-        gaze: "student",
-        pointTarget: { target: "student" },
-      };
-    }
 
-    if (isMicActive) {
-      return {
-        state: "listeningEar",
-        expression: "focused",
-        gesture: "listeningEar",
-        gaze: "student",
-        pointTarget: { target: "student" },
-      };
-    }
-
-    if (currentPage?.pageType === "video" || currentPage?.pageType === "3d") {
-      return {
-        state: "amazed",
-        expression: "mindBlown",
-        gesture: "celebrate",
-        gaze: "student",
-        pointTarget: { target: "board" },
-      };
-    }
-
-    if (classroomStage === "practice") {
-      return {
-        state: "idle",
-        expression: "focused",
-        gesture: "explainBothHands",
-        gaze: "student",
-        pointTarget: { target: "board" },
-      };
-    }
-
-    if (classroomStage === "memorize") {
-      if (teacherRepeat > 0) {
-        return {
-          state: "speaking",
-          expression: "focused",
-          gesture: "explainBothHands",
-          gaze: "student",
-          pointTarget: { target: "student" },
-        };
-      }
-      return {
-        state: "listeningEar",
-        expression: "focused",
-        gesture: "listeningEar",
-        gaze: "student",
-        pointTarget: { target: "student" },
-      };
-    }
-
-    if (speaking) {
-      return {
-        state: "speaking",
-        expression: "explaining",
-        gesture: currentLineIndex % 2 === 0 ? "explainBothHands" : "pointAtTarget",
-        gaze: "student",
-        pointTarget: { target: "board" },
-      };
-    }
-
-    return {
-      state: "idle",
-      expression: "happy",
-      gesture: "idle",
-      gaze: "student",
-      pointTarget: { target: "board" },
-    };
-  }, [teacherGreeting, isMicActive, currentPage, classroomStage, teacherRepeat, speaking, currentLineIndex]);
-
-  const handleTeacherClick = useCallback(() => {
-    const stageName = classroomStage === "lesson_pages" ? "explain" : classroomStage === "practice" ? "practice" : "memorize";
-    const decision = decideAgentNextStep(stageName, masteryState, outcomeModule);
-    setTeacherGreeting(decision.teacherSpeech);
-    const t = setTimeout(() => {
-      setTeacherGreeting(null);
-    }, 4500);
-    return () => clearTimeout(t);
-  }, [classroomStage, masteryState, outcomeModule]);
 
   const mainBoardCanvasElement = (
     <motion.div
@@ -1003,48 +889,6 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         }}
       />
 
-      {/* AI Teacher Avatar in Bottom Corner (Hidden during 3D Classroom Mode) */}
-      <AnimatePresence>
-        {isTeacherActive && !is3DClassroomActive && (
-          <div className="fixed bottom-16 right-5 z-30 pointer-events-none">
-            <AnimatedTeacher
-              key="ai-teacher-active"
-              state={customState || teacherProps.state}
-              expression={customExpression || teacherProps.expression}
-              gesture={customGesture || teacherProps.gesture}
-              position={customPosition}
-              scale={0.82}
-              gazeTarget={customGaze || teacherProps.gaze}
-              pointTarget={customPoint || teacherProps.pointTarget}
-              speakingText={teacherGreeting || (speaking ? currentCaption : undefined)}
-              isAudioSpeaking={speaking || !!teacherGreeting}
-              avatarStyle="pulled"
-              onClick={handleTeacherClick}
-              className="pointer-events-auto cursor-pointer select-none"
-            />
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* 3D Character Studio Drawer Controls */}
-      <DemoControls
-        isOpen={showStudioControls}
-        onClose={() => setShowStudioControls(false)}
-        currentState={customState || teacherProps.state}
-        currentExpression={customExpression || teacherProps.expression}
-        currentGesture={customGesture || teacherProps.gesture}
-        currentPosition={customPosition}
-        onPlayState={(st) => {
-          setCustomState(st);
-          setCustomExpression(null);
-          setCustomGesture(null);
-        }}
-        onSetExpression={(exp) => setCustomExpression(exp)}
-        onSetGesture={(gst) => setCustomGesture(gst)}
-        onMoveTo={(pos) => setCustomPosition(pos)}
-        onLookAt={(gz) => setCustomGaze(gz)}
-        onPointAt={(pt) => setCustomPoint(pt)}
-      />
     </div>
   );
 }
