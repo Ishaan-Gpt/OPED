@@ -32,8 +32,8 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#030303] text-white relative font-sans selection:bg-emerald-500/30 selection:text-white">
-      {/* High-Tech Professional System Preloader */}
+    <main className="min-h-screen bg-white text-slate-900 relative font-sans selection:bg-blue-100 selection:text-blue-900">
+      {/* High-Tech Porcelain System Preloader */}
       {!isUnlocked && <ProfessionalLoader onUnlock={() => setIsUnlocked(true)} />}
 
       {/* Main Stage */}

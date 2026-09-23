@@ -2,187 +2,173 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Atom, Compass, Dna, Calculator, Cpu, CheckCircle2 } from "lucide-react";
+import { Box, Video, Brain, Sparkles, CheckCircle2, Cpu } from "lucide-react";
 
-interface SubjectTrack {
+interface TrackCategory {
   id: string;
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-  modules: string[];
+  features: string[];
   description: string;
-  accent: string;
+  badgeColor: string;
 }
 
-const subjects: SubjectTrack[] = [
+const tracks: TrackCategory[] = [
   {
-    id: "physics",
-    name: "Physics & Optics 3D",
-    icon: Compass,
+    id: "3d-vr",
+    name: "3D VR Classrooms",
+    icon: Box,
     description:
-      "Manipulate light rays, mirrors, lenses, and electrical circuits in real-time 3D VR space.",
-    modules: [
-      "Concave & Convex Mirror Optics",
-      "Prism Refraction & Dispersion",
-      "Circuit & Ohm's Law Simulation",
-      "Gravitation & Motion Mechanics",
+      "Immersive 3D environments with dynamic camera motion, spatial audio, and interactive meshes.",
+    features: [
+      "Classroom Environment Engine",
+      "Interactive 3D Whiteboard",
+      "Spatial Audio & Reverb",
+      "Dynamic Camera Tracking",
     ],
-    accent: "from-blue-600/20 to-indigo-600/5",
+    badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
   },
   {
-    id: "chemistry",
-    name: "Chemistry & Atom 3D",
-    icon: Atom,
+    id: "video-ai",
+    name: "2-Way Realtime Video",
+    icon: Video,
     description:
-      "Step inside Rutherford & Bohr atomic orbits, rotate molecular bonds, and trigger chemical reactions.",
-    modules: [
-      "Subatomic Particle Orbits",
-      "Chemical Equation Balancer",
-      "Periodic Table 3D Trends",
-      "Acid-Base Neutralization",
+      "Bidirectional video and audio generation that reacts instantly to student speech and gestures.",
+    features: [
+      "Real-time Video Synthesis",
+      "Low-Latency Audio Stream",
+      "Gesture & Lip Sync Rig",
+      "Dynamic Expression Controller",
     ],
-    accent: "from-indigo-600/20 to-sky-600/5",
+    badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200",
   },
   {
-    id: "biology",
-    name: "Biology & Life Sciences",
-    icon: Dna,
+    id: "ncert",
+    name: "NCERT AI Curriculum",
+    icon: Brain,
     description:
-      "Explore 3D cell organelles, watch plant photosynthesis at molecular levels, and inspect human organs.",
-    modules: [
-      "Plant Photosynthesis 3D",
-      "Cell Structure & Organelles",
-      "Human Heart Circulation",
-      "Genetics & DNA Replication",
+      "Comprehensive Class 4–10 Science, Math, and Physics modules structured for high engagement.",
+    features: [
+      "Class 4-10 Science Modules",
+      "Automated Step Evaluation",
+      "Socratic Question Generator",
+      "Mastery Outcome Tracking",
     ],
-    accent: "from-amber-600/20 to-orange-600/5",
+    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
   },
   {
-    id: "math",
-    name: "Mathematics & Geometry",
-    icon: Calculator,
-    description:
-      "Visualize 3D calculus surfaces, rotate coordinate geometries, and solve interactive linear algebra.",
-    modules: [
-      "3D Vector Surfaces",
-      "Coordinate Geometry 3D",
-      "Calculus Derivatives & Integrals",
-      "Probability & Statistics",
-    ],
-    accent: "from-sky-600/20 to-blue-600/5",
-  },
-  {
-    id: "cs",
-    name: "Computer Science & AI",
+    id: "eval",
+    name: "Adaptive AI Teacher",
     icon: Cpu,
     description:
-      "Inspect 3D neural network layers, walk through data structure graphs, and build AI algorithms.",
-    modules: [
-      "3D Neural Network Matrix",
-      "Algorithm Graph Traversal",
-      "Python AI Code Runner",
-      "Web Development Studio",
+      "Autonomous AI Teacher character that evaluates responses, provides hints, and adapts pace.",
+    features: [
+      "Recitation Evaluation Engine",
+      "Multi-Modal Gaze & Pointing",
+      "Automated Feedback Loops",
+      "Personalized Learning Path",
     ],
-    accent: "from-violet-600/20 to-indigo-600/5",
+    badgeColor: "bg-sky-50 text-sky-700 border-sky-200",
   },
 ];
 
 export const Tracks: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("all");
 
-  const filteredSubjects =
-    activeTab === "all" ? subjects : subjects.filter((s) => s.id === activeTab);
+  const filteredTracks = activeTab === "all" ? tracks : tracks.filter((t) => t.id === activeTab);
 
   return (
-    <section id="curriculum" className="py-28 px-6 sm:px-12 max-w-7xl mx-auto space-y-16">
+    <section className="py-28 px-6 sm:px-12 max-w-7xl mx-auto space-y-16 bg-white">
       {/* Header */}
       <div className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300 tracking-widest uppercase">
-          <span>[ INTERACTIVE 3D CURRICULUM ]</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-mono text-slate-700 tracking-wider uppercase font-semibold">
+          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+          <span>[ CORE PLATFORM ENGINES ]</span>
         </div>
 
-        <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tighter text-white leading-tight">
-          Explore Class 4–10 NCERT Subjects in Immersive 3D.
+        <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
+          Engineered for the next decade of AI education.
         </h2>
 
-        <p className="text-slate-400 text-base sm:text-lg font-normal">
-          Every concept is mapped to NCERT standards, backed by real-time AI teacher evaluations and
-          3D VR visualizers.
+        <p className="text-slate-600 text-base sm:text-lg font-normal">
+          Combining spatial computing, generative video AI, and cognitive learning science in one
+          seamless platform.
         </p>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b border-slate-800">
+      <div className="flex flex-wrap gap-2 pb-4 border-b border-slate-200">
         <button
           onClick={() => setActiveTab("all")}
-          className={`px-4 py-2 rounded-full text-xs font-mono transition-all ${
+          className={`px-4 py-2 rounded-full text-xs font-mono transition-all font-semibold ${
             activeTab === "all"
-              ? "bg-white text-slate-950 font-semibold shadow-md"
-              : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white"
+              ? "bg-slate-900 text-white"
+              : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
           }`}
         >
-          All 3D Classrooms
+          All Modules
         </button>
-        {subjects.map((s) => (
+        {tracks.map((t) => (
           <button
-            key={s.id}
-            onClick={() => setActiveTab(s.id)}
-            className={`px-4 py-2 rounded-full text-xs font-mono transition-all ${
-              activeTab === s.id
-                ? "bg-white text-slate-950 font-semibold shadow-md"
-                : "bg-slate-900 text-slate-400 border border-slate-800 hover:text-white"
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`px-4 py-2 rounded-full text-xs font-mono transition-all font-semibold ${
+              activeTab === t.id
+                ? "bg-slate-900 text-white"
+                : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
             }`}
           >
-            {s.name}
+            {t.name}
           </button>
         ))}
       </div>
 
-      {/* Subjects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredSubjects.map((subject, idx) => {
-          const Icon = subject.icon;
+      {/* Tracks Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {filteredTracks.map((track, idx) => {
+          const Icon = track.icon;
           return (
             <motion.div
-              key={subject.id}
+              key={track.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="group relative bg-[#151C2C]/70 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 backdrop-blur-md"
+              className="group relative bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1"
             >
-              {/* Card Ambient Gradient */}
-              <div
-                className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${subject.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
-              />
-
               <div className="relative z-10 space-y-6">
-                {/* Header Icon + Subject Title */}
+                {/* Header Icon + Track Name */}
                 <div className="flex items-center justify-between">
-                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-white group-hover:border-blue-500/40 transition-colors">
-                    <Icon className="w-6 h-6 text-blue-400" />
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-blue-600 group-hover:bg-blue-50 transition-colors">
+                    <Icon className="w-6 h-6" />
                   </div>
-                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                    CLASSROOM 0{idx + 1}
+                  <span
+                    className={`text-[10px] font-mono px-2.5 py-1 rounded-full border ${track.badgeColor} font-semibold uppercase`}
+                  >
+                    MODULE 0{idx + 1}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-white tracking-tight">{subject.name}</h3>
-                  <p className="mt-2 text-xs text-slate-400 leading-relaxed font-normal">
-                    {subject.description}
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">{track.name}</h3>
+                  <p className="mt-2 text-xs text-slate-600 leading-relaxed font-normal">
+                    {track.description}
                   </p>
                 </div>
 
-                {/* Verified Modules List */}
-                <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-                    3D INTERACTIVE MODULES
+                {/* Features List */}
+                <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-semibold">
+                    KEY CAPABILITIES
                   </span>
                   <ul className="space-y-2">
-                    {subject.modules.map((mod, mIdx) => (
-                      <li key={mIdx} className="flex items-center gap-2 text-xs text-slate-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                        <span>{mod}</span>
+                    {track.features.map((feat, fIdx) => (
+                      <li
+                        key={fIdx}
+                        className="flex items-center gap-2 text-xs text-slate-700 font-medium"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                        <span>{feat}</span>
                       </li>
                     ))}
                   </ul>
@@ -190,8 +176,8 @@ export const Tracks: React.FC = () => {
               </div>
 
               {/* Bottom Badge */}
-              <div className="relative z-10 mt-6 pt-4 flex items-center justify-between text-[11px] font-mono text-slate-400 group-hover:text-blue-400 transition-colors">
-                <span>LAUNCH 3D ENVIRONMENT</span>
+              <div className="relative z-10 mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-mono text-slate-500 group-hover:text-blue-600 transition-colors font-semibold">
+                <span>EXPLORE CAPABILITIES</span>
                 <span>→</span>
               </div>
             </motion.div>
