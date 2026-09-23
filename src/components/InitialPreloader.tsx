@@ -1,62 +1,80 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, animate } from "framer-motion";
 import { BrandMark } from "@/components/icons";
+
+const STAGES = [
+  "INITIALIZING AI NCERT RIG...",
+  "INDEXING CHAPTER DATASETS...",
+  "SYNTHESIZING VECTOR BLACKBOARD...",
+  "CLASSROOM ENGINE READY",
+];
 
 export default function InitialPreloader({ onComplete }: { onComplete: () => void }) {
   const countRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
+  const [stageText, setStageText] = useState(STAGES[0]);
 
   useEffect(() => {
-    // 1. Counter loads to 100 quickly (0.8s)
+    // Check if user has already seen preloader in this tab session
+    const hasVisited = sessionStorage.getItem("oped_preloader_seen");
+    if (hasVisited) {
+      onComplete();
+      return;
+    }
+
+    // 1. Smooth counter progress (0 -> 100%) over 0.95s
     const counterControls = animate(0, 100, {
-      duration: 0.8,
-      ease: "easeOut",
+      duration: 0.95,
+      ease: [0.16, 1, 0.3, 1],
       onUpdate: (latest) => {
+        const val = Math.floor(latest);
         if (countRef.current) {
-          countRef.current.innerText = Math.floor(latest).toString();
+          countRef.current.innerText = val.toString();
         }
+        if (val < 30) setStageText(STAGES[0]);
+        else if (val < 65) setStageText(STAGES[1]);
+        else if (val < 90) setStageText(STAGES[2]);
+        else setStageText(STAGES[3]);
       }
     });
 
-    // 2. Zoom animation inspired by GlyphPortal math (starts after counter)
+    // 2. Exponential portal camera zoom straight into the "O"
     const zoomControls = animate(0, 1, {
-      delay: 0.85,
-      duration: 1.8,
+      delay: 0.95,
+      duration: 1.6,
       onUpdate: (p) => {
         if (!containerRef.current) return;
         
-        // Custom cubic bezier easing from GlyphPortal
+        // High-precision smooth step easing
         const t = Math.min(Math.max(p, 0), 1);
         const eased = t < 0.5 ? 4 * t ** 3 : 1 - Math.pow(-2 * t + 2, 3) / 2;
         
-        // Exponential scale for a physical camera zoom feel
+        // Physical camera zoom effect passing through the logo center
         const startScale = 1;
-        const endScale = 400; // Massive scale to pass through the 'O'
+        const endScale = 450;
         const scale = Math.exp(Math.log(startScale) + Math.log(endScale / startScale) * eased);
         
-        // Smooth interpolation function
+        // Smooth tilt roll peaking mid-zoom
         const smooth = (a: number, b: number, n: number) => {
           const clamped = Math.min(Math.max((n - a) / (b - a), 0), 1);
           return clamped * clamped * (3 - 2 * clamped);
         };
-
-        // Barrel roll (x-y plane rotation) peaking at ~38 degrees and straightening out
-        const roll = -38 * smooth(0.0, 0.5, t) * (1 - smooth(0.6, 1.0, t)); 
+        const roll = -32 * smooth(0.0, 0.5, t) * (1 - smooth(0.6, 1.0, t));
         
-        // Apply transforms directly for 0-latency rendering
         containerRef.current.style.transform = `scale(${scale}) rotate(${roll}deg)`;
         
-        // At the very end when the 'O' is massive, fade out the white background to reveal the landing page seamlessly
-        if (p > 0.85) {
-           const opacity = 1 - ((p - 0.85) / 0.15);
-           if (bgRef.current) {
-             bgRef.current.style.opacity = Math.max(0, opacity).toString();
-           }
+        // Fade out backdrop softly as camera pierces through
+        if (p > 0.8) {
+          const opacity = 1 - ((p - 0.8) / 0.2);
+          if (bgRef.current) {
+            bgRef.current.style.opacity = Math.max(0, opacity).toString();
+          }
         }
       },
       onComplete: () => {
-        setTimeout(onComplete, 50);
+        sessionStorage.setItem("oped_preloader_seen", "true");
+        setTimeout(onComplete, 40);
       }
     });
 
@@ -69,36 +87,49 @@ export default function InitialPreloader({ onComplete }: { onComplete: () => voi
   return (
     <div
       ref={bgRef}
-      className="fixed inset-0 z-[100] bg-white flex items-center justify-center overflow-hidden pointer-events-none"
+      className="fixed inset-0 z-[100] bg-white flex items-center justify-center overflow-hidden pointer-events-none transition-opacity duration-300"
     >
-      <div style={{ perspective: "1000px" }} className="flex items-center justify-center w-full h-full">
-          <div
-            ref={containerRef}
-            // Transform origin carefully placed exactly in the center of the "O"
-            className="flex items-center gap-6 origin-[42%_50%]"
-            style={{ transform: "scale(1) rotate(0deg)" }}
-          >
-            <BrandMark size={100} variant="black" />
-            <h1 
-              className="text-black flex items-center h-[100px] pb-4" 
-              style={{ fontFamily: "var(--f-sans)", fontSize: "100px", fontWeight: 900, letterSpacing: "-0.05em", lineHeight: 1 }}
-            >
-              OPED<span style={{ color: "var(--cyan)" }}>.</span>
-            </h1>
+      {/* GLYPH PORTAL CONTAINER */}
+      <div style={{ perspective: "1000px" }} className="flex items-center justify-center w-full h-full relative">
+        {/* Subtle Ambient Laser Ring */}
+        <div className="absolute size-[300px] rounded-full border border-[var(--cyan)]/20 animate-ping pointer-events-none" />
+        
+        <div
+          ref={containerRef}
+          className="flex items-center gap-6 origin-[42%_50%] will-change-transform select-none"
+          style={{ transform: "scale(1) rotate(0deg)" }}
+        >
+          <div className="relative flex items-center justify-center">
+            <BrandMark size={105} variant="black" />
+            <div className="absolute inset-0 rounded-full bg-[var(--cyan)]/10 blur-xl -z-10" />
           </div>
+          <h1 
+            className="text-black flex items-center h-[100px] pb-4 tracking-tighter" 
+            style={{ fontFamily: "var(--f-sans)", fontSize: "105px", fontWeight: 900, lineHeight: 1 }}
+          >
+            OPED<span className="text-[var(--cyan)]">.</span>
+          </h1>
+        </div>
       </div>
 
-      <div className="absolute bottom-12 left-12">
-         <motion.div
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1, y: [20, 0] }}
-           transition={{ duration: 0.5, ease: "easeOut" }}
-           className="text-zinc-900 text-[12vw] font-thin leading-none tracking-tighter"
-           style={{ transform: "scaleY(1.4)", transformOrigin: "bottom left", fontVariantNumeric: "tabular-nums" }}
-         >
-           <span ref={countRef}>0</span>
-         </motion.div>
+      {/* FOOTER COUNTER & STATUS HUD */}
+      <div className="absolute bottom-10 inset-x-10 flex items-end justify-between pointer-events-none">
+        <div className="space-y-1">
+          <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase flex items-center gap-2">
+            <span className="size-2 rounded-full bg-[var(--cyan)] animate-pulse" />
+            <span>OPED / ENGINE PRELOADER</span>
+          </div>
+          <div className="text-xs font-mono font-medium text-zinc-900 tracking-wider">
+            {stageText}
+          </div>
+        </div>
+
+        <div className="flex items-baseline gap-1 text-zinc-900 font-mono font-light leading-none tracking-tighter text-7xl sm:text-8xl">
+          <span ref={countRef}>0</span>
+          <span className="text-2xl font-sans font-bold text-[var(--cyan)]">%</span>
+        </div>
       </div>
     </div>
   );
 }
+

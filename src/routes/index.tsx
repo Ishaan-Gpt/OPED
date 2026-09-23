@@ -290,15 +290,25 @@ function Index() {
             transition={{ duration: 0.6 }}
             className="hero-copy"
           >
+            {/* Top Badge Pill */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--cyan)]/10 border border-[var(--cyan)]/30 text-xs font-mono font-medium text-[var(--cyan)] mb-6 shadow-sm backdrop-blur-md"
+            >
+              <Sparkles size={14} className="animate-spin text-[var(--cyan)]" />
+              <span>FREE AI NCERT TEACHER • CLASSES 4 TO 10</span>
+            </motion.div>
+
             <Doodle direction="left" className="hero-doodle-1">Actually interactive</Doodle>
             <h1 className="font-serif">An AI teacher that<br />won't let you <span className="script-word">Fake It.</span></h1>
             <p className="font-serif">Interactive NCERT chapter learning for Classes 4–10.</p>
             
             <div className="hero-search-wrap">
-              
               <Doodle direction="right" className="hero-doodle-2">100% Free</Doodle>
               <form onSubmit={startLesson} className="hero-search" role="search">
-                <Search size={21} strokeWidth={1.5}/>
+                <Search size={21} strokeWidth={1.5} className="text-zinc-500 shrink-0" />
                 <input
                   aria-label="Search an NCERT chapter"
                   value={query}
@@ -309,6 +319,21 @@ function Index() {
                   placeholder={isGenerating ? "Preparing lesson module..." : RULES.placeholder}
                   disabled={isGenerating}
                 />
+                
+                {/* Voice Dictation Mic Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sampleQuery = "Photosynthesis";
+                    setQuery(sampleQuery);
+                    void launchChapter(sampleQuery);
+                  }}
+                  title="Voice Search"
+                  className="size-9 rounded-full bg-zinc-100 hover:bg-[var(--cyan)]/15 hover:text-[var(--cyan)] text-zinc-600 flex items-center justify-center transition-colors shrink-0 border border-zinc-200/80 cursor-pointer"
+                >
+                  <Mic size={16} />
+                </button>
+
                 <Button type="submit" size="icon" aria-label="Open classroom" disabled={isGenerating}>
                   {isGenerating ? <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" /> : <ArrowRight size={20}/>}
                 </Button>
@@ -347,14 +372,13 @@ function Index() {
                     setError(null);
                     void launchChapter(s);
                   }}
-                  className="rounded-full border border-zinc-200/90 bg-white/80 hover:bg-white hover:border-[var(--cyan)] hover:text-[var(--cyan)] px-3.5 py-1.5 text-xs font-medium text-zinc-900 transition-all shadow-sm backdrop-blur-md cursor-pointer"
+                  className="rounded-full border border-zinc-200/90 bg-white/80 hover:bg-white hover:border-[var(--cyan)] hover:text-[var(--cyan)] px-3.5 py-1.5 text-xs font-medium text-zinc-900 transition-all shadow-sm backdrop-blur-md cursor-pointer flex items-center gap-1.5"
                 >
-                  {s}
+                  <Sparkles size={11} className="text-[var(--cyan)] opacity-70" />
+                  <span>{s}</span>
                 </motion.button>
               ))}
             </div>
-
-            
           </motion.div>
         </section>
 
