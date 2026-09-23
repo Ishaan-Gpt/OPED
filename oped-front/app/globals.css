@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pitch-black: #000000;
+  --color-surface-dark: #080808;
+  --color-surface-card: #0c0c0c;
+  --color-surface-elevated: #111111;
+  --color-emerald-glow: #2E5243;
+  --color-emerald-slate: #203934;
+  --color-border-subtle: #18181B;
+  --color-border-hover: #3F3F46;
+  --font-sans: var(--font-geist-sans), Inter, sans-serif;
+  --font-mono: var(--font-geist-mono), JetBrains Mono, monospace;
+}
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+html, body {
+  background-color: #000000;
+  color: #ffffff;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  selection-background-color: #2E5243;
+  selection-color: #ffffff;
+}
+
+/* SVG Noise Overlay */
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.12'/%3E%3C/svg%3E");
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(12, 12, 12, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 40px -10px rgba(46, 82, 67, 0.5);
+}
+
+/* Text shimmer animation */
+@keyframes text-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, #a1a1aa 50%, #ffffff 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: text-shimmer 4s linear infinite;
+}
+

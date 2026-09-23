@@ -152,7 +152,11 @@ export interface GazeTargetCoords {
   y: number;
 }
 
-export type GazeTarget = GazeDirection | GazeTargetCoords;
+export interface GazeTargetElement {
+  targetElement: HTMLElement | string;
+}
+
+export type GazeTarget = GazeDirection | GazeTargetCoords | GazeTargetElement;
 
 export interface CharacterProps {
   state?: CharacterState | undefined;
@@ -194,7 +198,7 @@ export interface BoneAngles {
 }
 
 export interface TeacherRefHandle {
-  play: (state: CharacterState | 'idle' | 'explain' | 'thinking' | 'question' | 'listen' | 'correct' | 'celebrate' | 'noPeek', durationMs?: number) => void;
+  play: (state: CharacterState | 'idle' | 'explain' | 'thinking' | 'question' | 'listen' | 'correct' | 'celebrate' | 'noPeek' | 'present', durationMs?: number) => void;
   speak: () => void;
   stopSpeaking: () => void;
   setExpression: (expr: ExpressionType) => void;
