@@ -22,11 +22,17 @@ export const palette = {
   gray950: "#09090b",
   black: "#000000",
 
-  // Semantic mappings (Strictly White Major Monochrome)
+  // Electric Cyan Accent (#04bdbd)
+  accent: "#04bdbd",
+  accentHover: "#039b9b",
+  accentSoft: "rgba(4, 189, 189, 0.12)",
+  accentGlow: "rgba(4, 189, 189, 0.35)",
+
+  // Semantic mappings (Strictly White Major Monochrome + Cyan Accent)
   royalRed: "#09090b",
   royalRedSoft: "#52525b",
-  tealGreen: "#09090b",
-  tealGreenSoft: "#3f3f46",
+  tealGreen: "#04bdbd",
+  tealGreenSoft: "rgba(4, 189, 189, 0.15)",
   earthBrown: "#ffffff",
   earthBrownLight: "#f4f4f5",
   earthBrownDark: "#e4e4e7",
@@ -37,9 +43,11 @@ export const palette = {
 } as const;
 
 export const typography = {
-  display: '"Fraunces", Georgia, serif',
-  body: '"Outfit", system-ui, sans-serif',
+  display: '"Instrument Serif", "Fraunces", Georgia, serif',
+  script: '"Pinyon Script", "Alex Brush", cursive',
+  body: '"DM Sans", "Outfit", system-ui, sans-serif',
   chalk: '"Caveat", "Comic Sans MS", cursive',
+  mono: '"Space Mono", monospace',
 } as const;
 
 export const radii = {
