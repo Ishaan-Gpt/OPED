@@ -214,18 +214,15 @@ function Index() {
     setActiveTopic(clean);
     const resolved = resolveQuery(clean);
     if (resolved.ok && resolved.module) {
-      setPendingModule(resolved.module);
-      setIsGenerating(true);
+      setActiveModule(resolved.module);
       return;
     }
     if (resolved.generatable) {
-      setIsGenerating(true);
       const generated = await generateLessonModule({ ...resolved.generatable, topic: clean });
       if (generated) {
-        setPendingModule(generated);
+        setActiveModule(generated);
         return;
       }
-      setIsGenerating(false);
       setError("Couldn't prepare that chapter right now — try again in a moment.");
       return;
     }
@@ -582,22 +579,6 @@ function Index() {
           <p>LEARN IT. PROVE IT. / NCERT CLASSES 4—10</p>
         </div>
       )}
-
-      {/* AWARDS LEVEL FULLSCREEN AI CHAPTER LOADER */}
-      <AnimatePresence>
-        {isGenerating && (
-          <AwardLoader
-            topic={activeTopic}
-            onComplete={() => {
-              setIsGenerating(false);
-              if (pendingModule) {
-                setActiveModule(pendingModule);
-                setPendingModule(null);
-              }
-            }}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 }
