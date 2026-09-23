@@ -2,175 +2,146 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Code2, Brain, BarChart3, Palette, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Sparkles, Video, Glasses, Box, ArrowRight, Zap, CheckCircle2 } from "lucide-react";
 
-interface TrackCategory {
-  id: string;
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  roles: string[];
-  description: string;
-  accent: string;
-}
-
-const tracks: TrackCategory[] = [
+const TRACKS = [
   {
-    id: "swe",
-    name: "Software Engineering",
-    icon: Code2,
+    id: "spatial-physics",
+    title: "Class 9-10 NCERT Physics 3D",
+    category: "3D SPATIAL CLASSROOM",
     description:
-      "Architect high-throughput AI backends, full-stack Next.js apps, and agentic microservices.",
-    roles: [
-      "Applied AI Engineer",
-      "Backend Engineer",
-      "Full Stack Developer",
-      "Frontend Developer",
+      "Explore Optics, Ray Diagrams, Rutherford Atomic Structure, and Electromagnetic Induction inside 3D spatial environments.",
+    badge: "3D VR SIMULATION",
+    modules: ["Ray Optics & Lenses", "Rutherford Model 3D", "Circuit Builder", "Refraction Rays"],
+    icon: Box,
+    accent: "border-amber-500/30 text-amber-400 bg-amber-500/10",
+  },
+  {
+    id: "generative-video",
+    title: "2-Way Real-time Generative Tutor",
+    category: "REAL-TIME VIDEO STREAM",
+    description:
+      "Converse with a hyper-realistic AI teacher streamed in 60 FPS video. Ask questions by voice and receive live visual board draw responses.",
+    badge: "< 80ms LATENCY STREAM",
+    modules: [
+      "Voice Natural Dialogue",
+      "Dynamic Blackboard Draw",
+      "Instant Concept Evaluation",
+      "Speech Kinematics",
     ],
-    accent: "from-emerald-500/20 to-teal-500/5",
+    icon: Video,
+    accent: "border-blue-500/30 text-blue-400 bg-blue-500/10",
   },
   {
-    id: "ai",
-    name: "AI & Data Science",
-    icon: Brain,
+    id: "vr-immersive",
+    title: "VR Headset Spatial Classroom",
+    category: "VIRTUAL REALITY",
     description:
-      "Fine-tune LLMs, deploy PyTorch inference pipelines, and construct scalable vector databases.",
-    roles: ["AI Engineer", "Machine Learning Engineer", "Data Scientist", "BI Analyst"],
-    accent: "from-blue-500/20 to-indigo-500/5",
+      "Put on your Meta Quest or Apple Vision Pro headset for 360° spatial audio, desk seating, and hands-on 3D manipulation.",
+    badge: "VR HEADSET READY",
+    modules: [
+      "Spatial Audio Positioning",
+      "Hand Gesture Tracking",
+      "FPV Classroom Camera",
+      "Seated Recitation",
+    ],
+    icon: Glasses,
+    accent: "border-purple-500/30 text-purple-400 bg-purple-500/10",
   },
   {
-    id: "biz",
-    name: "Business & Ops",
-    icon: BarChart3,
+    id: "ncert-mastery",
+    title: "NCERT Class 7-10 Complete Science",
+    category: "CURRICULUM ENGINE",
     description:
-      "Analyze market expansion, automate enterprise workflows, and partner with executive leadership.",
-    roles: ["Management Consultant", "Financial Analyst", "Operations Associate", "Chief of Staff"],
-    accent: "from-amber-500/20 to-orange-500/5",
-  },
-  {
-    id: "prod",
-    name: "Product & Design",
-    icon: Palette,
-    description:
-      "Design pixel-perfect interfaces, craft AI product specs, and drive end-to-end user growth.",
-    roles: ["Product Manager", "UX/Design Engineer", "Systems Designer", "Product Marketer"],
-    accent: "from-purple-500/20 to-pink-500/5",
-  },
-  {
-    id: "sec",
-    name: "Security & Sales",
-    icon: ShieldCheck,
-    description:
-      "Protect AI models against adversarial prompts and pitch enterprise AI solutions to Fortune 500s.",
-    roles: ["AI Security Analyst", "SOC Analyst", "Account Executive", "Solutions Consultant"],
-    accent: "from-red-500/20 to-rose-500/5",
+      "Comprehensive NCERT syllabus breakdown with automated mastery outcomes, voice recitation checks, and report scorecards.",
+    badge: "FULL SYLLABUS",
+    modules: [
+      "Nutrition in Plants",
+      "Light & Reflection",
+      "Structure of Atom",
+      "Chemical Reactions",
+    ],
+    icon: Zap,
+    accent: "border-emerald-500/30 text-emerald-400 bg-emerald-500/10",
   },
 ];
 
 export const Tracks: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>("all");
-
-  const filteredTracks = activeTab === "all" ? tracks : tracks.filter((t) => t.id === activeTab);
+  const [activeTrack, setActiveTrack] = useState(TRACKS[0].id);
 
   return (
-    <section className="py-28 px-6 sm:px-12 max-w-7xl mx-auto space-y-16">
-      {/* Header */}
+    <section id="realtime-video" className="max-w-7xl mx-auto px-6 py-28 space-y-16">
+      {/* Title */}
       <div className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 tracking-widest uppercase">
-          <span>[ ROLES & CURRICULUM ]</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111520] border border-amber-500/30 text-amber-300 text-xs font-mono tracking-widest uppercase">
+          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <span>FOUR PILLARS OF SPATIAL LEARNING</span>
         </div>
 
         <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tighter text-white leading-tight">
-          Get hired into the world&apos;s most in-demand AI-native roles.
+          Immersive 3D Spatial Classrooms & Generative Video.
         </h2>
 
-        <p className="text-zinc-400 text-base sm:text-lg font-normal">
-          Master real-world production stacks used by top tech companies and high-growth startups.
+        <p className="text-slate-400 text-base sm:text-lg">
+          Select a spatial learning domain to explore interactive 3D physics models and 2-way
+          generative video streams.
         </p>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b border-white/5">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`px-4 py-2 rounded-full text-xs font-mono transition-all ${
-            activeTab === "all"
-              ? "bg-white text-black font-semibold"
-              : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-white"
-          }`}
-        >
-          All Tracks
-        </button>
-        {tracks.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 rounded-full text-xs font-mono transition-all ${
-              activeTab === t.id
-                ? "bg-white text-black font-semibold"
-                : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-white"
-            }`}
-          >
-            {t.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Tracks Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTracks.map((track, idx) => {
+      {/* Track Selection Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {TRACKS.map((track) => {
           const Icon = track.icon;
+          const isActive = activeTrack === track.id;
+
           return (
             <motion.div
               key={track.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="group relative bg-[#0c0c0c] border border-white/5 hover:border-zinc-700 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+              onClick={() => setActiveTrack(track.id)}
+              whileHover={{ y: -4 }}
+              className={`cursor-pointer rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
+                isActive
+                  ? "bg-[#111520] border-2 border-amber-500/50 shadow-2xl glow-gold"
+                  : "bg-[#0b0e14] border border-white/10 hover:border-slate-700"
+              }`}
             >
-              {/* Card Ambient Gradient */}
-              <div
-                className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${track.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
-              />
-
-              <div className="relative z-10 space-y-6">
-                {/* Header Icon + Track Name */}
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white group-hover:border-zinc-600 transition-colors">
-                    <Icon className="w-6 h-6 text-emerald-400" />
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${track.accent}`}
+                  >
+                    <Icon className="w-6 h-6" />
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                    TRACK 0{idx + 1}
+                  <span
+                    className={`text-[10px] font-mono px-2.5 py-1 rounded-full border ${track.accent}`}
+                  >
+                    {track.badge}
                   </span>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-bold text-white tracking-tight">{track.name}</h3>
-                  <p className="mt-2 text-xs text-zinc-400 leading-relaxed font-normal">
-                    {track.description}
-                  </p>
-                </div>
-
-                {/* Verified Roles List */}
-                <div className="space-y-2 pt-2 border-t border-white/5">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                    VERIFIED POSITIONS
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+                    {track.category}
                   </span>
-                  <ul className="space-y-2">
-                    {track.roles.map((role, rIdx) => (
-                      <li key={rIdx} className="flex items-center gap-2 text-xs text-zinc-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span>{role}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="text-xl font-bold text-white leading-snug">{track.title}</h3>
+                  <p className="text-xs text-slate-400 leading-relaxed">{track.description}</p>
                 </div>
               </div>
 
-              {/* Bottom Badge */}
-              <div className="relative z-10 mt-6 pt-4 flex items-center justify-between text-[11px] font-mono text-zinc-500 group-hover:text-emerald-400 transition-colors">
-                <span>GUARANTEED INTERVIEW</span>
-                <span>→</span>
+              <div className="mt-8 pt-4 border-t border-white/10 space-y-2">
+                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">
+                  KEY MODULES
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {track.modules.map((m) => (
+                    <span
+                      key={m}
+                      className="px-2 py-0.5 rounded-md bg-[#07090e] border border-slate-800 text-[10px] font-mono text-slate-300"
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
               </div>
             </motion.div>
           );
