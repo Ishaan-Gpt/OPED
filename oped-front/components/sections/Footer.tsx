@@ -21,12 +21,12 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="relative bg-[#08090C] pt-28 pb-16 border-t border-slate-800/80 overflow-hidden">
-      {/* Executive Royal Blue Radial Backlight */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-600/10 blur-[180px] rounded-full pointer-events-none" />
+    <footer className="relative bg-[#0B0F17] pt-28 pb-16 border-t border-slate-800/80 overflow-hidden">
+      {/* Ambient Ring Backlight */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-600/15 blur-[180px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 space-y-24 relative z-10 text-center">
-        {/* Giant Launch Banner */}
+        {/* Giant Hero Banner */}
         <div className="max-w-4xl mx-auto space-y-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -35,28 +35,29 @@ export const Footer: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
-            <span className="inline-flex items-center gap-1.5 text-xs font-mono tracking-widest text-blue-400 uppercase border border-blue-500/20 px-3.5 py-1.5 rounded-full bg-blue-500/10">
-              <Box className="w-3.5 h-3.5" /> OPED 3D SPATIAL CLASSROOM
+            <span className="inline-block text-xs font-mono tracking-widest text-blue-400 uppercase border border-blue-500/20 px-3.5 py-1.5 rounded-full bg-blue-500/10">
+              EARLY ACCESS ENROLLMENT
             </span>
 
             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-white leading-none">
-              Step into the future of education.
+              Step into the future of 3D AI education.
             </h2>
 
-            <p className="text-slate-400 text-lg sm:text-xl max-w-xl mx-auto font-normal">
-              Experience 2-way real-time AI teacher generation in interactive 3D VR classrooms.
+            <p className="text-slate-300 text-lg sm:text-xl max-w-xl mx-auto font-normal">
+              Experience 2-way real-time video generation and 3D VR classrooms built for NCERT
+              students.
             </p>
 
             {/* Primary Action Button */}
             <div className="pt-4 flex justify-center">
               <div className="relative group">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 opacity-75 blur group-hover:opacity-100 transition duration-500" />
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-500 opacity-75 blur group-hover:opacity-100 transition duration-1000 animate-pulse" />
                 <button
-                  onClick={() => (window.location.href = "/showcase")}
+                  onClick={() => setIsModalOpen(true)}
                   className="relative flex items-center gap-3 bg-white text-slate-950 font-extrabold text-base px-10 py-5 rounded-full hover:bg-slate-100 transition-all active:scale-95 shadow-2xl"
                 >
-                  <span>Launch 3D VR Classroom</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <span>Request 3D VR Access</span>
+                  <ArrowRight className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
@@ -64,15 +65,18 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Footer Divider & Links */}
-        <div className="pt-16 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-500 font-mono">
+        <div className="pt-16 border-t border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-400 font-mono">
           <div className="flex items-center gap-3">
-            <span className="text-lg font-black text-white tracking-tight">OPED.</span>
-            <span>© OPED Education Technologies. All rights reserved.</span>
+            <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+              <Box className="w-3.5 h-3.5" />
+            </div>
+            <span className="text-lg font-black text-white tracking-tight">OPED.3D</span>
+            <span>© OPED AI Education Platform. All rights reserved.</span>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <a href="mailto:team@oped.education" className="hover:text-white transition-colors">
-              team@oped.education
+            <a href="mailto:support@oped.ai" className="hover:text-white transition-colors">
+              support@oped.ai
             </a>
             <a href="#privacy" className="hover:text-white transition-colors">
               Privacy Policy
@@ -81,12 +85,12 @@ export const Footer: React.FC = () => {
               Terms of Service
             </a>
             <a
-              href="https://github.com/Ishaan-Gpt/OPED"
+              href="https://x.com"
               target="_blank"
               rel="noreferrer"
               className="hover:text-white transition-colors"
             >
-              GitHub
+              X (Twitter)
             </a>
           </div>
         </div>
@@ -99,13 +103,13 @@ export const Footer: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-[#0D0F14] border border-slate-800 rounded-3xl p-8 space-y-6 text-left shadow-2xl"
+              className="relative w-full max-w-md bg-[#151C2C] border border-slate-800 rounded-3xl p-8 space-y-6 text-left shadow-2xl"
             >
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -118,13 +122,14 @@ export const Footer: React.FC = () => {
                 <>
                   <div className="space-y-2">
                     <span className="text-[10px] font-mono text-blue-400 uppercase tracking-widest">
-                      INSTANT ACCESS
+                      3D VR CLASSROOM EARLY ACCESS
                     </span>
                     <h3 className="text-2xl font-bold text-white tracking-tight">
-                      Enter 3D VR Classroom
+                      Request Platform Demo
                     </h3>
                     <p className="text-xs text-slate-400 font-normal">
-                      Enter your email to receive early access to upcoming 3D STEM chapters.
+                      Enter your email to receive an early access invite for the OPED 3D VR
+                      interactive classroom.
                     </p>
                   </div>
 
@@ -141,16 +146,16 @@ export const Footer: React.FC = () => {
                       type="submit"
                       className="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-500 transition-all active:scale-98 shadow-lg"
                     >
-                      Launch Session
+                      Submit Demo Request
                     </button>
                   </form>
                 </>
               ) : (
                 <div className="py-8 text-center space-y-4">
                   <CheckCircle2 className="w-12 h-12 text-blue-400 mx-auto animate-bounce" />
-                  <h3 className="text-xl font-bold text-white">Access Granted!</h3>
+                  <h3 className="text-xl font-bold text-white">Access Requested!</h3>
                   <p className="text-xs text-slate-400">
-                    Launching your 3D VR AI classroom environment now.
+                    Thank you! We have reserved your spot for the OPED 3D VR classroom demo.
                   </p>
                 </div>
               )}

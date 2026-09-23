@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Video, Box, Play, Sparkles, Layers } from "lucide-react";
+import { Box, Sparkles, Play, CheckCircle, Compass, Atom, Sun } from "lucide-react";
 
 export const BentoProjects: React.FC = () => {
   const card1Ref = useRef<HTMLDivElement>(null);
@@ -21,10 +21,10 @@ export const BentoProjects: React.FC = () => {
     ref.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
-  // Card 1: Simulated speech transcription & teacher response stream
+  // Card 1: Simulated typewriter speech output for AI Teacher explanation of Rutherford Atom
   const [typedText, setTypedText] = useState("");
   const fullText =
-    "Let us examine Rutherford's alpha particle scattering experiment. Notice how most particles pass straight through the gold foil, proving that the atom is mostly empty space.";
+    "Look closely at the nucleus. Rutherford discovered that most of the atom's mass and positive charge is concentrated in a tiny central volume.";
 
   useEffect(() => {
     let index = 0;
@@ -36,85 +36,163 @@ export const BentoProjects: React.FC = () => {
   }, [fullText]);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-28 space-y-16">
-      {/* Section Header */}
+    <section id="platform" className="max-w-7xl mx-auto px-6 py-28 space-y-16">
+      {/* Title */}
       <div className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono tracking-widest uppercase">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono tracking-widest uppercase">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>IMMERSIVE ARCHITECTURE</span>
+          <span>3D INTERACTIVE ENGINE</span>
         </div>
 
         <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tighter text-white leading-tight">
-          Engineered for 3D spatial clarity & instant interaction.
+          Touch and manipulate 3D models in real-time.
         </h2>
 
         <p className="text-slate-400 text-base sm:text-lg">
-          Combining 2-way real-time video generation, interactive 3D spatial models, and
-          YouTube-speed adaptive streaming.
+          No more flat textbook diagrams. Experience concepts in full 3D WebGL space guided by
+          real-time voice and video AI teaching.
         </p>
       </div>
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* CARD 1 - 2-Way Real-Time AI Teacher */}
+        {/* CARD 1 - Rutherford 3D Atom Model */}
         <div
           ref={card1Ref}
           onMouseMove={(e) => handleMouseMove(e, card1Ref)}
-          className="group relative bg-[#0D0F14] border border-slate-800/80 hover:border-blue-500/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-xl hover:shadow-2xl"
+          className="group relative bg-[#151C2C]/80 border border-slate-800 hover:border-blue-500/50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl"
           style={{
             backgroundImage:
-              "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(37, 99, 235, 0.12), transparent 50%)",
+              "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(37, 99, 235, 0.12), transparent 45%)",
           }}
         >
           <div className="space-y-6">
             <div className="flex items-center justify-between text-xs font-mono text-slate-400">
               <div className="flex items-center gap-2">
-                <Video className="w-4 h-4 text-blue-400" />
+                <Atom className="w-4 h-4 text-blue-400" />
                 <span className="uppercase tracking-wider font-semibold text-white">
-                  2-WAY REAL-TIME VIDEO
+                  CHEMISTRY & ATOM 3D
                 </span>
               </div>
-              <span className="text-[10px] text-slate-500">&lt;200ms LATENCY</span>
+              <span className="text-[10px] text-slate-500">MODULE 01</span>
             </div>
 
             <h3 className="text-xl font-bold text-white leading-snug">
-              Interactive AI Teacher character with live vocal & facial synthesis.
+              Interactive Rutherford & Bohr 3D Atomic Orbital Visualizer
             </h3>
 
-            {/* Interactive Preview: Teacher Audio/Video Stream Box */}
+            {/* Interactive Preview */}
             <div className="rounded-2xl bg-slate-950 border border-slate-800 p-4 space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] text-slate-400">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                  <span>AI Teacher Stream — Active</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-700" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500/80" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500/80" />
                 </div>
-                <span className="text-blue-400">60 FPS</span>
+                <span>AI Teacher Voice Explanation</span>
               </div>
 
               <div className="space-y-2 text-slate-300">
-                <div className="text-[10px] text-slate-500">NCERT Class 9 — Structure of Atom</div>
-                <div className="p-3 rounded-xl bg-slate-900/90 border border-blue-500/25 text-blue-300 text-[11px] leading-relaxed min-h-[75px]">
+                <div className="text-[10px] text-slate-500">
+                  Topic: NCERT Class 9 — Structure of the Atom
+                </div>
+                <div className="p-3 rounded-lg bg-slate-900 border border-blue-500/30 text-blue-200 text-[11px] leading-relaxed min-h-[70px]">
                   {typedText}
                   <span className="inline-block w-1.5 h-3 bg-blue-400 ml-1 animate-pulse" />
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-1 text-[10px] text-blue-400">
-                <span className="flex items-center gap-1.5">
-                  <Play className="w-3 h-3 fill-blue-400" /> Real-time synthesis...
+                <span className="flex items-center gap-1">
+                  <Play className="w-3 h-3 fill-blue-400" /> 3D Orbits Active
                 </span>
-                <span className="text-slate-500">99.8% Sync Score</span>
+                <span className="text-slate-400">Electron Shell: K, L, M</span>
               </div>
             </div>
           </div>
 
-          {/* Feature Pills */}
-          <div className="mt-8 pt-4 border-t border-slate-800/80 flex flex-wrap gap-2">
-            {["Live Voice", "Facial Rig", "Natural Easing", "Vector SVG", "Gaze Tracking"].map(
+          {/* Tech Pills */}
+          <div className="mt-8 pt-4 border-t border-slate-800 flex flex-wrap gap-2">
+            {["Three.js", "WebGL", "Framer Motion", "NCERT Class 9", "AI Lipsync"].map((pill) => (
+              <span
+                key={pill}
+                className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300"
+              >
+                {pill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* CARD 2 - Ray Optics 3D Visualizer */}
+        <div
+          ref={card2Ref}
+          onMouseMove={(e) => handleMouseMove(e, card2Ref)}
+          className="group relative bg-[#151C2C]/80 border border-slate-800 hover:border-blue-500/50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.12), transparent 45%)",
+          }}
+        >
+          <div className="space-y-6">
+            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-indigo-400" />
+                <span className="uppercase tracking-wider font-semibold text-white">
+                  PHYSICS OPTICS 3D
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500">MODULE 02</span>
+            </div>
+
+            <h3 className="text-xl font-bold text-white leading-snug">
+              Concave & Convex Mirror Focal Length Ray Tracing
+            </h3>
+
+            {/* Interactive Preview */}
+            <div className="rounded-2xl bg-slate-950 border border-slate-800 p-4 space-y-3 font-mono text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] text-slate-400">
+                <span>Real-Time Optics Math</span>
+                <span className="text-indigo-400 font-bold">f = -15 cm</span>
+              </div>
+
+              {/* Conversion bar visualization */}
+              <div className="space-y-2">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>Object Distance (u)</span>
+                    <span>-30 cm</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-500 w-[60%]" />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>Real & Inverted Image Distance (v)</span>
+                    <span>-30 cm</span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                    <div className="h-full bg-indigo-500 w-[60%]" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-2 rounded bg-slate-900 text-[10px] text-slate-300 flex items-center justify-between">
+                <span>Magnification (m = -1) Verified</span>
+                <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Tech Pills */}
+          <div className="mt-8 pt-4 border-t border-slate-800 flex flex-wrap gap-2">
+            {["Ray Tracing", "Mirror Formula", "NCERT Class 10", "Interactive Optics"].map(
               (pill) => (
                 <span
                   key={pill}
-                  className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400"
+                  className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300"
                 >
                   {pill}
                 </span>
@@ -123,135 +201,84 @@ export const BentoProjects: React.FC = () => {
           </div>
         </div>
 
-        {/* CARD 2 - 3D VR Spatial Canvas */}
-        <div
-          ref={card2Ref}
-          onMouseMove={(e) => handleMouseMove(e, card2Ref)}
-          className="group relative bg-[#0D0F14] border border-slate-800/80 hover:border-indigo-500/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-xl hover:shadow-2xl"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(79, 70, 229, 0.12), transparent 50%)",
-          }}
-        >
-          <div className="space-y-6">
-            <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-              <div className="flex items-center gap-2">
-                <Box className="w-4 h-4 text-indigo-400" />
-                <span className="uppercase tracking-wider font-semibold text-white">
-                  3D SPATIAL CANVAS
-                </span>
-              </div>
-              <span className="text-[10px] text-slate-500">VR READY</span>
-            </div>
-
-            <h3 className="text-xl font-bold text-white leading-snug">
-              Explore 3D STEM models in VR classrooms with instant spatial manipulation.
-            </h3>
-
-            {/* Interactive Preview: 3D Wireframe Mesh Simulation */}
-            <div className="rounded-2xl bg-slate-950 border border-slate-800 p-4 space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] text-slate-400">
-                <span>Rutherford Atom 3D Model</span>
-                <span className="text-indigo-400 font-bold">Interactive</span>
-              </div>
-
-              {/* 3D Orbit Mesh Visualizer */}
-              <div className="h-24 flex items-center justify-center relative overflow-hidden bg-slate-900/50 rounded-xl border border-slate-800">
-                <div className="w-10 h-10 rounded-full bg-blue-600/30 border border-blue-400 flex items-center justify-center animate-pulse">
-                  <div className="w-4 h-4 rounded-full bg-blue-400 shadow-[0_0_15px_#2563eb]" />
-                </div>
-                {/* Orbiting electrons */}
-                <div className="absolute w-28 h-12 rounded-full border border-indigo-400/40 animate-[spin_6s_linear_infinite]" />
-                <div className="absolute w-12 h-28 rounded-full border border-blue-400/40 animate-[spin_8s_linear_infinite_reverse]" />
-              </div>
-
-              <div className="p-2 rounded bg-slate-900 text-[10px] text-slate-300 flex items-center justify-between">
-                <span>Rotatable 360° Viewport</span>
-                <span className="text-indigo-400">WebXR / GLTF</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Feature Pills */}
-          <div className="mt-8 pt-4 border-t border-slate-800/80 flex flex-wrap gap-2">
-            {["Three.js", "WebGL", "Ray Diagrams", "Convex Optics", "Atoms"].map((pill) => (
-              <span
-                key={pill}
-                className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400"
-              >
-                {pill}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* CARD 3 - Instant YouTube-Speed Delivery */}
+        {/* CARD 3 - Photosynthesis 3D Simulation */}
         <div
           ref={card3Ref}
           onMouseMove={(e) => handleMouseMove(e, card3Ref)}
-          className="group relative bg-[#0D0F14] border border-slate-800/80 hover:border-blue-500/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-xl hover:shadow-2xl"
+          className="group relative bg-[#151C2C]/80 border border-slate-800 hover:border-blue-500/50 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl"
           style={{
             backgroundImage:
-              "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.12), transparent 50%)",
+              "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(245, 158, 11, 0.12), transparent 45%)",
           }}
         >
           <div className="space-y-6">
             <div className="flex items-center justify-between text-xs font-mono text-slate-400">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-blue-400" />
+                <Sun className="w-4 h-4 text-amber-400" />
                 <span className="uppercase tracking-wider font-semibold text-white">
-                  YOUTUBE-SPEED DELIVERY
+                  BIOLOGY 3D
                 </span>
               </div>
-              <span className="text-[10px] text-slate-500">INSTANT</span>
+              <span className="text-[10px] text-slate-500">MODULE 03</span>
             </div>
 
             <h3 className="text-xl font-bold text-white leading-snug">
-              Multipurpose blackboard canvas with instant dynamic lesson streaming.
+              Plant Photosynthesis & Chloroplast Molecular Simulation
             </h3>
 
-            {/* Interactive Preview: Adaptive Stream Waveform */}
+            {/* Interactive Preview */}
             <div className="rounded-2xl bg-slate-950 border border-slate-800 p-4 space-y-3 font-mono text-xs">
               <div className="flex items-center justify-between text-[10px] text-slate-400">
-                <span>Adaptive HLS Stream Pipeline</span>
-                <span className="text-blue-400">0ms Buffer</span>
+                <span>Chemical Reaction Equation</span>
+                <span className="text-amber-400 font-bold">6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂</span>
               </div>
 
-              <div className="h-20 bg-slate-900/60 rounded-xl p-3 flex flex-col justify-between border border-slate-800">
-                <div className="flex justify-between text-[10px] text-slate-400">
-                  <span>Audio & Video Chunk Delivery</span>
-                  <span className="text-blue-400">4.8 MB/s</span>
-                </div>
-                <div className="flex items-end gap-1 h-8">
-                  {[40, 65, 30, 80, 95, 70, 85, 45, 90, 60, 100, 75, 50, 85, 90, 60].map(
-                    (h, idx) => (
-                      <div
-                        key={idx}
-                        className="flex-1 bg-gradient-to-t from-blue-600 to-indigo-400 rounded-t"
-                        style={{ height: `${h}%` }}
-                      />
-                    ),
-                  )}
-                </div>
-              </div>
+              <svg className="w-full h-24 overflow-visible" viewBox="0 0 200 80">
+                <line x1="0" y1="20" x2="200" y2="20" stroke="#334155" strokeDasharray="3 3" />
+                <line x1="0" y1="50" x2="200" y2="50" stroke="#334155" strokeDasharray="3 3" />
+
+                <motion.path
+                  d="M 10 70 Q 50 20, 100 50 T 190 15"
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="2.5"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                />
+
+                <path
+                  d="M 10 65 Q 60 10, 110 40 T 190 25"
+                  fill="none"
+                  stroke="#f59e0b"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 2"
+                />
+              </svg>
 
               <div className="flex items-center justify-between text-[10px] text-slate-400">
-                <span>Dynamic Math Slide Generation</span>
-                <span className="text-blue-400 font-bold">Live Synced</span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" /> Light Energy Absorbed
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-400" /> Glucose Output
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Feature Pills */}
-          <div className="mt-8 pt-4 border-t border-slate-800/80 flex flex-wrap gap-2">
-            {["HLS Streaming", "KaTeX Math", "Remotion", "Audio Map"].map((pill) => (
-              <span
-                key={pill}
-                className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400"
-              >
-                {pill}
-              </span>
-            ))}
+          {/* Tech Pills */}
+          <div className="mt-8 pt-4 border-t border-slate-800 flex flex-wrap gap-2">
+            {["Plant Cells", "Chloroplast 3D", "NCERT Class 7", "Molecular Dynamics"].map(
+              (pill) => (
+                <span
+                  key={pill}
+                  className="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300"
+                >
+                  {pill}
+                </span>
+              ),
+            )}
           </div>
         </div>
       </div>

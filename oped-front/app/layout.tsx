@@ -13,16 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zero University | Learn. Build. Get Hired.",
+  title: "OPED — World's Most Advanced 3D VR AI Education Platform",
   description:
-    "BUNQ LABS Zero University. Get hired into the world's most in-demand AI-native roles. Beta members get a guaranteed interview.",
+    "Experience 2-way real-time video generation, interactive 3D VR classrooms, and instant voice AI teaching. As fast as AI, as smooth as YouTube.",
   keywords: [
-    "Zero University",
-    "AI Education",
-    "Software Engineering",
-    "AI Engineer",
-    "Product Design",
-    "BUNQ LABS",
+    "OPED",
+    "3D VR Classroom",
+    "AI Education Platform",
+    "Realtime Video Generation",
+    "NCERT 3D Models",
+    "Interactive AI Teacher",
   ],
 };
 
@@ -34,13 +34,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="dark bg-black text-white selection:bg-[#2E5243] selection:text-white"
+      className="dark bg-[#0B0F17] text-[#F8FAFC] selection:bg-blue-600/30 selection:text-white"
     >
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white min-h-screen relative font-sans`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0B0F17] text-[#F8FAFC] min-h-screen relative font-sans`}
       >
         {/* Global SVG Noise Overlay */}
-        <div className="pointer-events-none opacity-20 fixed inset-0 z-50 bg-noise" />
+        <div className="pointer-events-none opacity-15 fixed inset-0 z-50 bg-noise" />
 
         {children}
       </body>
