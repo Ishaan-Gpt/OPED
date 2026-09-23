@@ -2,34 +2,23 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  CheckCircle2,
-  MessageSquare,
-  Award,
-  Calendar,
-  Sparkles,
-  User,
-  Send,
-  Video,
-  Box,
-  Mic,
-} from "lucide-react";
+import { CheckCircle2, MessageSquare, Box, Sparkles, User, Send, Video, Mic } from "lucide-react";
 
 export const MatchingEngine: React.FC = () => {
   const [messages, setMessages] = useState([
     {
       sender: "AI Teacher (Anaya)",
-      text: "Great recall on Rutherford's experiment! Can you explain why alpha particles were deflected at large angles?",
+      text: "Welcome to today's Class 10 Science module on Reflection and Refraction! Can you recall what happens when light passes through a convex lens?",
       time: "10:14 AM",
     },
     {
       sender: "Student (You)",
-      text: "Because the positive charge of the atom is concentrated in a tiny nucleus rather than spread out uniformly!",
+      text: "The light rays converge at the focal point on the principal axis.",
       time: "10:15 AM",
     },
     {
       sender: "AI Teacher (Anaya)",
-      text: "Spot on! Generating a 3D simulation of the nucleus on your spatial board now...",
+      text: "Excellent recall! Let's render the 3D ray diagram on the blackboard right now.",
       time: "10:15 AM",
     },
   ]);
@@ -40,136 +29,165 @@ export const MatchingEngine: React.FC = () => {
     if (!inputVal.trim()) return;
     setMessages((prev) => [...prev, { sender: "Student (You)", text: inputVal, time: "Just now" }]);
     setInputVal("");
+
+    // Simulate AI response after 600ms
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "AI Teacher (Anaya)",
+          text: "Analyzing response... Perfect understanding! Let us proceed to ray diagram calculation.",
+          time: "Just now",
+        },
+      ]);
+    }, 600);
   };
 
   return (
     <section className="py-28 px-6 sm:px-12 max-w-7xl mx-auto space-y-16 relative">
-      {/* Background Ambient Radial Backlight */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-amber-500/10 blur-[160px] rounded-full pointer-events-none" />
+      {/* Executive Background Radial Backlight */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-blue-600/10 blur-[160px] rounded-full pointer-events-none" />
 
       {/* Header */}
       <div className="text-center space-y-4 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111520] border border-amber-500/30 text-amber-300 text-xs font-mono tracking-widest uppercase">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>2-WAY GENERATIVE VIDEO INTERACTION</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-slate-400 tracking-widest uppercase">
+          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+          <span>REAL-TIME INTERACTION ENGINE</span>
         </div>
 
         <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tighter text-white leading-tight">
-          Talk naturally. Learn visually in 3D.
+          2-Way live voice & video response in milliseconds.
         </h2>
 
         <p className="text-slate-400 text-base sm:text-lg">
-          Zero delay. Instant 2-way video generation that adapts lesson depth based on your voice
-          responses.
+          Ask questions naturally. The AI teacher evaluates your concept recall and dynamically
+          updates the 3D blackboard.
         </p>
       </div>
 
-      {/* Feature Pills Stack */}
+      {/* Feature Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-        <div className="p-6 rounded-2xl bg-[#0b0e14] border border-white/10 space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+        <div className="p-6 rounded-2xl bg-[#0D0F14] border border-slate-800 space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+            <Mic className="w-5 h-5" />
+          </div>
+          <h3 className="text-lg font-bold text-white">1. Instant Voice Input</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Speak your answer directly to the teacher. Automatic speech recognition evaluates
+            conceptual understanding.
+          </p>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-[#0D0F14] border border-slate-800 space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
             <Video className="w-5 h-5" />
           </div>
-          <h3 className="text-lg font-bold text-white">1. Real-time Video Stream</h3>
+          <h3 className="text-lg font-bold text-white">2. Real-Time Video Teacher</h3>
           <p className="text-xs text-slate-400 leading-relaxed">
-            AI teacher facial kinematics and voice synthesized live at 60 FPS with &lt; 80ms
-            latency.
+            Teacher avatar speaks, gestures, and points toward target elements on the 3D blackboard
+            in sync.
           </p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0b0e14] border border-white/10 space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+        <div className="p-6 rounded-2xl bg-[#0D0F14] border border-slate-800 space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
             <Box className="w-5 h-5" />
           </div>
-          <h3 className="text-lg font-bold text-white">2. Spatial 3D Blackboard</h3>
+          <h3 className="text-lg font-bold text-white">3. 3D Spatial Blackboard</h3>
           <p className="text-xs text-slate-400 leading-relaxed">
-            The teacher points and draws diagrams on an interactive spatial board in real-time.
-          </p>
-        </div>
-
-        <div className="p-6 rounded-2xl bg-[#0b0e14] border border-white/10 space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
-            <Award className="w-5 h-5" />
-          </div>
-          <h3 className="text-lg font-bold text-white">3. Automated Mastery Score</h3>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Verifies your conceptual mastery per NCERT chapter with automated evaluation reports.
+            Real-time rendering of mathematical formulas, 3D ray optics, and atomic structures as
+            concepts are introduced.
           </p>
         </div>
       </div>
 
-      {/* Sleek Floating Glassmorphism Workspace Window Mockup */}
+      {/* Sleek Floating Glass Application Window Mockup */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="rounded-3xl border border-white/10 glass-panel overflow-hidden shadow-2xl backdrop-blur-xl"
+        className="rounded-3xl border border-slate-800 glass-panel overflow-hidden shadow-2xl backdrop-blur-xl"
       >
         {/* Titlebar */}
-        <div className="px-6 py-4 bg-[#07090e]/90 border-b border-white/10 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-red-500/80" />
-            <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-            <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+            <span className="w-3 h-3 rounded-full bg-slate-700" />
+            <span className="w-3 h-3 rounded-full bg-slate-700" />
+            <span className="w-3 h-3 rounded-full bg-slate-700" />
             <span className="ml-2 text-xs font-mono text-slate-400">
-              OPED Spatial Interaction Console v2.4
+              OPED 3D Classroom Simulator v2.4
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[10px] font-mono text-amber-300 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              2-WAY VIDEO LATENCY: 68ms
+            <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-[10px] font-mono text-blue-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              LATENCY: 140ms
             </span>
           </div>
         </div>
 
         {/* Workspace Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
-          {/* Left Column: Student Scorecard */}
-          <div className="lg:col-span-5 p-6 sm:p-8 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
+          {/* Left Column: 3D Classroom Telemetry */}
+          <div className="lg:col-span-5 p-6 sm:p-8 space-y-6 bg-slate-950/40">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center font-bold text-xl text-slate-950 shadow-lg">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-xl text-white shadow-lg">
                 OP
               </div>
               <div>
                 <h4 className="text-xl font-bold text-white flex items-center gap-2">
-                  Student Console
-                  <CheckCircle2 className="w-4 h-4 text-amber-400" />
+                  Class 10 — Physics
+                  <CheckCircle2 className="w-4 h-4 text-blue-400" />
                 </h4>
-                <p className="text-xs font-mono text-slate-400">
-                  NCERT Class 9 Science • Atom Module
-                </p>
+                <p className="text-xs font-mono text-slate-400">Light Reflection & Refraction</p>
               </div>
             </div>
 
             <div className="space-y-3 font-mono text-xs">
-              <div className="p-3 rounded-xl bg-[#07090e] border border-white/10 flex items-center justify-between">
-                <span className="text-slate-400">CONCEPT RECALL ACCURACY</span>
-                <span className="text-amber-400 font-bold">96.8%</span>
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                <span className="text-slate-400">TEACHER RIG</span>
+                <span className="text-blue-400 font-bold">2D Vector + 3D Bone</span>
               </div>
-              <div className="p-3 rounded-xl bg-[#07090e] border border-white/10 flex items-center justify-between">
-                <span className="text-slate-400">3D MODEL INTERACTION</span>
-                <span className="text-white font-bold">COMPLETED (3/3)</span>
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                <span className="text-slate-400">AUDIO STREAM</span>
+                <span className="text-white font-bold">NCERT Preloaded HLS</span>
               </div>
-              <div className="p-3 rounded-xl bg-[#07090e] border border-white/10 flex items-center justify-between">
-                <span className="text-slate-400">2-WAY STREAM FPS</span>
-                <span className="text-blue-400 font-bold flex items-center gap-1">
-                  <Video className="w-3 h-3" /> 60 FPS HD
-                </span>
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                <span className="text-slate-400">RECALL ACCURACY</span>
+                <span className="text-blue-400 font-bold">98.4% (Mastery)</span>
+              </div>
+            </div>
+
+            {/* Verified Tech Badges */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                ACTIVE MODULES
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {["Convex Lens", "Principal Axis", "Ray Tracing", "Focal Point", "Refraction"].map(
+                  (tech) => (
+                    <span
+                      key={tech}
+                      className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300"
+                    >
+                      {tech}
+                    </span>
+                  ),
+                )}
               </div>
             </div>
           </div>
 
-          {/* Right Column: Live Video Dialogue Stream */}
-          <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-[#07090e]/60 space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 text-xs font-mono">
+          {/* Right Column: Live Chat & Interaction Console */}
+          <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between bg-slate-950/20 space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800 text-xs font-mono">
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-amber-400" />
-                <span className="text-white font-semibold">Live 2-Way Generative Dialogue</span>
+                <MessageSquare className="w-4 h-4 text-blue-400" />
+                <span className="text-white font-semibold">2-Way Live Dialogue</span>
               </div>
-              <span className="text-slate-400">AI Teacher Anaya</span>
+              <span className="text-slate-500">Interactive Student Session</span>
             </div>
 
             {/* Message History */}
@@ -178,23 +196,23 @@ export const MatchingEngine: React.FC = () => {
                 <div
                   key={i}
                   className={`flex flex-col space-y-1 ${
-                    msg.sender.includes("You") ? "items-end" : "items-start"
+                    msg.sender.includes("Student") ? "items-end" : "items-start"
                   }`}
                 >
                   <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                    {msg.sender.includes("You") ? (
-                      <User className="w-3 h-3" />
+                    {msg.sender.includes("Student") ? (
+                      <User className="w-3 h-3 text-slate-400" />
                     ) : (
-                      <Video className="w-3 h-3 text-amber-400" />
+                      <Video className="w-3 h-3 text-blue-400" />
                     )}
                     <span>{msg.sender}</span>
                     <span>• {msg.time}</span>
                   </div>
                   <div
                     className={`p-3.5 rounded-2xl text-xs max-w-md leading-relaxed ${
-                      msg.sender.includes("You")
-                        ? "bg-amber-500/20 border border-amber-500/40 text-amber-100 rounded-tr-none"
-                        : "bg-[#111520] border border-slate-700 text-slate-200 rounded-tl-none"
+                      msg.sender.includes("Student")
+                        ? "bg-blue-600/20 border border-blue-500/30 text-blue-100 rounded-tr-none"
+                        : "bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none"
                     }`}
                   >
                     {msg.text}
@@ -203,18 +221,18 @@ export const MatchingEngine: React.FC = () => {
               ))}
             </div>
 
-            {/* Input Bar */}
+            {/* Chat Input */}
             <form onSubmit={handleSend} className="flex gap-2">
               <input
                 type="text"
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Ask your AI teacher a question..."
-                className="flex-1 bg-[#111520] border border-slate-700 rounded-full px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
+                placeholder="Type your response to AI Teacher..."
+                className="flex-1 bg-slate-900 border border-slate-800 rounded-full px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50"
               />
               <button
                 type="submit"
-                className="p-2.5 rounded-full bg-amber-400 text-slate-950 hover:bg-amber-300 transition-colors"
+                className="p-2.5 rounded-full bg-blue-600 text-white hover:bg-blue-500 transition-colors"
               >
                 <Send className="w-4 h-4" />
               </button>

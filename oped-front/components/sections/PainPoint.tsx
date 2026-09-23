@@ -2,16 +2,7 @@
 
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import {
-  AlertCircle,
-  ShieldCheck,
-  Zap,
-  Video,
-  Glasses,
-  Sparkles,
-  CheckCircle2,
-  Play,
-} from "lucide-react";
+import { AlertCircle, ShieldCheck, Zap } from "lucide-react";
 
 export const PainPoint: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,39 +18,37 @@ export const PainPoint: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      id="3d-classroom"
-      className="relative min-h-[160vh] bg-[#07090e] py-32 px-6 sm:px-12 md:px-20 border-t border-b border-white/5 flex flex-col justify-center"
+      className="relative min-h-[160vh] bg-black py-28 px-6 sm:px-12 md:px-20 border-t border-b border-white/5 flex flex-col justify-center"
     >
-      {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-950/20 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[150px] pointer-events-none" />
+      {/* Background Micro Glow */}
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-red-950/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-[#2E5243]/15 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto w-full space-y-24">
         {/* Editorial Section Header Tag */}
         <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-[11px] font-mono tracking-widest uppercase flex items-center gap-2">
-            <AlertCircle className="w-3.5 h-3.5 text-blue-400" />
-            <span>PASSIVE vs REAL-TIME GENERATIVE VIDEO</span>
+          <div className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-mono tracking-widest uppercase flex items-center gap-1.5">
+            <AlertCircle className="w-3 h-3" />
+            <span>THE HIGHER ED PARADIGM SHIFT</span>
           </div>
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-slate-800 to-transparent" />
+          <div className="h-[1px] flex-1 bg-gradient-to-r from-zinc-800 to-transparent" />
         </div>
 
         {/* Staggered Narrative Cards */}
-        <div className="space-y-16 sm:space-y-24 pl-2 sm:pl-8 border-l border-slate-800">
+        <div className="space-y-16 sm:space-y-24 pl-2 sm:pl-8 border-l border-zinc-800/80">
           {/* Stage 1 */}
           <motion.div
             style={{ opacity: stage1Opacity }}
             className="space-y-3 transition-opacity duration-300"
           >
-            <span className="text-xs font-mono text-slate-400 uppercase tracking-widest">
-              THE YOUTUBE LIMITATION
+            <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+              PHASE 01
             </span>
-            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-slate-300">
-              1-Way Passive Watching.
+            <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-zinc-400">
+              4 years.
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
-              Watching static video tutorials without feedback leads to passive watching. When you
-              get stuck, YouTube can&apos;t answer your question or evaluate your understanding.
+            <p className="text-zinc-500 text-base sm:text-lg max-w-xl font-normal">
+              Spent memorizing outdated theory in lectures that haven&apos;t changed in decades.
             </p>
           </motion.div>
 
@@ -68,15 +57,14 @@ export const PainPoint: React.FC = () => {
             style={{ opacity: stage2Opacity }}
             className="space-y-3 transition-opacity duration-300"
           >
-            <span className="text-xs font-mono text-amber-400/90 uppercase tracking-widest">
-              THE OPED BREAKTHROUGH
+            <span className="text-xs font-mono text-red-500/80 uppercase tracking-widest">
+              PHASE 02
             </span>
-            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-gradient-gold">
-              2-Way Real-time Generative Video.
+            <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-red-500/90 drop-shadow-[0_0_25px_rgba(239,68,68,0.2)]">
+              In debt.
             </h2>
-            <p className="text-slate-300 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
-              Your AI teacher generates real-time video and speech in under 80ms. Speak naturally,
-              ask questions mid-lesson, and receive instant 1-on-1 visual explanations.
+            <p className="text-zinc-400 text-base sm:text-lg max-w-xl font-normal">
+              Saddled with tens of thousands in student loans before your first real paycheck.
             </p>
           </motion.div>
 
@@ -85,61 +73,61 @@ export const PainPoint: React.FC = () => {
             style={{ opacity: stage3Opacity }}
             className="space-y-3 transition-opacity duration-300"
           >
-            <span className="text-xs font-mono text-blue-400 uppercase tracking-widest">
-              SPATIAL IMMERSION
+            <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+              PHASE 03
             </span>
-            <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-slate-200">
-              3D VR Spatial Classrooms.
+            <h2 className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-zinc-600 line-through decoration-red-500/80 decoration-4">
+              And still no job.
             </h2>
-            <p className="text-slate-400 text-base sm:text-lg max-w-2xl font-normal leading-relaxed">
-              Step inside a fully rendered 3D spatial classroom with interactive blackboards,
-              spatial audio, 3D physics models, and VR headset support.
+            <p className="text-zinc-400 text-base sm:text-lg max-w-xl font-normal">
+              Sending 500 automated resume PDFs into black-hole applicant tracking systems.
             </p>
           </motion.div>
         </div>
 
-        {/* Resolution Banner */}
+        {/* Resolution Banner: Resumes are dead */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="relative mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#111520] via-[#0b0e14] to-[#07090e] border border-amber-500/20 shadow-2xl overflow-hidden"
+          className="relative mt-20 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#0c0c0c] via-[#080808] to-black border border-emerald-500/20 glow-emerald overflow-hidden"
         >
           <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-            <Glasses className="w-56 h-56 text-amber-400" />
+            <ShieldCheck className="w-48 h-48 text-emerald-400" />
           </div>
 
           <div className="relative z-10 space-y-6 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono tracking-widest uppercase">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>THE SPATIAL EDUCATION STANDARD</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono tracking-widest uppercase">
+              <Zap className="w-3 h-3" />
+              <span>THE ZERO GUARANTEE</span>
             </div>
 
             <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tighter text-white leading-tight">
-              Learning as fast as AI.
+              Resumes are dead.
               <br />
-              <span className="text-amber-400">As interactive as real life.</span>
+              <span className="text-emerald-400">And it costs you nothing...</span> we charge
+              recruiters.
             </h3>
 
-            <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-normal">
-              OPED replaces flat text and pre-recorded videos with live generative video teachers
-              and spatial 3D interactive whiteboards. Practice NCERT concepts, manipulate 3D models,
-              and get evaluated in real-time.
+            <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-normal">
+              Traditional credentials no longer prove potential in an AI-driven workforce. Zero
+              replaces passive lectures with intense, real-world micro-simulations, proving your
+              skills to hiring managers directly.
             </p>
 
-            <div className="pt-4 flex flex-wrap gap-8 text-xs font-mono text-slate-300">
+            <div className="pt-4 flex flex-wrap gap-8 text-xs font-mono text-zinc-400">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <span>2-Way Generative Video (&lt; 80ms)</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>$0 Tuition Upfront</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <span>3D Spatial VR Environment</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>Guaranteed Interview</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400" />
-                <span>Live Interactive Physics Models</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>100% Work-Verified Portfolio</span>
               </div>
             </div>
           </div>
