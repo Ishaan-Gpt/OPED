@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Video, Box, LineChart, Play, CheckCircle, Sparkles, MessageSquare } from "lucide-react";
+import {
+  Video,
+  Box,
+  LineChart,
+  Play,
+  CheckCircle,
+  Sparkles,
+  MessageSquare,
+  Activity,
+  ShieldCheck,
+} from "lucide-react";
 
 export const BentoProjects: React.FC = () => {
   const card1Ref = useRef<HTMLDivElement>(null);
@@ -21,7 +31,7 @@ export const BentoProjects: React.FC = () => {
     ref.current.style.setProperty("--mouse-y", `${y}px`);
   };
 
-  // Card 1: Simulated speech transcription & 2-way AI response
+  // Simulated live audio speech transcript stream
   const [typedText, setTypedText] = useState("");
   const fullText =
     "Let's review refraction of light! When a light ray enters a glass prism, it bends toward the normal line due to the change in optical density.";
@@ -36,31 +46,35 @@ export const BentoProjects: React.FC = () => {
   }, [fullText]);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-28 space-y-16 bg-slate-50 border-t border-b border-slate-200">
+    <section
+      id="video-ai"
+      className="max-w-7xl mx-auto px-6 py-28 space-y-16 bg-slate-50 border-t border-b border-slate-200"
+    >
       {/* Title */}
       <div className="space-y-4 max-w-3xl">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 border border-blue-200 text-blue-800 text-xs font-mono tracking-wider uppercase font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-          <span>INTERACTIVE SHOWCASE</span>
+          <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-spin" />
+          <span>3D VR & VIDEO AI SHOWCASE</span>
         </div>
 
         <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
           Experience learning built for the AI era.
         </h2>
 
-        <p className="text-slate-600 text-base sm:text-lg">
+        <p className="text-slate-600 text-base sm:text-lg font-normal">
           Live 2-way video streams, interactive 3D spatial whiteboards, and instant automated
           student evaluation.
         </p>
       </div>
 
       {/* Bento Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* CARD 1 - 2-Way Real-Time Video */}
-        <div
+        <motion.div
           ref={card1Ref}
+          whileHover={{ y: -6 }}
           onMouseMove={(e) => handleMouseMove(e, card1Ref)}
-          className="group relative bg-white border border-slate-200 hover:border-blue-300 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-xl"
+          className="group relative bg-white border border-slate-200 hover:border-blue-400 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-400 shadow-sm hover:shadow-2xl"
         >
           <div className="space-y-6">
             <div className="flex items-center justify-between text-xs font-mono text-slate-500 font-semibold">
@@ -70,7 +84,9 @@ export const BentoProjects: React.FC = () => {
                   2-WAY REAL-TIME VIDEO
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400">DEMO 01</span>
+              <span className="text-[10px] text-blue-600 font-bold px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200">
+                DEMO 01
+              </span>
             </div>
 
             <h3 className="text-xl font-bold text-slate-900 leading-snug">
@@ -78,14 +94,17 @@ export const BentoProjects: React.FC = () => {
             </h3>
 
             {/* Interactive Preview: Video Stream */}
-            <div className="rounded-2xl bg-slate-900 text-white border border-slate-800 p-4 space-y-3 font-mono text-xs shadow-inner">
+            <div className="rounded-2xl bg-slate-900 text-white border border-slate-800 p-4 space-y-3 font-mono text-xs shadow-xl">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] text-slate-400">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
                   <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
                   <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
                 </div>
-                <span className="text-blue-400 font-bold">OPED Live Stream [30 FPS]</span>
+                <span className="text-blue-400 font-bold flex items-center gap-1">
+                  <Activity className="w-3 h-3 text-blue-400 animate-pulse" /> OPED Live Stream [30
+                  FPS]
+                </span>
               </div>
 
               <div className="space-y-2 text-slate-200">
@@ -99,11 +118,17 @@ export const BentoProjects: React.FC = () => {
                 </div>
               </div>
 
+              {/* Animated Audio Bars Visualizer */}
               <div className="flex items-center justify-between pt-1 text-[10px] text-blue-400 font-semibold">
-                <span className="flex items-center gap-1">
-                  <Play className="w-3 h-3 fill-blue-400" /> Synthesizing audio & speech...
+                <span className="flex items-center gap-1.5">
+                  <Play className="w-3 h-3 fill-blue-400" /> Synthesizing audio & speech
                 </span>
-                <span className="text-slate-400">42ms latency</span>
+                <div className="flex items-end gap-1 h-3">
+                  <span className="w-1 h-2 bg-blue-400 animate-pulse" />
+                  <span className="w-1 h-3 bg-blue-400 animate-pulse delay-75" />
+                  <span className="w-1 h-1 bg-blue-400 animate-pulse delay-150" />
+                  <span className="w-1 h-3 bg-blue-400 animate-pulse" />
+                </div>
               </div>
             </div>
           </div>
@@ -119,13 +144,14 @@ export const BentoProjects: React.FC = () => {
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* CARD 2 - 3D VR Classroom Mesh */}
-        <div
+        <motion.div
           ref={card2Ref}
+          whileHover={{ y: -6 }}
           onMouseMove={(e) => handleMouseMove(e, card2Ref)}
-          className="group relative bg-white border border-slate-200 hover:border-blue-300 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-xl"
+          className="group relative bg-white border border-slate-200 hover:border-blue-400 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-400 shadow-sm hover:shadow-2xl"
         >
           <div className="space-y-6">
             <div className="flex items-center justify-between text-xs font-mono text-slate-500 font-semibold">
@@ -135,7 +161,9 @@ export const BentoProjects: React.FC = () => {
                   3D VR BLACKBOARD MESH
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400">DEMO 02</span>
+              <span className="text-[10px] text-indigo-600 font-bold px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200">
+                DEMO 02
+              </span>
             </div>
 
             <h3 className="text-xl font-bold text-slate-900 leading-snug">
@@ -143,7 +171,7 @@ export const BentoProjects: React.FC = () => {
             </h3>
 
             {/* Interactive Preview: 3D Mesh Diagram */}
-            <div className="rounded-2xl bg-slate-900 text-white border border-slate-800 p-4 space-y-3 font-mono text-xs shadow-inner">
+            <div className="rounded-2xl bg-slate-900 text-white border border-slate-800 p-4 space-y-3 font-mono text-xs shadow-xl">
               <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-[10px] text-slate-400">
                 <span>Atomic Structure (Rutherford Model)</span>
                 <span className="text-indigo-400 font-bold">Interactive 3D Mesh</span>
@@ -174,13 +202,14 @@ export const BentoProjects: React.FC = () => {
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* CARD 3 - Student Evaluation */}
-        <div
+        <motion.div
           ref={card3Ref}
+          whileHover={{ y: -6 }}
           onMouseMove={(e) => handleMouseMove(e, card3Ref)}
-          className="group relative bg-white border border-slate-200 hover:border-blue-300 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-sm hover:shadow-xl"
+          className="group relative bg-white border border-slate-200 hover:border-blue-400 rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-400 shadow-sm hover:shadow-2xl"
         >
           <div className="space-y-6">
             <div className="flex items-center justify-between text-xs font-mono text-slate-500 font-semibold">
@@ -190,7 +219,9 @@ export const BentoProjects: React.FC = () => {
                   STUDENT MASTERY ENGINE
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400">DEMO 03</span>
+              <span className="text-[10px] text-emerald-600 font-bold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
+                DEMO 03
+              </span>
             </div>
 
             <h3 className="text-xl font-bold text-slate-900 leading-snug">
@@ -198,7 +229,7 @@ export const BentoProjects: React.FC = () => {
             </h3>
 
             {/* Interactive Preview: Performance Graph */}
-            <div className="rounded-2xl bg-slate-900 text-white border border-slate-800 p-4 space-y-3 font-mono text-xs shadow-inner">
+            <div className="rounded-2xl bg-slate-900 text-white border border-slate-800 p-4 space-y-3 font-mono text-xs shadow-xl">
               <div className="flex items-center justify-between text-[10px] text-slate-400">
                 <span>Student Retention Curve</span>
                 <span className="text-emerald-400 font-bold">Score: 96.8%</span>
@@ -241,7 +272,7 @@ export const BentoProjects: React.FC = () => {
               </span>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
