@@ -165,7 +165,7 @@ export default function EmbeddedThreeDCanvas({ kind, title, onDone }: Props) {
         <button
           type="button"
           onClick={onDone}
-          className="absolute bottom-3 right-4 px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 border border-white/30 text-white font-semibold text-xs backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
+          className="absolute bottom-3 right-4 px-4 py-1.5 rounded-full bg-teal text-white font-semibold text-xs transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg"
         >
           Done Exploring →
         </button>

@@ -83,15 +83,15 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-4">
       {/* HUD Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-zinc-900/90 backdrop-blur-md border border-white/20 text-xs text-white">
-        <div className="flex items-center gap-2 text-white font-medium">
-          <Sparkles className="w-4 h-4 text-white animate-pulse" />
+      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-900/80 backdrop-blur border border-emerald-500/20 text-xs">
+        <div className="flex items-center gap-2 text-emerald-400 font-medium">
+          <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
           <span>Outcome Practice · Step 3 of 3</span>
         </div>
-        <div className="flex items-center gap-3 text-white/80">
+        <div className="flex items-center gap-3 text-slate-300">
           <span>Question {currentIndex + 1} of {totalQuestions}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
-          <span className="font-semibold text-white">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+          <span className="font-semibold text-emerald-400">
             Score: {answeredSoFar > 0 ? Math.round((correctSoFar / answeredSoFar) * 100) : 0}%
           </span>
         </div>
@@ -103,28 +103,28 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -12 }}
-        className="relative p-6 rounded-2xl bg-zinc-900/95 backdrop-blur-xl border border-white/20 shadow-2xl flex flex-col gap-5 text-white"
+        className="relative p-6 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-700/60 shadow-2xl flex flex-col gap-5 text-white"
       >
         {/* Question Type Badge */}
         <div className="flex items-center justify-between">
-          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-white/10 text-white border border-white/20 backdrop-blur-md">
+          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
             {currentQ.type.replace(/-/g, " ")}
           </span>
           {isAnswered && (
             <span
-              className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full backdrop-blur-md ${
+              className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full ${
                 currentResult?.isCorrect
-                  ? "bg-white/30 text-white border border-white/50"
-                  : "bg-white/10 text-white/70 border border-white/20"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                  : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
               }`}
             >
               {currentResult?.isCorrect ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-white" /> Correct
+                  <Check className="w-3.5 h-3.5" /> Correct
                 </>
               ) : (
                 <>
-                  <X className="w-3.5 h-3.5 text-white/70" /> Incorrect
+                  <X className="w-3.5 h-3.5" /> Incorrect
                 </>
               )}
             </span>
@@ -132,7 +132,7 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
         </div>
 
         {/* Question Prompt */}
-        <h3 className="text-base sm:text-lg font-medium text-white leading-relaxed">
+        <h3 className="text-base sm:text-lg font-medium text-slate-100 leading-relaxed">
           {currentQ.question}
         </h3>
 
@@ -151,12 +151,12 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
                     evaluateAnswer(currentInput);
                   }
                 }}
-                className={`flex-1 px-4 py-3 rounded-xl bg-black/60 border text-sm text-white placeholder-white/40 focus:outline-none transition-all ${
+                className={`flex-1 px-4 py-3 rounded-xl bg-slate-800/90 border text-sm text-white placeholder-slate-400 focus:outline-none transition-all ${
                   isAnswered
                     ? currentResult?.isCorrect
-                      ? "border-white/60 bg-white/20"
-                      : "border-white/30 bg-white/5"
-                    : "border-white/20 focus:border-white/60 focus:ring-1 focus:ring-white/60"
+                      ? "border-emerald-500/80 bg-emerald-950/20"
+                      : "border-rose-500/80 bg-rose-950/20"
+                    : "border-slate-600 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400"
                 }`}
               />
               {!isAnswered && (
@@ -164,7 +164,7 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
                   type="button"
                   disabled={!currentInput.trim()}
                   onClick={() => evaluateAnswer(currentInput)}
-                  className="px-5 py-3 rounded-xl font-semibold text-sm bg-white/20 hover:bg-white/30 border border-white/30 disabled:opacity-40 text-white transition-all cursor-pointer backdrop-blur-md"
+                  className="px-5 py-3 rounded-xl font-medium text-sm bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white transition-colors cursor-pointer"
                 >
                   Submit
                 </button>
@@ -177,15 +177,15 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
               {currentQ.options?.map((option, idx) => {
                 const isSelected = currentResult?.answer === option;
                 const isCorrectOption = option === currentQ.correctAnswer;
-                let btnStyle = "bg-white/10 border-white/20 hover:bg-white/20 text-white backdrop-blur-md";
+                let btnStyle = "bg-slate-800/80 border-slate-700/80 hover:bg-slate-750 text-slate-200";
 
                 if (isAnswered) {
                   if (isCorrectOption) {
-                    btnStyle = "bg-white/30 border-white/60 text-white font-bold backdrop-blur-md";
+                    btnStyle = "bg-emerald-900/40 border-emerald-500 text-emerald-200 font-semibold";
                   } else if (isSelected && !currentResult?.isCorrect) {
-                    btnStyle = "bg-white/5 border-white/20 text-white/50 line-through backdrop-blur-md";
+                    btnStyle = "bg-rose-900/40 border-rose-500 text-rose-200";
                   } else {
-                    btnStyle = "opacity-40 bg-white/5 border-white/10 text-white/40 backdrop-blur-md";
+                    btnStyle = "opacity-50 bg-slate-800/40 border-slate-750 text-slate-400";
                   }
                 }
 
@@ -212,15 +212,15 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
               {["True", "False"].map((opt) => {
                 const isSelected = currentResult?.answer === opt;
                 const isCorrectOption = opt === currentQ.correctAnswer;
-                let btnStyle = "bg-white/10 border-white/20 hover:bg-white/20 text-white backdrop-blur-md";
+                let btnStyle = "bg-slate-800/80 border-slate-700 hover:bg-slate-750 text-slate-200";
 
                 if (isAnswered) {
                   if (isCorrectOption) {
-                    btnStyle = "bg-white/30 border-white/60 text-white font-bold backdrop-blur-md";
+                    btnStyle = "bg-emerald-900/40 border-emerald-500 text-emerald-200 font-semibold";
                   } else if (isSelected && !currentResult?.isCorrect) {
-                    btnStyle = "bg-white/5 border-white/20 text-white/50 line-through backdrop-blur-md";
+                    btnStyle = "bg-rose-900/40 border-rose-500 text-rose-200";
                   } else {
-                    btnStyle = "opacity-40 bg-white/5 border-white/10 text-white/40 backdrop-blur-md";
+                    btnStyle = "opacity-40 bg-slate-800/40 border-slate-750 text-slate-400";
                   }
                 }
 
@@ -247,16 +247,16 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="p-3.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white/90 flex flex-col gap-1.5 backdrop-blur-md"
+              className="p-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs text-slate-300 flex flex-col gap-1.5"
             >
-              <div className="flex items-center gap-1.5 font-semibold text-white">
-                <HelpCircle className="w-3.5 h-3.5 text-white" />
+              <div className="flex items-center gap-1.5 font-semibold text-emerald-400">
+                <HelpCircle className="w-3.5 h-3.5" />
                 <span>NCERT Concept Explanation</span>
               </div>
               <p className="leading-relaxed">{currentQ.explanation}</p>
               {!currentResult?.isCorrect && (
-                <div className="mt-1 font-medium text-white">
-                  Correct Answer: <span className="font-bold underline">{currentQ.correctAnswer}</span>
+                <div className="mt-1 font-medium text-emerald-300">
+                  Correct Answer: <span className="font-bold">{currentQ.correctAnswer}</span>
                 </div>
               )}
             </motion.div>
@@ -268,12 +268,12 @@ export default function PracticeHUD({ practice, onComplete, onQuestionAnswered }
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex justify-end pt-2 border-t border-white/15"
+            className="flex justify-end pt-2 border-t border-slate-800"
           >
             <button
               type="button"
               onClick={handleNext}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-white/20 hover:bg-white/30 border border-white/30 text-white transition-all cursor-pointer shadow-lg backdrop-blur-md"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold transition-colors cursor-pointer shadow-lg shadow-emerald-500/20"
             >
               <span>{currentIndex + 1 < totalQuestions ? "Next Question" : "Complete Practice & View Report"}</span>
               <ArrowRight className="w-4 h-4" />

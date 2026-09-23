@@ -83,19 +83,19 @@ export function RecitationHUD({ module, onReplay, onReadiness }: Props) {
     <div className="rounded-2xl border border-chalk/14 bg-black/25 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-[0.62rem] uppercase tracking-[0.2em] text-white/70">Active recall</p>
-          <p className="font-[family-name:var(--font-display)] text-lg text-chalk font-medium">Your turn to recite</p>
+          <p className="text-[0.62rem] uppercase tracking-[0.2em] text-royal-soft">Active recall</p>
+          <p className="font-[family-name:var(--font-display)] text-lg text-chalk">Your turn to recite</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onReplay}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs text-white backdrop-blur-md transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full border border-chalk/20 px-3 py-1.5 text-xs text-chalk/70 hover:border-chalk/45"
           >
             <ReplayIcon size={14} /> Teacher repeats ({RULES.teacherRepeats}×)
           </button>
           <button
             onClick={() => setMode(mode === "voice" ? "text" : "voice")}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 hover:bg-white/20 px-3 py-1.5 text-xs text-white backdrop-blur-md transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full border border-chalk/20 px-3 py-1.5 text-xs text-chalk/70 hover:border-chalk/45"
           >
             {mode === "voice" ? <KeyboardIcon size={14} /> : <MicIcon size={14} />}
             {mode === "voice" ? "Type instead" : "Speak instead"}
@@ -103,7 +103,7 @@ export function RecitationHUD({ module, onReplay, onReadiness }: Props) {
         </div>
       </div>
 
-      <p className="mt-3 rounded-xl border border-white/15 bg-white/5 px-3.5 py-2.5 font-[family-name:var(--font-chalk)] text-[1.05rem] text-white/90 backdrop-blur-md">
+      <p className="mt-3 rounded-xl border border-chalk/10 bg-chalk/5 px-3 py-2 font-[family-name:var(--font-chalk)] text-[1.05rem] text-chalk/80">
         Recite: “{module.examConcept}”
       </p>
 
@@ -113,10 +113,8 @@ export function RecitationHUD({ module, onReplay, onReadiness }: Props) {
             onPointerDown={startTalking}
             onPointerUp={stopTalking}
             onPointerLeave={() => listening && stopTalking()}
-            className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all backdrop-blur-md border cursor-pointer ${
-              listening
-                ? "bg-white/40 border-white/70 text-white animate-pulse"
-                : "bg-white/15 hover:bg-white/25 border-white/25 text-white"
+            className={`inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-colors ${
+              listening ? "bg-royal text-white" : "bg-teal text-white hover:bg-teal-soft"
             }`}
           >
             <MicIcon size={18} /> {listening ? "Listening… release to submit" : "Hold to recite"}
@@ -135,9 +133,9 @@ export function RecitationHUD({ module, onReplay, onReadiness }: Props) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type your recitation in your own words…"
-            className="min-w-0 flex-1 rounded-xl border border-white/20 bg-black/50 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/50"
+            className="min-w-0 flex-1 rounded-xl border border-chalk/20 bg-chalk/5 px-3.5 py-2.5 text-sm text-chalk outline-none placeholder:text-chalk/35 focus:border-teal-soft"
           />
-          <button className="rounded-xl bg-white/20 hover:bg-white/30 border border-white/30 px-4 py-2.5 text-sm font-semibold text-white transition-all backdrop-blur-md cursor-pointer">
+          <button className="rounded-xl bg-teal px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-soft">
             Check recall
           </button>
         </form>
