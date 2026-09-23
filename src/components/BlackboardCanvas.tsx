@@ -12,8 +12,17 @@ import EmbeddedThreeDCanvas from "@/components/EmbeddedThreeDCanvas";
 import EmbeddedVideoPlayer from "@/components/EmbeddedVideoPlayer";
 import RightChatDrawer from "@/components/RightChatDrawer";
 import { BrandMark, CheckSealIcon, TeacherIcon, EnterIcon } from "@/components/icons";
-import { Sparkles, Brain, Target, BookOpen, CheckCircle2, ChevronRight, User, MessageSquare, Mic, MicOff, Pause, Play, X } from "lucide-react";
-
+import { Sparkles, Brain, Target, BookOpen, CheckCircle2, ChevronRight, User, MessageSquare, Mic, MicOff } from "lucide-react";
+import { AnimatedTeacher } from "@/character/AnimatedTeacher";
+import type {
+  CharacterState,
+  ExpressionType,
+  GestureType,
+  GazeTarget,
+  PointTarget,
+  PositionPreset,
+} from "@/character/types";
+import { DemoControls } from "@/demo/DemoControls";
 import { generateLessonVideo } from "@/lib/remotion/client";
 import { streamTeacherResponse } from "@/lib/bedrock";
 import MasteryOutcome from "@/components/MasteryOutcome";
@@ -36,8 +45,8 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   }, [module.title, module.grade, module.chapter]);
 
   // Student Onboarding State
-  const [studentName, setStudentName] = useState<string>("Student");
-  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+  const [studentName, setStudentName] = useState<string>("");
+  const [isNameModalOpen, setIsNameModalOpen] = useState(true);
   const [nameInput, setNameInput] = useState("");
 
   // Classroom Multi-Page & Multi-Stage State
@@ -56,7 +65,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
 
   const [pages, setPages] = useState<LessonPage[]>(initialPages);
   const [activePageIndex, setActivePageIndex] = useState(0);
-  const [classroomStage, setClassroomStage] = useState<"onboarding" | "lesson_pages" | "memorize" | "practice" | "mastery">("lesson_pages");
+  const [classroomStage, setClassroomStage] = useState<"onboarding" | "lesson_pages" | "memorize" | "practice" | "mastery">("onboarding");
 
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [visibleNotesCount, setVisibleNotesCount] = useState(1);
@@ -65,21 +74,6 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const [teacherRepeat, setTeacherRepeat] = useState(0);
   const [captionSpeaker, setCaptionSpeaker] = useState("Dr. Rao");
   const [isStudentSpeaking, setIsStudentSpeaking] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-
-  const togglePauseClass = useCallback(() => {
-    setIsPaused((prev) => {
-      const next = !prev;
-      if (next) {
-        speechPlayer.pause();
-        setSpeaking(false);
-      } else {
-        speechPlayer.resume();
-        setSpeaking(true);
-      }
-      return next;
-    });
-  }, []);
 
   // Embedded Video State
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
@@ -118,7 +112,16 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     examReadinessRating: "Developing",
   });
 
+  // 3D Avatar state
+  const [isTeacherActive, setIsTeacherActive] = useState(true);
   const [teacherGreeting, setTeacherGreeting] = useState<string | null>(null);
+  const [showStudioControls, setShowStudioControls] = useState(false);
+  const [customState, setCustomState] = useState<CharacterState | null>(null);
+  const [customExpression, setCustomExpression] = useState<ExpressionType | null>(null);
+  const [customGesture, setCustomGesture] = useState<GestureType | null>(null);
+  const [customGaze, setCustomGaze] = useState<GazeTarget | null>(null);
+  const [customPoint, setCustomPoint] = useState<PointTarget | null>(null);
+  const [customPosition, setCustomPosition] = useState<PositionPreset>("bottom-right");
   const [is3DClassroomActive, setIs3DClassroomActive] = useState<boolean>(true);
   const boardCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -148,7 +151,7 @@ export function BlackboardCanvas({ module, onExit }: Props) {
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (classroomStage !== "lesson_pages" || isMicActive || isPaused || !currentPage) return;
+    if (classroomStage !== "lesson_pages" || isMicActive || !currentPage) return;
 
     if (pauseTimerRef.current) {
       clearTimeout(pauseTimerRef.current);
@@ -488,7 +491,103 @@ export function BlackboardCanvas({ module, onExit }: Props) {
     });
   }, []);
 
+  // --------------------------------------------------------------------------
+  // 3D AVATAR SYNCHRONIZATION
+  // --------------------------------------------------------------------------
+  const teacherProps = useMemo<{
+    state: CharacterState;
+    expression: ExpressionType;
+    gesture: GestureType;
+    gaze: GazeTarget;
+    pointTarget: PointTarget;
+  }>(() => {
+    if (teacherGreeting) {
+      return {
+        state: "celebrate",
+        expression: "happy",
+        gesture: "doubleThumbsUp",
+        gaze: "student",
+        pointTarget: { target: "student" },
+      };
+    }
 
+    if (isMicActive) {
+      return {
+        state: "listeningEar",
+        expression: "focused",
+        gesture: "listeningEar",
+        gaze: "student",
+        pointTarget: { target: "student" },
+      };
+    }
+
+    if (currentPage?.pageType === "video" || currentPage?.pageType === "3d") {
+      return {
+        state: "amazed",
+        expression: "mindBlown",
+        gesture: "celebrate",
+        gaze: "student",
+        pointTarget: { target: "board" },
+      };
+    }
+
+    if (classroomStage === "practice") {
+      return {
+        state: "idle",
+        expression: "focused",
+        gesture: "explainBothHands",
+        gaze: "student",
+        pointTarget: { target: "board" },
+      };
+    }
+
+    if (classroomStage === "memorize") {
+      if (teacherRepeat > 0) {
+        return {
+          state: "speaking",
+          expression: "focused",
+          gesture: "explainBothHands",
+          gaze: "student",
+          pointTarget: { target: "student" },
+        };
+      }
+      return {
+        state: "listeningEar",
+        expression: "focused",
+        gesture: "listeningEar",
+        gaze: "student",
+        pointTarget: { target: "student" },
+      };
+    }
+
+    if (speaking) {
+      return {
+        state: "speaking",
+        expression: "explaining",
+        gesture: currentLineIndex % 2 === 0 ? "explainBothHands" : "pointAtTarget",
+        gaze: "student",
+        pointTarget: { target: "board" },
+      };
+    }
+
+    return {
+      state: "idle",
+      expression: "happy",
+      gesture: "idle",
+      gaze: "student",
+      pointTarget: { target: "board" },
+    };
+  }, [teacherGreeting, isMicActive, currentPage, classroomStage, teacherRepeat, speaking, currentLineIndex]);
+
+  const handleTeacherClick = useCallback(() => {
+    const stageName = classroomStage === "lesson_pages" ? "explain" : classroomStage === "practice" ? "practice" : "memorize";
+    const decision = decideAgentNextStep(stageName, masteryState, outcomeModule);
+    setTeacherGreeting(decision.teacherSpeech);
+    const t = setTimeout(() => {
+      setTeacherGreeting(null);
+    }, 4500);
+    return () => clearTimeout(t);
+  }, [classroomStage, masteryState, outcomeModule]);
 
   const mainBoardCanvasElement = (
     <motion.div
@@ -728,28 +827,14 @@ export function BlackboardCanvas({ module, onExit }: Props) {
             </span>
           </div>
 
-          {/* Simple Pause / Resume Class Button */}
-          <button
-            type="button"
-            onClick={togglePauseClass}
-            className={`rounded-full border px-4 py-1.5 text-xs font-semibold cursor-pointer flex items-center gap-2 transition-all shadow-lg backdrop-blur-md ${
-              isPaused
-                ? "border-amber-400/60 bg-amber-500/20 text-amber-200 hover:bg-amber-500/30"
-                : "border-white/20 bg-white/10 text-white hover:bg-white/20"
-            }`}
-          >
-            {isPaused ? <Play size={13} fill="currentColor" /> : <Pause size={13} fill="currentColor" />}
-            <span>{isPaused ? "Resume Class" : "Pause Class"}</span>
-          </button>
 
-          {/* Simple Exit Class Button */}
+
           <button
             type="button"
             onClick={onExit}
-            className="rounded-full border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 px-4 py-1.5 text-xs font-semibold text-rose-200 backdrop-blur-md cursor-pointer transition-all flex items-center gap-1.5"
+            className="rounded-full border border-white/20 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 text-xs text-white backdrop-blur-md cursor-pointer transition-all"
           >
-            <X size={14} />
-            <span>Exit Class</span>
+            New topic
           </button>
         </div>
       </header>
@@ -889,6 +974,48 @@ export function BlackboardCanvas({ module, onExit }: Props) {
         }}
       />
 
+      {/* AI Teacher Avatar in Bottom Corner (Hidden during 3D Classroom Mode) */}
+      <AnimatePresence>
+        {isTeacherActive && !is3DClassroomActive && (
+          <div className="fixed bottom-16 right-5 z-30 pointer-events-none">
+            <AnimatedTeacher
+              key="ai-teacher-active"
+              state={customState || teacherProps.state}
+              expression={customExpression || teacherProps.expression}
+              gesture={customGesture || teacherProps.gesture}
+              position={customPosition}
+              scale={0.82}
+              gazeTarget={customGaze || teacherProps.gaze}
+              pointTarget={customPoint || teacherProps.pointTarget}
+              speakingText={teacherGreeting || (speaking ? currentCaption : undefined)}
+              isAudioSpeaking={speaking || !!teacherGreeting}
+              avatarStyle="pulled"
+              onClick={handleTeacherClick}
+              className="pointer-events-auto cursor-pointer select-none"
+            />
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 3D Character Studio Drawer Controls */}
+      <DemoControls
+        isOpen={showStudioControls}
+        onClose={() => setShowStudioControls(false)}
+        currentState={customState || teacherProps.state}
+        currentExpression={customExpression || teacherProps.expression}
+        currentGesture={customGesture || teacherProps.gesture}
+        currentPosition={customPosition}
+        onPlayState={(st) => {
+          setCustomState(st);
+          setCustomExpression(null);
+          setCustomGesture(null);
+        }}
+        onSetExpression={(exp) => setCustomExpression(exp)}
+        onSetGesture={(gst) => setCustomGesture(gst)}
+        onMoveTo={(pos) => setCustomPosition(pos)}
+        onLookAt={(gz) => setCustomGaze(gz)}
+        onPointAt={(pt) => setCustomPoint(pt)}
+      />
     </div>
   );
 }
