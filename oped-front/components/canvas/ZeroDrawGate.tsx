@@ -26,10 +26,12 @@ export const ZeroDrawGate: React.FC<ZeroDrawGateProps> = ({ onUnlock }) => {
   // Web Audio Synth for glass snap sound
   const playSnapSound = useCallback(() => {
     try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
-      
+
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -127,11 +129,14 @@ export const ZeroDrawGate: React.FC<ZeroDrawGateProps> = ({ onUnlock }) => {
     }
 
     // 1. Compute Centroid
-    const sum = strokePoints.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
+    const sum = strokePoints.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), {
+      x: 0,
+      y: 0,
+    });
     const centroid = { x: sum.x / strokePoints.length, y: sum.y / strokePoints.length };
 
     // 2. Radii stats
-    const radii = strokePoints.map(p => Math.hypot(p.x - centroid.x, p.y - centroid.y));
+    const radii = strokePoints.map((p) => Math.hypot(p.x - centroid.x, p.y - centroid.y));
     const meanRadius = radii.reduce((a, b) => a + b, 0) / radii.length;
 
     if (meanRadius < 20) {
@@ -181,34 +186,37 @@ export const ZeroDrawGate: React.FC<ZeroDrawGateProps> = ({ onUnlock }) => {
     return false;
   }, []);
 
-  const triggerSuccessEffects = useCallback((center: { x: number; y: number }) => {
-    setIsUnlocked(true);
-    playSnapSound();
+  const triggerSuccessEffects = useCallback(
+    (center: { x: number; y: number }) => {
+      setIsUnlocked(true);
+      playSnapSound();
 
-    if (typeof window !== "undefined" && navigator.vibrate) {
-      try {
-        navigator.vibrate([30, 50, 90]);
-      } catch {
-        // Haptics fallback
+      if (typeof window !== "undefined" && navigator.vibrate) {
+        try {
+          navigator.vibrate([30, 50, 90]);
+        } catch {
+          // Haptics fallback
+        }
       }
-    }
 
-    // Confetti burst from centroid
-    confetti({
-      particleCount: 80,
-      spread: 90,
-      origin: {
-        x: center.x / window.innerWidth,
-        y: center.y / window.innerHeight,
-      },
-      colors: ["#10B981", "#2E5243", "#FFFFFF", "#34D399"],
-      disableForReducedMotion: true,
-    });
+      // Confetti burst from centroid
+      confetti({
+        particleCount: 80,
+        spread: 90,
+        origin: {
+          x: center.x / window.innerWidth,
+          y: center.y / window.innerHeight,
+        },
+        colors: ["#10B981", "#2E5243", "#FFFFFF", "#34D399"],
+        disableForReducedMotion: true,
+      });
 
-    setTimeout(() => {
-      onUnlock();
-    }, 1000);
-  }, [onUnlock, playSnapSound]);
+      setTimeout(() => {
+        onUnlock();
+      }, 1000);
+    },
+    [onUnlock, playSnapSound],
+  );
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isUnlocked) return;
@@ -226,7 +234,7 @@ export const ZeroDrawGate: React.FC<ZeroDrawGateProps> = ({ onUnlock }) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
     const p = { x: e.clientX - rect.left, y: e.clientY - rect.top, time: Date.now() };
-    setPoints(prev => [...prev, p]);
+    setPoints((prev) => [...prev, p]);
   };
 
   const handlePointerUp = () => {
@@ -292,7 +300,11 @@ export const ZeroDrawGate: React.FC<ZeroDrawGateProps> = ({ onUnlock }) => {
               </motion.div>
 
               <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tighter text-white">
-                Draw a <span className="text-emerald-400 underline decoration-emerald-500/30 underline-offset-8">0</span> to enter
+                Draw a{" "}
+                <span className="text-emerald-400 underline decoration-emerald-500/30 underline-offset-8">
+                  0
+                </span>{" "}
+                to enter
               </h1>
 
               <p className="text-sm text-zinc-400 max-w-xs font-normal">

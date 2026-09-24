@@ -37,7 +37,9 @@ export default function Home() {
       {!isUnlocked && <ZeroDrawGate onUnlock={() => setIsUnlocked(true)} />}
 
       {/* Main Page Stage (Reveals upon Unlock) */}
-      <div className={`transition-opacity duration-1000 ${isUnlocked ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+      <div
+        className={`transition-opacity duration-1000 ${isUnlocked ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
         <Navbar onJoinBetaClick={scrollToFooter} />
         <Hero onJoinBetaClick={scrollToFooter} />
         <PainPoint />

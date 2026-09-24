@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger);
 import {
   ArrowLeft,
   ArrowRight,
@@ -69,6 +74,10 @@ const fadeRight: any = {
 const popIn: any = {
   hidden: { opacity: 0, scale: 0.9, filter: "blur(10px)" },
   visible: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.17, 0.55, 0.55, 1] } }
+};
+const fadeIn: any = {
+  hidden: { opacity: 0, filter: "blur(10px)" },
+  visible: { opacity: 1, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
 };
 
 const subjects = [
@@ -242,6 +251,72 @@ function Index() {
 
   const [showPreloader, setShowPreloader] = useState(true);
 
+  
+  useGSAP(() => {
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 1px)", () => {
+      
+      // 1) Hero section - Appear-> Half element slide in from left rest half from right (ON LOAD!)
+      gsap.fromTo(".hero-section .hero-copy > :not(.hero-search-wrap)", { x: "-50vw", opacity: 0 }, { x: "0vw", opacity: 1, duration: 1, ease: "power2.out", delay: 0.2 });
+      gsap.fromTo(".hero-section .hero-search-wrap", { x: "50vw", opacity: 0 }, { x: "0vw", opacity: 1, duration: 1, ease: "power2.out", delay: 0.2 });
+      
+      const heroTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".hero-section",
+          start: "top top",
+          end: "+=150%",
+          pin: true,
+          scrub: 1.2,
+          pinSpacing: false,
+        }
+      });
+      // Out-> Opposide direction slide out
+      heroTl.fromTo(".hero-section .hero-copy > :not(.hero-search-wrap)", { x: "0vw", opacity: 1 }, { x: "-50vw", opacity: 0, duration: 1 })
+            .fromTo(".hero-section .hero-search-wrap", { x: "0vw", opacity: 1 }, { x: "50vw", opacity: 0, duration: 1 }, "<")
+            .fromTo(".hero-section", { opacity: 1 }, { opacity: 0, duration: 0.5 }); // Fade out background/remaining
+
+      const chapTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".chapters-section",
+          start: "top top",
+          end: "+=100%",
+          pin: true,
+          scrub: 1.2,
+          pinSpacing: false,
+        }
+      });
+      chapTl.fromTo(".chapters-section", { opacity: 0 }, { opacity: 1, duration: 1 })
+            .to({}, { duration: 1 })
+            .fromTo(".chapters-section", { opacity: 1 }, { opacity: 0, duration: 1 });
+
+      const classTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".classroom-section",
+          start: "top top",
+          end: "+=100%",
+          pin: true,
+          scrub: 1.2,
+          pinSpacing: false,
+        }
+      });
+      classTl.fromTo(".classroom-section", { opacity: 0 }, { opacity: 1, duration: 1 })
+             .to({}, { duration: 1 })
+             .fromTo(".classroom-section", { opacity: 1 }, { opacity: 0, duration: 1 });
+
+      const ctaTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".final-cta",
+          start: "top top",
+          end: "+=100%",
+          pin: true,
+          scrub: 1.2,
+          pinSpacing: true, // pinSpacing true for the last section so the footer doesn't get covered
+        }
+      });
+      ctaTl.fromTo(".final-cta", { opacity: 0 }, { opacity: 1, duration: 1 });
+    });
+  }, { scope: pageRef });
+
   if (activeModule) {
     return (
       <BlackboardCanvas
@@ -280,13 +355,8 @@ function Index() {
 
       <main>
         {/* UNIFIED HERO SECTION WITH CENTERED SEARCH */}
-        <section id="top" className="hero-section">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="hero-copy"
-          >
+        <section id="top" className="hero-section scroll-slide relative z-[10]">
+          <div className="hero-copy">
             <Doodle direction="left" className="hero-doodle-1">Actually interactive</Doodle>
             <h1 className="font-serif">An AI teacher that<br />won't let you <span className="script-word">Fake It.</span></h1>
             <p className="font-serif">Interactive NCERT chapter learning for Classes 4–10.</p>
@@ -352,17 +422,13 @@ function Index() {
             </div>
 
             
-          </motion.div>
+          </div>
         </section>
 
         {/* NCERT SUBJECTS & CHAPTER SELECTION */}
-        <motion.section
+        <section
           id="chapters"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, margin: "-50px" }}
-          variants={staggerContainer}
-          className="chapters-section content-width"
+          className="chapters-section content-width scroll-slide bg-[var(--background)] relative z-[11]"
         >
           <motion.div className="section-heading reveal" variants={fadeUp}>
             <Doodle direction="left">Class 4 to 10</Doodle>
@@ -383,15 +449,11 @@ function Index() {
               </motion.div>
             ))}
           </motion.div>
-        </motion.section>
+        </section>
 
         {/* CLASSROOM PHOTO SHOWCASE */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, margin: "-50px" }}
-          variants={staggerContainer}
-          className="classroom-section content-width"
+        <section
+          className="classroom-section content-width scroll-slide bg-[var(--background)] relative z-[12] h-[100dvh] flex flex-col justify-center"
         >
           <motion.div className="section-heading reveal" variants={fadeUp}>
             <Doodle>no PDFs, no passive video</Doodle>
@@ -404,7 +466,7 @@ function Index() {
               <span>TEXT / VISUALS / IDEAS</span>
             </div>
           </motion.div>
-        </motion.section>
+        </section>
 
         {/* THE OPED LOOP STORY SECTION */}
         <motion.section
@@ -413,7 +475,7 @@ function Index() {
           whileInView="visible"
           viewport={{ once: false, margin: "-50px" }}
           variants={staggerContainer}
-          className="story-section content-width"
+          className="story-section content-width bg-[var(--background)] relative z-[13]"
         >
           <div className="story-layout">
             <div className="story-left">
@@ -476,13 +538,13 @@ function Index() {
           whileInView="visible"
           viewport={{ once: false, margin: "-50px" }}
           variants={staggerContainer}
-          className="readiness-section content-width"
+          className="readiness-section content-width bg-[var(--background)] relative z-[14]"
         >
-          <motion.div className="readiness-copy reveal" variants={fadeLeft}>
+          <motion.div className="readiness-copy reveal" variants={fadeIn}>
             <Doodle>marks alone don't show what's solid</Doodle>
-            <motion.h2 variants={fadeUp}>Build a readiness score that<br /><span className="script-word text-[0.8em]">actually means something.</span></motion.h2>
+            <motion.h2 variants={fadeIn}>Build a readiness score that<br /><span className="script-word text-[0.8em]">actually means something.</span></motion.h2>
           </motion.div>
-          <motion.div className="readiness-visual reveal" variants={fadeRight}>
+          <motion.div className="readiness-visual reveal" variants={fadeIn}>
             <div className="readiness-header">
               <span>CHAPTER READINESS</span>
               <span>CLASS 10 / SCIENCE</span>
@@ -496,16 +558,14 @@ function Index() {
         </motion.section>
 
         {/* ZERO COST SECTION WITH SCROLL-TRIGGERED STACK SPREAD MOTION */}
-        <StackSpread />
+        <section className="scroll-slide bg-[var(--background)] relative z-[15]">
+          <StackSpread />
+        </section>
 
         {/* FINAL CTA SECTION */}
-        <motion.section 
+        <section 
           id="start" 
-          className="final-cta"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, margin: "-50px" }}
-          variants={staggerContainer}
+          className="final-cta scroll-slide bg-[var(--background)] relative z-[16]"
         >
           <div className="paper-curl" aria-hidden="true"/>
           <motion.div className="cta-content" variants={fadeUp}>
@@ -534,7 +594,7 @@ function Index() {
             <span>LEARN IT. PROVE IT.</span>
             <a href="#top">BACK TO TOP ↑</a>
           </motion.footer>
-        </motion.section>
+        </section>
       </main>
 
       {/* FLOATING QUICK DOCK & MENU OVERLAY */}

@@ -47,10 +47,7 @@ function CampusBuildings() {
 
       {/* Dynamic Data Node Beacons */}
       {buildings.map((b, i) => (
-        <mesh
-          key={`beacon-${i}`}
-          position={[b.pos[0], b.pos[1] + b.scale[1] / 2 + 0.2, b.pos[2]]}
-        >
+        <mesh key={`beacon-${i}`} position={[b.pos[0], b.pos[1] + b.scale[1] / 2 + 0.2, b.pos[2]]}>
           <sphereGeometry args={[0.08, 16, 16]} />
           <meshBasicMaterial color="#10B981" />
         </mesh>
@@ -80,10 +77,7 @@ export const CampusWireframe: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(46,82,67,0.3)_0%,transparent_70%)] pointer-events-none" />
 
       {/* R3F Canvas */}
-      <Canvas
-        camera={{ position: [6, 7, 8], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-      >
+      <Canvas camera={{ position: [6, 7, 8], fov: 45 }} gl={{ antialias: true, alpha: true }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.4}>

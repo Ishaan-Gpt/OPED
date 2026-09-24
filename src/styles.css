@@ -182,7 +182,7 @@
 }
 
 /* ── Lovable Landing Page Styling ─────────────────────────────────────── */
-.site-shell { overflow: clip; background: var(--background); color: var(--foreground); font-family: var(--f-sans); }
+.site-shell { background: var(--background); color: var(--foreground); font-family: var(--f-sans); }
 .content-width { width: min(1360px, calc(100% - 9vw)); margin-inline: auto; }
 .site-header { height: 78px; width: 100%; padding: 0 4.5%; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 5; }
 .brand { color: inherit; font-family: var(--f-serif); font-size: 36px; font-weight: 400; line-height: 1; letter-spacing: -1px; text-decoration: none; display: flex; align-items: center; gap: 10px; }

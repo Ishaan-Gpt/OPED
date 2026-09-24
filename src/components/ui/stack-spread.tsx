@@ -319,6 +319,7 @@ export interface StackSpreadProps {
   textColor?: string;
   textFadeStart?: number;
   showScrollHint?: boolean;
+  progressOverride?: MotionValue<number>;
 }
 
 export default function StackSpread({
@@ -329,6 +330,7 @@ export default function StackSpread({
   textColor = "#09090b",
   textFadeStart = 0.25,
   showScrollHint = true,
+  progressOverride,
 }: StackSpreadProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
@@ -339,8 +341,10 @@ export default function StackSpread({
     offset: ["start start", "end end"],
   });
 
+  const activeProgress = progressOverride || scrollYProgress;
+
   const progress = useTransform(
-    scrollYProgress,
+    activeProgress,
     [0, SCATTER_START, SCATTER_END, 1],
     [0, 0, 1, 1],
   );

@@ -5,10 +5,10 @@
   --color-surface-dark: #080808;
   --color-surface-card: #0c0c0c;
   --color-surface-elevated: #111111;
-  --color-emerald-glow: #2E5243;
+  --color-emerald-glow: #2e5243;
   --color-emerald-slate: #203934;
-  --color-border-subtle: #18181B;
-  --color-border-hover: #3F3F46;
+  --color-border-subtle: #18181b;
+  --color-border-hover: #3f3f46;
   --font-sans: var(--font-geist-sans), Inter, sans-serif;
   --font-mono: var(--font-geist-mono), JetBrains Mono, monospace;
 }
@@ -18,12 +18,13 @@
   --foreground: #ffffff;
 }
 
-html, body {
+html,
+body {
   background-color: #000000;
   color: #ffffff;
   overflow-x: hidden;
   font-family: var(--font-sans);
-  selection-background-color: #2E5243;
+  selection-background-color: #2e5243;
   selection-color: #ffffff;
 }
 
@@ -61,8 +62,12 @@ html, body {
 
 /* Text shimmer animation */
 @keyframes text-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .animate-shimmer {
@@ -73,4 +78,3 @@ html, body {
   background-clip: text;
   animation: text-shimmer 4s linear infinite;
 }
-
